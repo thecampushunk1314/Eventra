@@ -1,0 +1,927 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/bg_canvas">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/authScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="28dp"
+            android:paddingBottom="32dp">
+
+            <!-- ========================================== -->
+            <!-- TOP HEADER CARD (Dynamic Lavender / Mint)   -->
+            <!-- ========================================== -->
+            <RelativeLayout
+                android:id="@+id/headerCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_header_lavender"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="18dp"
+                android:paddingBottom="18dp">
+
+                <!-- Left: Squircle Icon + Brand Title -->
+                <LinearLayout
+                    android:id="@+id/layoutBrand"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <!-- Black Squircle with Calendar Icon -->
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/bg_squircle_black">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_eventra_calendar"
+                            app:tint="@color/white" />
+                    </FrameLayout>
+
+                    <!-- Eventra Title -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:letterSpacing="-0.03"
+                        android:text="Eventra"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Right: Decorative Dots (Yellow, Mint, Black) -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/bg_dot_pale_yellow" />
+
+                    <View
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/bg_dot_pale_mint" />
+
+                    <View
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:background="@drawable/bg_dot_dark_ink" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <!-- ========================================== -->
+            <!-- MAIN CARD CONTAINER (White Elevated Card)   -->
+            <!-- ========================================== -->
+            <LinearLayout
+                android:id="@+id/cardContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_card_container_white"
+                android:elevation="2dp"
+                android:orientation="vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="24dp">
+
+                <!-- Segmented Tab Switcher (Register | Login) -->
+                <LinearLayout
+                    android:id="@+id/layoutTabContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_tab_container"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+
+                    <!-- Register Tab Button -->
+                    <TextView
+                        android:id="@+id/tabRegister"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_tab_active"
+                        android:elevation="1dp"
+                        android:gravity="center"
+                        android:text="Register"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <!-- Login Tab Button -->
+                    <TextView
+                        android:id="@+id/tabLogin"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:gravity="center"
+                        android:text="Login"
+                        android:textColor="@color/text_muted"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- ========================================== -->
+                <!-- REGISTER FORM CONTAINER                    -->
+                <!-- ========================================== -->
+                <LinearLayout
+                    android:id="@+id/containerRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <!-- Full Name Field -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_input_box"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_person_outline"
+                            app:tint="@color/text_muted" />
+
+                        <EditText
+                            android:id="@+id/etRegisterFullName"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="12dp"
+                            android:background="@null"
+                            android:hint="Full name"
+                            android:inputType="textPersonName|textCapWords"
+                            android:maxLines="1"
+                            android:textColor="@color/charcoal_dark"
+                            android:textColorHint="@color/text_placeholder"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- Roll number / Staff ID Field -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_input_box"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_badge_id"
+                            app:tint="@color/text_muted" />
+
+                        <EditText
+                            android:id="@+id/etRegisterRollNo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="12dp"
+                            android:background="@null"
+                            android:hint="Roll number / Staff ID"
+                            android:inputType="textCapCharacters"
+                            android:maxLines="1"
+                            android:textColor="@color/charcoal_dark"
+                            android:textColorHint="@color/text_placeholder"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- Email Field (@eventra.ac.in) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_input_box"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_mail_outline"
+                            app:tint="@color/text_muted" />
+
+                        <EditText
+                            android:id="@+id/etRegisterEmail"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="12dp"
+                            android:background="@null"
+                            android:hint="name@eventra.ac.in"
+                            android:inputType="textEmailAddress"
+                            android:maxLines="1"
+                            android:textColor="@color/charcoal_dark"
+                            android:textColorHint="@color/text_placeholder"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- Create Password Field -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_input_box"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_lock_outline"
+                            app:tint="@color/text_muted" />
+
+                        <EditText
+                            android:id="@+id/etRegisterPassword"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:hint="Create password"
+                            android:inputType="textPassword"
+                            android:maxLines="1"
+                            android:textColor="@color/charcoal_dark"
+                            android:textColorHint="@color/text_placeholder"
+                            android:textSize="14sp" />
+
+                        <ImageView
+                            android:id="@+id/btnRegisterTogglePassword"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:padding="2dp"
+                            android:src="@drawable/ic_eye_outline"
+                            app:tint="@color/text_muted" />
+                    </LinearLayout>
+
+                    <!-- Role Selection Section: "I'm joining as" -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:text="I'm joining as"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="13.5sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <!-- Student Role Pill -->
+                        <TextView
+                            android:id="@+id/roleStudent"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_role_student_selected"
+                            android:gravity="center"
+                            android:text="Student"
+                            android:textColor="@color/charcoal_dark"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold" />
+
+                        <!-- Faculty Role Pill -->
+                        <TextView
+                            android:id="@+id/roleFaculty"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_role_faculty_unselected"
+                            android:gravity="center"
+                            android:text="Faculty"
+                            android:textColor="#312E81"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold" />
+
+                        <!-- Organizer Role Pill -->
+                        <TextView
+                            android:id="@+id/roleOrganizer"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_role_organizer_unselected"
+                            android:gravity="center"
+                            android:text="Organizer"
+                            android:textColor="#78350F"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Institution / Buyer Selection Section -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:text="Campus / Buyer Institution"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="13.5sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/instHigherSec"
+                            android:layout_width="0dp"
+                            android:layout_height="42dp"
+                            android:layout_weight="1.2"
+                            android:background="@drawable/bg_role_student_unselected"
+                            android:gravity="center"
+                            android:text="Higher Sec / School"
+                            android:textColor="@color/charcoal_dark"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/instCollege"
+                            android:layout_width="0dp"
+                            android:layout_height="42dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_role_faculty_unselected"
+                            android:gravity="center"
+                            android:text="College"
+                            android:textColor="@color/charcoal_dark"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/instUniversity"
+                            android:layout_width="0dp"
+                            android:layout_height="42dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1.1"
+                            android:background="@drawable/bg_role_student_selected"
+                            android:gravity="center"
+                            android:text="University"
+                            android:textColor="@color/charcoal_dark"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Personal Information: Phone & DOB -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="14dp"
+                        android:background="@drawable/bg_input_box"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_phone"
+                            app:tint="@color/text_muted" />
+
+                        <EditText
+                            android:id="@+id/etRegisterPhone"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="12dp"
+                            android:background="@null"
+                            android:hint="Phone number (e.g. 9823000001)"
+                            android:inputType="phone"
+                            android:maxLines="1"
+                            android:textColor="@color/charcoal_dark"
+                            android:textColorHint="@color/text_placeholder"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutPickDob"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_input_box"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_calendar"
+                            app:tint="@color/text_muted" />
+
+                        <EditText
+                            android:id="@+id/etRegisterDob"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:focusable="false"
+                            android:clickable="true"
+                            android:hint="Date of Birth (DD/MM/YYYY)"
+                            android:inputType="none"
+                            android:textColor="@color/charcoal_dark"
+                            android:textColorHint="@color/text_placeholder"
+                            android:textSize="14sp" />
+
+                        <ImageView
+                            android:id="@+id/btnPickDob"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@drawable/ic_calendar_event"
+                            app:tint="@color/text_muted" />
+                    </LinearLayout>
+
+                    <!-- ========================================== -->
+                    <!-- BUYER ADAPTIVE SECTION                     -->
+                    <!-- ========================================== -->
+
+                    <!-- School / Higher Secondary Adaptive Form -->
+                    <LinearLayout
+                        android:id="@+id/containerSchoolFields"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_marginTop="6dp"
+                            android:background="@drawable/bg_input_box"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_school"
+                                app:tint="@color/text_muted" />
+
+                            <EditText
+                                android:id="@+id/etRegisterClass"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="12dp"
+                                android:background="@null"
+                                android:hint="Class / Standard (e.g. 11th Standard)"
+                                android:inputType="textCapWords"
+                                android:maxLines="1"
+                                android:textColor="@color/charcoal_dark"
+                                android:textColorHint="@color/text_placeholder"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_input_box"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_student_cap"
+                                app:tint="@color/text_muted" />
+
+                            <EditText
+                                android:id="@+id/etRegisterStream"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="12dp"
+                                android:background="@null"
+                                android:hint="Stream (e.g. Science, Commerce, Arts)"
+                                android:inputType="textCapWords"
+                                android:maxLines="1"
+                                android:textColor="@color/charcoal_dark"
+                                android:textColorHint="@color/text_placeholder"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="52dp"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_input_box"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_file"
+                                app:tint="@color/text_muted" />
+
+                            <EditText
+                                android:id="@+id/etRegisterSubjectsSchool"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:background="@null"
+                                android:hint="Subjects (e.g. Physics, Chemistry, Maths, English)"
+                                android:inputType="textCapWords|textMultiLine"
+                                android:maxLines="3"
+                                android:textColor="@color/charcoal_dark"
+                                android:textColorHint="@color/text_placeholder"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- College / University Adaptive Form -->
+                    <LinearLayout
+                        android:id="@+id/containerCollegeFields"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_marginTop="6dp"
+                            android:background="@drawable/bg_input_box"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_student_cap"
+                                app:tint="@color/text_muted" />
+
+                            <EditText
+                                android:id="@+id/etRegisterDegree"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="12dp"
+                                android:background="@null"
+                                android:hint="Degree (e.g. MCA, B.Tech, B.Sc, MBA)"
+                                android:inputType="textCapWords"
+                                android:maxLines="1"
+                                android:textColor="@color/charcoal_dark"
+                                android:textColorHint="@color/text_placeholder"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_input_box"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_school"
+                                app:tint="@color/text_muted" />
+
+                            <EditText
+                                android:id="@+id/etRegisterYearCollege"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="12dp"
+                                android:background="@null"
+                                android:hint="Level of Year (e.g. 2nd Year, Batch 2026)"
+                                android:inputType="textCapWords"
+                                android:maxLines="1"
+                                android:textColor="@color/charcoal_dark"
+                                android:textColorHint="@color/text_placeholder"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_input_box"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_badge_id"
+                                app:tint="@color/text_muted" />
+
+                            <EditText
+                                android:id="@+id/etRegisterDepartment"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="12dp"
+                                android:background="@null"
+                                android:hint="Department (e.g. Computer Applications)"
+                                android:inputType="textCapWords"
+                                android:maxLines="1"
+                                android:textColor="@color/charcoal_dark"
+                                android:textColorHint="@color/text_placeholder"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="52dp"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_input_box"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_file"
+                                app:tint="@color/text_muted" />
+
+                            <EditText
+                                android:id="@+id/etRegisterSubjectsCollege"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:background="@null"
+                                android:hint="Subjects (e.g. Cloud Computing, Java, DBMS)"
+                                android:inputType="textCapWords|textMultiLine"
+                                android:maxLines="3"
+                                android:textColor="@color/charcoal_dark"
+                                android:textColorHint="@color/text_placeholder"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Terms & Privacy Checkbox -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <CheckBox
+                            android:id="@+id/cbTerms"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="@color/charcoal_dark"
+                            android:checked="true" />
+
+                        <TextView
+                            android:id="@+id/tvTerms"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="I agree to the Terms and Privacy Policy"
+                            android:textColor="@color/charcoal_dark"
+                            android:textSize="12.5sp" />
+                    </LinearLayout>
+
+                    <!-- Create Account Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCreateAccount"
+                        style="@style/Widget.Eventra.Button.Pill"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:layout_marginTop="18dp"
+                        android:backgroundTint="@color/charcoal_dark"
+                        android:text="Create account"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="20dp" />
+
+                </LinearLayout>
+
+                <!-- ========================================== -->
+                <!-- LOGIN FORM CONTAINER                       -->
+                <!-- ========================================== -->
+                <LinearLayout
+                    android:id="@+id/containerLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <!-- Email Field (@eventra.ac.in) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_input_box"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_mail_outline"
+                            app:tint="@color/text_muted" />
+
+                        <EditText
+                            android:id="@+id/etLoginEmail"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="12dp"
+                            android:background="@null"
+                            android:hint="name@eventra.ac.in"
+                            android:inputType="textEmailAddress"
+                            android:maxLines="1"
+                            android:textColor="@color/charcoal_dark"
+                            android:textColorHint="@color/text_placeholder"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- Password Field -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_input_box"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_lock_outline"
+                            app:tint="@color/text_muted" />
+
+                        <EditText
+                            android:id="@+id/etLoginPassword"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:hint="Password"
+                            android:inputType="textPassword"
+                            android:maxLines="1"
+                            android:textColor="@color/charcoal_dark"
+                            android:textColorHint="@color/text_placeholder"
+                            android:textSize="14sp" />
+
+                        <ImageView
+                            android:id="@+id/btnLoginTogglePassword"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:padding="2dp"
+                            android:src="@drawable/ic_eye_outline"
+                            app:tint="@color/text_muted" />
+                    </LinearLayout>
+
+                    <!-- Forgot Password Link -->
+                    <TextView
+                        android:id="@+id/btnForgotPassword"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="12dp"
+                        android:text="Forgot password?"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <!-- Log In Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLoginSubmit"
+                        style="@style/Widget.Eventra.Button.Pill"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:layout_marginTop="18dp"
+                        android:backgroundTint="@color/charcoal_dark"
+                        android:text="Log in"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="20dp" />
+
+                    <!-- Info Banner (Lavender rounded pill with circle-i) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:background="@drawable/bg_info_banner"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp">
+
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_info_outline"
+                            app:tint="@color/charcoal_dark" />
+
+                        <TextView
+                            android:id="@+id/tvLoginInfo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="Sign in using your @eventra.ac.in institutional account."
+                            android:textColor="@color/charcoal_dark"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- ========================================== -->
+            <!-- BOTTOM FOOTER LINK                         -->
+            <!-- ========================================== -->
+            <TextView
+                android:id="@+id/tvFooterPrompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:gravity="center"
+                android:text="Already registered? Log in"
+                android:textColor="@color/charcoal_dark"
+                android:textSize="13.5sp" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

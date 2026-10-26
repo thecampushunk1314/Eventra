@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_card_white"
+    android:padding="24dp">
+
+    <!-- Success Checkmark Header -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_chip_mint"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/ic_check"
+            app:tint="@color/pastel_mint_text" />
+
+        <TextView
+            android:id="@+id/dialogHeaderBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Registration Confirmed"
+            android:textColor="@color/pastel_mint_text"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Here is Your Official ID"
+        android:textColor="@color/charcoal_dark"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/dialogSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="Please save your generated ID. You can sign in using this ID or your email."
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        android:textAlignment="center" />
+
+    <!-- ID Badge Card (Intrinsic Institutional Smart Card) -->
+    <LinearLayout
+        android:id="@+id/idCardContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/bg_id_badge_card"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:gravity="center">
+
+        <!-- Top Header row with Smart Chip & Role Pill -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Simulated Smart Chip (Gold/Brass Institutional Badge) -->
+            <LinearLayout
+                android:layout_width="32dp"
+                android:layout_height="24dp"
+                android:background="@drawable/bg_chip_butter"
+                android:gravity="center">
+
+                <View
+                    android:layout_width="16dp"
+                    android:layout_height="10dp"
+                    android:background="@color/pastel_butter_primary" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/dialogRoleBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chip_lavender"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:text="STUDENT"
+                android:textColor="@color/pastel_lavender_text"
+                android:textSize="11.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/dialogGeneratedId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="MCA_2026_2650"
+            android:textColor="@color/charcoal_dark"
+            android:textSize="26sp"
+            android:letterSpacing="0.06"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/dialogUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Esther Howard"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/dialogUserDepartment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Department of Computer Applications"
+            android:textColor="@color/text_secondary"
+            android:textSize="12.5sp" />
+
+        <!-- Institutional Provisioning Notice -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_chip_mint"
+            android:padding="8dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Official Domain: @eventra.ac.in"
+                android:textColor="@color/pastel_mint_text"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="Default Key: 123456789 (Reset on First Login)"
+                android:textColor="@color/pastel_mint_text"
+                android:textSize="10.5sp" />
+        </LinearLayout>
+
+        <!-- Copy Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCopyId"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginTop="14dp"
+            android:text="Copy ID"
+            android:textSize="12.5sp"
+            android:textColor="@color/charcoal_dark"
+            app:icon="@drawable/ic_copy"
+            app:iconTint="@color/charcoal_dark"
+            app:iconSize="15dp"
+            app:cornerRadius="19dp"
+            app:backgroundTint="@color/white"
+            app:strokeColor="@color/input_border"
+            app:strokeWidth="1dp" />
+    </LinearLayout>
+
+    <!-- Action Buttons -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnEnterDashboard"
+        style="@style/Widget.Eventra.Button.Pill"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginTop="20dp"
+        android:text="Enter Dashboard" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnGoToSignIn"
+        style="@style/Widget.Eventra.Button.Pill"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@color/pastel_lavender_bg"
+        android:textColor="@color/pastel_lavender_text"
+        android:text="Go to Log In" />
+
+</LinearLayout>

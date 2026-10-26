@@ -1,0 +1,84 @@
+<resources>
+    <string name="app_name">Eventra</string>
+    <string name="student">Student</string>
+    <string name="teacher_director">Teacher / Director</string>
+    <string name="register">Register</string>
+    <string name="sign_in">Sign In</string>
+    <string name="register_as_student">Register as Student</string>
+    <string name="register_as_teacher">Register as Teacher / Director</string>
+    <string name="sign_in_as_student">Sign In as Student</string>
+    <string name="sign_in_as_teacher">Sign In as Teacher / Director</string>
+    <string name="already_have_account">Already registered? Sign In</string>
+    <string name="need_an_account">Don\'t have an account? Register</string>
+
+
+    <!--  Header  -->
+    <string name="greeting">Good morning,</string>
+    <string name="student_name">Student Name</string>
+    <string name="avatar_initials">SN</string>
+    <string name="cd_notifications">Notifications</string>
+    <string name="cd_search">Search</string>
+    <!--  Hero  -->
+    <string name="hero_title">Event duty counts as present.</string>
+    <string name="attendance_value">82.4%</string>
+    <string name="attendance_label">Overall attendance</string>
+    <string name="attendance_breakdown">Lectures 78.0% + duty leave 4.4%</string>
+    <string name="attendance_safe">Safe</string>
+    <string name="attendance_minimum">Minimum 75%</string>
+    <!--  Quick actions  -->
+    <string name="new_spot_pass">New Spot Pass</string>
+    <string name="permission">Permission</string>
+    <!--  This week  -->
+    <string name="this_week">This week</string>
+    <string name="open_calendar">Open calendar</string>
+    <string name="day_mon">Mon</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_fri">Fri</string>
+    <string name="day_sat">Sat</string>
+    <string name="day_sun">Sun</string>
+    <string name="date_19">19</string>
+    <string name="date_20">20</string>
+    <string name="date_21">21</string>
+    <string name="date_22">22</string>
+    <string name="date_23">23</string>
+    <string name="date_24">24</string>
+    <string name="date_25">25</string>
+    <string name="legend_today">Today</string>
+    <string name="legend_duty">Duty leave, practice or event</string>
+    <!--  Today's practice  -->
+    <string name="todays_practice">Today\'s practice</string>
+    <string name="todays_date">Wed, 21 Oct</string>
+    <string name="practice_football">Football practice</string>
+    <string name="practice_football_meta">7:00 – 8:30 AM · Main Ground</string>
+    <string name="practice_cultural">Cultural rehearsal</string>
+    <string name="practice_cultural_meta">4:30 – 5:30 PM · Auditorium</string>
+    <string name="status_marked_present">Marked present</string>
+    <string name="status_upcoming">Upcoming</string>
+    <!--  Requests  -->
+    <string name="your_requests">Your requests</string>
+    <string name="see_all">See all</string>
+    <string name="spot_pass_title">Spot Pass · Football practice</string>
+    <string name="status_approved">Approved</string>
+    <string name="lecture_slot">Lecture slot 1–2</string>
+    <string name="permission_title">Permission · Inter-college Meet</string>
+    <string name="status_pending_pd">Pending PD</string>
+    <string name="event_dates">28 – 30 Oct</string>
+    <string name="stage_submitted">Submitted</string>
+    <string name="stage_pd_approved">PD approved</string>
+    <string name="stage_teacher_notified">Teacher notified</string>
+    <string name="avatar_pd">PD</string>
+    <string name="avatar_teacher">T</string>
+    <string name="date_21_oct">21 Oct</string>
+    <string name="remarks_count">Remarks 01</string>
+    <!--  Notice  -->
+    <string name="notice_title">Circulation Notice</string>
+    <string name="notice_meta">Inter-college Meet approval · from PD · 2 hrs ago</string>
+    <!--  Bottom navigation  -->
+    <string name="nav_home">Home</string>
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_requests">Requests</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_create">Create new</string>
+</resources>
