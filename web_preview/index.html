@@ -874,24 +874,24 @@
             </div>
 
             <div class="form-group">
-              <label for="loginUnifiedPassword">Password (Default: 123456789)</label>
+              <label for="loginUnifiedPassword">Password (Default: 10-digit Phone No)</label>
               <div class="input-wrapper">
                 <span class="input-icon">🔒</span>
-                <input type="password" id="loginUnifiedPassword" placeholder="Enter password (default: 123456789)" required>
+                <input type="password" id="loginUnifiedPassword" placeholder="Enter password (default: 10-digit Phone No)" required>
               </div>
             </div>
 
             <!-- Moodle-Style Password Reset / First-Time Login Link -->
             <div style="display:flex; justify-content:flex-end; margin-top:-4px; margin-bottom:14px;">
               <a href="javascript:void(0)" onclick="openResetModal()" style="font-size:12px; font-weight:700; color:#7B52DE; text-decoration:none;">
-                🔑 First time login? Reset default password (123456789)
+                🔑 First time login? Reset default password (10-digit Phone No)
               </a>
             </div>
 
             <!-- Multi-Buyer Smart Credential Cards -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
               <span style="font-size:11px; font-weight:800; color:#475569; letter-spacing:0.3px;">🪪 ONE-TAP INSTITUTIONAL CREDENTIALS</span>
-              <span style="font-size:10px; font-weight:700; color:#7B52DE; background:#EAE3FC; padding:1px 6px; border-radius:100px;">Pass: 123456789</span>
+              <span style="font-size:10px; font-weight:700; color:#7B52DE; background:#EAE3FC; padding:1px 6px; border-radius:100px;">Pass: 10-digit Phone No</span>
             </div>
             <div class="demo-chip-box multi-buyer">
               <div class="smart-cred-card lavender" onclick="autofillDemo('BSC')">
@@ -1138,7 +1138,7 @@
           <span style="font-size:11px; font-weight:700; color:#1F8E73; background:#D9F3EC; padding:2px 8px; border-radius:100px;">Moodle-Style Auth</span>
         </div>
         <h2>Academic System Control</h2>
-        <p>Institutions integrate their database, provision schemas, and issue <code>@ycasc.com</code> accounts with default pass <code>123456789</code>.</p>
+        <p>Institutions integrate their database, provision schemas, and issue <code>@ycasc.com</code> accounts with default pass <code>10-digit Phone No</code>.</p>
 
         <!-- Workbench Segmented Control Tabs -->
         <div class="workbench-tabs">
@@ -1152,7 +1152,7 @@
           <!-- Yashoda College Credentials Card -->
           <div class="credentials-card">
             <div style="background:#FFF9E6; border:1px solid #FFE49E; border-radius:10px; padding:9px 12px; margin-bottom:12px; font-size:11.5px; color:#8C4B06; line-height:1.4;">
-              <strong>ℹ️ Portal Provisioning:</strong> Institution integrates <code>yashoda_college_db</code>. Accounts use <code>@ycasc.com</code> with default password <code>123456789</code>.
+              <strong>ℹ️ Portal Provisioning:</strong> Institution integrates <code>yashoda_college_db</code>. Accounts use <code>@ycasc.com</code> with default password <code>10-digit Phone No</code>.
             </div>
 
             <h4 style="margin:8px 0; font-size:12px; font-weight:800; color:#18191E;">🏛️ Yashoda College of Arts, Science and Commerce</h4>
@@ -1247,7 +1247,7 @@
             <div class="api-endpoint-item">
               <span class="api-method post">POST</span>
               <code>/api/auth/reset-password</code>
-              <p>First-time activation replacing default <code>123456789</code> password.</p>
+              <p>First-time activation replacing default <code>10-digit Phone No</code> password.</p>
             </div>
             <div class="api-endpoint-item">
               <span class="api-method get">GET</span>
@@ -1329,7 +1329,7 @@
       </div>
 
       <h2>Reset Default Password</h2>
-      <p class="modal-subtitle">Accounts are provisioned with domain <strong>@ycasc.com</strong> and default password <strong>123456789</strong>. Reset your password below:</p>
+      <p class="modal-subtitle">Accounts are provisioned with domain <strong>@ycasc.com</strong> and default password equal to each user's <strong>10-digit phone number</strong>. Reset your password below:</p>
 
       <form onsubmit="handlePasswordResetSubmit(event)" style="text-align:left; margin-top:16px;">
         <div class="form-group">
@@ -1341,10 +1341,10 @@
         </div>
 
         <div class="form-group">
-          <label for="resetCurrentPassword">Current Password (Default: 123456789)</label>
+          <label for="resetCurrentPassword">Current Password (Default: 10-digit Phone No)</label>
           <div class="input-wrapper">
             <span class="input-icon">🔒</span>
-            <input type="password" id="resetCurrentPassword" value="123456789" required>
+            <input type="password" id="resetCurrentPassword" placeholder="Default: 10-digit Phone No" required>
           </div>
         </div>
 

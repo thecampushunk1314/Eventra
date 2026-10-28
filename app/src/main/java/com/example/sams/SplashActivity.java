@@ -57,7 +57,6 @@ public class SplashActivity extends AppCompatActivity {
     private void animateLogoAndBranding() {
         View logoCard = findViewById(R.id.cardLogoContainer);
         View title = findViewById(R.id.tvSplashTitle);
-        View college = findViewById(R.id.tvSplashCollege);
 
         if (logoCard != null) {
             AnimationSet animSet = new AnimationSet(true);
@@ -84,13 +83,6 @@ public class SplashActivity extends AppCompatActivity {
             alpha.setDuration(1000);
             alpha.setStartOffset(300);
             title.startAnimation(alpha);
-        }
-
-        if (college != null) {
-            AlphaAnimation alpha = new AlphaAnimation(0.0f, 1.0f);
-            alpha.setDuration(1000);
-            alpha.setStartOffset(500);
-            college.startAnimation(alpha);
         }
     }
 

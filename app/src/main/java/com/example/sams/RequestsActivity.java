@@ -85,6 +85,7 @@ public class RequestsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        setupNavigation();
         loadAndDisplayRequests();
     }
 
@@ -174,7 +175,17 @@ public class RequestsActivity extends AppCompatActivity {
             startActivity(new Intent(this, ProfileActivity.class));
         });
 
-        findViewById(R.id.navReqCreate).setOnClickListener(v -> showCreateRequestChooser());
+        User currentUser = userManager.getCurrentUser();
+        boolean isStaffOrPrincipal = currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal());
+        View btnCreate = findViewById(R.id.navReqCreate);
+        if (btnCreate != null) {
+            if (isStaffOrPrincipal) {
+                btnCreate.setVisibility(View.GONE);
+            } else {
+                btnCreate.setVisibility(View.VISIBLE);
+                btnCreate.setOnClickListener(v -> showCreateRequestChooser());
+            }
+        }
     }
 
     private void loadAndDisplayRequests() {
@@ -259,6 +270,14 @@ public class RequestsActivity extends AppCompatActivity {
 
         if (layoutEmptyRequests != null) {
             layoutEmptyRequests.setVisibility(itemsRendered == 0 ? View.VISIBLE : View.GONE);
+            TextView tvEmptySubtitle = findViewById(R.id.tvEmptyRequestsSubtitle);
+            if (tvEmptySubtitle != null) {
+                if (isStaffOrPrincipal) {
+                    tvEmptySubtitle.setText("No student spot passes or permission requests found.");
+                } else {
+                    tvEmptySubtitle.setText("Tap '+ New' to submit a Spot Pass or event permission request.");
+                }
+            }
         }
     }
 
@@ -606,6 +625,12 @@ public class RequestsActivity extends AppCompatActivity {
     }
 
     private void showCreateRequestChooser() {
+        User user = userManager.getCurrentUser();
+        if (user == null || user.isTeacherOrDirector() || user.isPrincipal()) {
+            Toast.makeText(this, "Only students can create leave requests or spot passes", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String[] options = new String[]{
                 "Spot Pass",
                 "Permission"
@@ -635,8 +660,8 @@ public class RequestsActivity extends AppCompatActivity {
         }
 
         User user = userManager.getCurrentUser();
-        if (user == null) {
-            Toast.makeText(this, "Please sign in to request a Spot Pass", Toast.LENGTH_SHORT).show();
+        if (user == null || user.isTeacherOrDirector() || user.isPrincipal()) {
+            Toast.makeText(this, "Only students can request a Spot Pass", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -853,8 +878,8 @@ public class RequestsActivity extends AppCompatActivity {
         }
 
         User user = userManager.getCurrentUser();
-        if (user == null) {
-            Toast.makeText(this, "Please sign in to submit a permission request", Toast.LENGTH_SHORT).show();
+        if (user == null || user.isTeacherOrDirector() || user.isPrincipal()) {
+            Toast.makeText(this, "Only students can submit a permission request", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -1113,25 +1138,92 @@ public class RequestsActivity extends AppCompatActivity {
 
         tvReason.setText(pass.getReason());
 
-        MaterialButton btnDelete = dialogView.findViewById(R.id.btnDeleteSpotPass);
-        if (btnDelete != null) {
-            btnDelete.setOnClickListener(v -> {
-                new AlertDialog.Builder(this)
-                        .setTitle("Cancel Spot Pass")
-                        .setMessage("Do you want to cancel and remove Spot Pass " + pass.getId() + "? You can submit a new pass with updated timings anytime.")
-                        .setPositiveButton("Yes, Cancel Pass", (d, which) -> {
-                            spotPassManager.deleteSpotPass(pass.getId());
-                            dialog.dismiss();
-                            loadAndDisplayRequests();
-                            Toast.makeText(this, "Spot Pass cancelled and removed.", Toast.LENGTH_SHORT).show();
-                        })
-                        .setNegativeButton("Keep Pass", null)
-                        .show();
-            });
+        // Audit Trail Action History
+        android.widget.LinearLayout containerAuditLogs = dialogView.findViewById(R.id.containerAuditTrailLogs);
+        if (containerAuditLogs != null) {
+            containerAuditLogs.removeAllViews();
+            List<SpotPassAction> history = pass.getActionHistory();
+            if (history.isEmpty()) {
+                pass.addAction(new SpotPassAction(
+                        "Student / Applicant",
+                        pass.getStudentName(),
+                        "Requested",
+                        pass.getReason(),
+                        "Auto-Notified via Eventra",
+                        "Auto-Notified via Eventra"
+                ));
+                history = pass.getActionHistory();
+            }
+
+            float density = getResources().getDisplayMetrics().density;
+            for (SpotPassAction action : history) {
+                android.widget.LinearLayout logItem = new android.widget.LinearLayout(this);
+                logItem.setOrientation(android.widget.LinearLayout.VERTICAL);
+                logItem.setPadding(0, (int)(4 * density), 0, (int)(6 * density));
+
+                android.widget.LinearLayout headerRow = new android.widget.LinearLayout(this);
+                headerRow.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                headerRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+                TextView tvActionTag = new TextView(this);
+                tvActionTag.setText("🔹 " + action.getAction());
+                tvActionTag.setTextSize(11.5f);
+                tvActionTag.setTypeface(null, android.graphics.Typeface.BOLD);
+                tvActionTag.setTextColor(getColor(action.getAction().contains("Reject") ? R.color.chip_red_text : R.color.pastel_lavender_text));
+                headerRow.addView(tvActionTag);
+
+                TextView tvTime = new TextView(this);
+                tvTime.setText(" • " + action.getFormattedTimestamp());
+                tvTime.setTextSize(10f);
+                tvTime.setTextColor(getColor(R.color.text_muted));
+                headerRow.addView(tvTime);
+
+                logItem.addView(headerRow);
+
+                TextView tvActor = new TextView(this);
+                tvActor.setText("By " + action.getActedByName() + " (" + action.getActedByRole() + ")");
+                tvActor.setTextSize(11f);
+                tvActor.setTextColor(getColor(R.color.charcoal_dark));
+                logItem.addView(tvActor);
+
+                if (action.getRemarks() != null && !action.getRemarks().isEmpty()) {
+                    TextView tvRemarks = new TextView(this);
+                    tvRemarks.setText("“" + action.getRemarks() + "”");
+                    tvRemarks.setTextSize(10.5f);
+                    tvRemarks.setTextColor(getColor(R.color.text_secondary));
+                    logItem.addView(tvRemarks);
+                }
+
+                containerAuditLogs.addView(logItem);
+            }
         }
 
+        MaterialButton btnDelete = dialogView.findViewById(R.id.btnDeleteSpotPass);
         User currentUser = userManager.getCurrentUser();
-        if (currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal())) {
+        boolean isStaffOrPrincipal = currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal());
+
+        if (btnDelete != null) {
+            if (isStaffOrPrincipal) {
+                btnDelete.setVisibility(View.GONE);
+            } else {
+                btnDelete.setVisibility(View.VISIBLE);
+                btnDelete.setOnClickListener(v -> {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Cancel Spot Pass")
+                            .setMessage("Do you want to cancel and remove Spot Pass " + pass.getId() + "? You can submit a new pass with updated timings anytime.")
+                            .setPositiveButton("Yes, Cancel Pass", (d, which) -> {
+                                spotPassManager.deleteSpotPass(pass.getId());
+                                dialog.dismiss();
+                                loadAndDisplayRequests();
+                                Toast.makeText(this, "Spot Pass cancelled and removed.", Toast.LENGTH_SHORT).show();
+                            })
+                            .setNegativeButton("Keep Pass", null)
+                            .show();
+                });
+            }
+        }
+
+        if (isStaffOrPrincipal) {
             btnClose.setText("Review & Take Action");
             btnClose.setOnClickListener(v -> {
                 dialog.dismiss();
@@ -1144,27 +1236,50 @@ public class RequestsActivity extends AppCompatActivity {
                 new AlertDialog.Builder(this)
                         .setTitle("Spot Pass Review: " + pass.getId())
                         .setItems(reviewActions, (d, which) -> {
+                            String role = (currentUser != null && currentUser.isPrincipal()) ? "Principal / HOD" : "Faculty / Teacher";
+                            String actor = (currentUser != null && currentUser.getFullName() != null) ? currentUser.getFullName() : "Faculty Staff";
+                            String actionName;
+                            String remarks;
+
                             if (which == 0) {
                                 // Faculty approved -> HOD status is "Approved & Verified"
-                                pass.setSubjectTeacherStatus("Approved by " + currentUser.getFullName());
+                                pass.setSubjectTeacherStatus("Approved by " + actor);
                                 pass.setClassTeacherStatus("Approved & Verified");
                                 pass.setStatus("Approved & Verified");
                                 pass.setProgress(100);
+                                actionName = "Approved by Faculty";
+                                remarks = "Clashing lecture absence sanctioned with duty credit.";
                             } else if (which == 1) {
                                 // HOD approved -> Faculty status is "Approved & Verified"
-                                pass.setClassTeacherStatus("Approved by " + currentUser.getFullName());
+                                pass.setClassTeacherStatus("Approved by " + actor);
                                 pass.setSubjectTeacherStatus("Approved & Verified");
                                 pass.setStatus("Approved & Verified");
                                 pass.setProgress(100);
+                                actionName = "Approved by HOD";
+                                remarks = "Department Head authorized student leave for event.";
                             } else if (which == 2) {
                                 pass.setClassTeacherStatus("Approved & Verified");
                                 pass.setSubjectTeacherStatus("Approved & Verified");
                                 pass.setStatus("Approved & Verified");
                                 pass.setProgress(100);
+                                actionName = "Fully Approved & Verified";
+                                remarks = "Executive academic clearance granted.";
                             } else {
                                 pass.setStatus("Rejected");
                                 pass.setProgress(100);
+                                actionName = "Rejected";
+                                remarks = "Spot Pass request was declined upon faculty review.";
                             }
+
+                            pass.addAction(new SpotPassAction(
+                                    role,
+                                    actor,
+                                    actionName,
+                                    remarks,
+                                    "Notified via Eventra",
+                                    "Recorded in Attendance Register"
+                            ));
+
                             spotPassManager.updateSpotPass(pass);
                             loadAndDisplayRequests();
                             Toast.makeText(this, "Spot Pass " + pass.getId() + " updated: " + pass.getStatus(), Toast.LENGTH_SHORT).show();
@@ -1213,24 +1328,31 @@ public class RequestsActivity extends AppCompatActivity {
         tvReason.setText(perm.getReason());
 
         MaterialButton btnDeletePerm = dialogView.findViewById(R.id.btnDeletePermission);
+        User currentUser = userManager.getCurrentUser();
+        boolean isStaffOrPrincipal = currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal());
+
         if (btnDeletePerm != null) {
-            btnDeletePerm.setOnClickListener(v -> {
-                new AlertDialog.Builder(this)
-                        .setTitle("Cancel Permission Request")
-                        .setMessage("Do you want to cancel and remove Permission Request " + perm.getId() + "? You can submit a new request with updated timings anytime.")
-                        .setPositiveButton("Yes, Cancel Request", (d, which) -> {
-                            permissionManager.deletePermission(perm.getId());
-                            dialog.dismiss();
-                            loadAndDisplayRequests();
-                            Toast.makeText(this, "Permission request cancelled and removed.", Toast.LENGTH_SHORT).show();
-                        })
-                        .setNegativeButton("Keep Request", null)
-                        .show();
-            });
+            if (isStaffOrPrincipal) {
+                btnDeletePerm.setVisibility(View.GONE);
+            } else {
+                btnDeletePerm.setVisibility(View.VISIBLE);
+                btnDeletePerm.setOnClickListener(v -> {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Cancel Permission Request")
+                            .setMessage("Do you want to cancel and remove Permission Request " + perm.getId() + "? You can submit a new request with updated timings anytime.")
+                            .setPositiveButton("Yes, Cancel Request", (d, which) -> {
+                                permissionManager.deletePermission(perm.getId());
+                                dialog.dismiss();
+                                loadAndDisplayRequests();
+                                Toast.makeText(this, "Permission request cancelled and removed.", Toast.LENGTH_SHORT).show();
+                            })
+                            .setNegativeButton("Keep Request", null)
+                            .show();
+                });
+            }
         }
 
-        User currentUser = userManager.getCurrentUser();
-        if (currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal())) {
+        if (isStaffOrPrincipal) {
             btnClose.setText("Review & Take Action");
             btnClose.setOnClickListener(v -> {
                 dialog.dismiss();
@@ -1303,17 +1425,19 @@ public class RequestsActivity extends AppCompatActivity {
 
         User currentUser = userManager.getCurrentUser();
         boolean isPrincipal = currentUser != null && currentUser.isPrincipal();
+        boolean isTeacher = currentUser != null && currentUser.isTeacherOrDirector();
 
-        if (isPrincipal) {
+        if (isPrincipal || isTeacher) {
             if (tvCalendarSubtitle != null) {
-                tvCalendarSubtitle.setText("Institutional Approvals & Granted Student Passes");
+                tvCalendarSubtitle.setText(isPrincipal
+                        ? "Institutional Approvals & Granted Student Passes"
+                        : (currentUser.getDepartment() + " • Timetable & Routine"));
             }
-            if (layoutTimetableSection != null) layoutTimetableSection.setVisibility(View.GONE);
-            if (layoutStudentPassesSection != null) layoutStudentPassesSection.setVisibility(View.GONE);
-            if (layoutPrincipalAllowedSection != null) layoutPrincipalAllowedSection.setVisibility(View.VISIBLE);
+            if (layoutTimetableSection != null) layoutTimetableSection.setVisibility(isPrincipal ? View.GONE : View.VISIBLE);
+            if (layoutStudentPassesSection != null) layoutStudentPassesSection.setVisibility(isPrincipal ? View.GONE : View.VISIBLE);
+            if (layoutPrincipalAllowedSection != null) layoutPrincipalAllowedSection.setVisibility(isPrincipal ? View.VISIBLE : View.GONE);
             if (btnCreatePass != null) {
-                btnCreatePass.setText("Close Calendar");
-                btnCreatePass.setOnClickListener(v -> dialog.dismiss());
+                btnCreatePass.setVisibility(View.GONE);
             }
         } else {
             if (layoutTimetableSection != null) layoutTimetableSection.setVisibility(View.VISIBLE);
@@ -1532,7 +1656,7 @@ public class RequestsActivity extends AppCompatActivity {
             btnClose.setOnClickListener(v -> dialog.dismiss());
         }
 
-        if (!isPrincipal && btnCreatePass != null) {
+        if (!isPrincipal && !isTeacher && btnCreatePass != null) {
             btnCreatePass.setOnClickListener(v -> {
                 dialog.dismiss();
                 showNewSpotPassDialog();

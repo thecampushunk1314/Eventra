@@ -6,6 +6,7 @@ public class User implements Serializable {
     public static final String ROLE_STUDENT = "STUDENT";
     public static final String ROLE_TEACHER = "TEACHER";
     public static final String ROLE_ORGANIZER = "ORGANIZER";
+    public static final String ROLE_EVENT_COORDINATOR = "EVENT_COORDINATOR";
     public static final String ROLE_PROGRAMME_DIRECTOR = "PROGRAMME_DIRECTOR";
 
     public static final String INSTITUTION_UNIVERSITY = "University";
@@ -63,7 +64,7 @@ public class User implements Serializable {
         this.email = email;
         this.password = password;
         this.role = role;
-        this.department = department;
+        this.department = (department != null && department.trim().endsWith(" Stream")) ? department.trim().substring(0, department.trim().length() - 7).trim() : department;
         this.programme = programme;
         this.additionalInfo = additionalInfo;
         this.phoneNumber = phoneNumber;
@@ -99,14 +100,34 @@ public class User implements Serializable {
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 
-    public String getDepartment() { return department; }
-    public void setDepartment(String department) { this.department = department; }
+    public String getDepartment() {
+        if (department == null) return "";
+        String d = department.trim();
+        if (d.endsWith(" Stream")) {
+            return d.substring(0, d.length() - 7).trim();
+        }
+        if (d.equalsIgnoreCase("Commerce Stream")) return "Commerce";
+        if (d.equalsIgnoreCase("Science Stream")) return "Science";
+        if (d.equalsIgnoreCase("Arts Stream")) return "Arts";
+        return d;
+    }
+
+    public void setDepartment(String department) {
+        if (department != null && department.trim().endsWith(" Stream")) {
+            this.department = department.trim().substring(0, department.trim().length() - 7).trim();
+        } else {
+            this.department = department;
+        }
+    }
 
     public String getProgramme() { return programme; }
     public void setProgramme(String programme) { this.programme = programme; }
 
     public String getAdditionalInfo() { return additionalInfo; }
     public void setAdditionalInfo(String additionalInfo) { this.additionalInfo = additionalInfo; }
+
+    public String getDesignation() { return additionalInfo != null ? additionalInfo : ""; }
+    public void setDesignation(String designation) { this.additionalInfo = designation; }
 
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
@@ -204,6 +225,14 @@ public class User implements Serializable {
 
     public double getAttendancePercentage() { 
         return attendancePercentage; 
+    }
+
+    public double calculateAttendance() {
+        if (totalClasses <= 0) return 100.0;
+        int effectiveAttended = attendedClasses + dutyLeaveApprovedCount;
+        if (effectiveAttended > totalClasses) effectiveAttended = totalClasses;
+        this.attendancePercentage = Math.min(100.0, ((double) effectiveAttended / totalClasses) * 100.0);
+        return this.attendancePercentage;
     }
 
     public void setAttendancePercentage(double attendancePercentage) { 

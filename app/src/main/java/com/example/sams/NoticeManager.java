@@ -83,6 +83,50 @@ public class NoticeManager {
         saveNotices(list);
     }
 
+    public synchronized boolean updateNotice(Notice notice) {
+        if (notice == null || notice.getId() == null) return false;
+        List<Notice> list = getAllNotices();
+        boolean found = false;
+        for (int i = 0; i < list.size(); i++) {
+            if (notice.getId().equals(list.get(i).getId())) {
+                list.set(i, notice);
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            saveNotices(list);
+        }
+        return found;
+    }
+
+    public synchronized boolean deleteNotice(String noticeId) {
+        if (noticeId == null || noticeId.trim().isEmpty()) return false;
+        List<Notice> list = getAllNotices();
+        boolean removed = false;
+        for (int i = 0; i < list.size(); i++) {
+            if (noticeId.equals(list.get(i).getId())) {
+                list.remove(i);
+                removed = true;
+                break;
+            }
+        }
+        if (removed) {
+            saveNotices(list);
+        }
+        return removed;
+    }
+
+    public synchronized Notice getNoticeById(String noticeId) {
+        if (noticeId == null || noticeId.trim().isEmpty()) return null;
+        for (Notice n : getAllNotices()) {
+            if (noticeId.equals(n.getId())) {
+                return n;
+            }
+        }
+        return null;
+    }
+
     public synchronized void clearAllNotices() {
         prefs.edit().remove(KEY_NOTICES).apply();
     }

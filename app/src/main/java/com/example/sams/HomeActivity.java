@@ -23,12 +23,15 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
+import android.widget.CheckBox;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -40,9 +43,11 @@ public class HomeActivity extends AppCompatActivity {
     private NoticeManager noticeManager;
     private PermissionRequestManager permissionRequestManager;
     private TimetableManager timetableManager;
+    private EventManager eventManager;
 
-    // Principal dashboard & records
+    // Principal and Teacher dashboard & records
     private View layoutPrincipalDashboard;
+    private View layoutTeacherDashboard;
     private View layoutStudentHero;
     private View layoutStudentQuickActions;
     private View layoutStudentWeek;
@@ -84,12 +89,14 @@ public class HomeActivity extends AppCompatActivity {
         noticeManager = NoticeManager.getInstance(this);
         permissionRequestManager = PermissionRequestManager.getInstance(this);
         timetableManager = TimetableManager.getInstance(this);
+        eventManager = EventManager.getInstance(this);
 
         tvHeaderAvatar = findViewById(R.id.tvHeaderAvatar);
         tvHeaderStudentName = findViewById(R.id.tvHeaderStudentName);
         headerProfileSection = findViewById(R.id.headerProfileSection);
 
         layoutPrincipalDashboard = findViewById(R.id.layoutPrincipalDashboard);
+        layoutTeacherDashboard = findViewById(R.id.layoutTeacherDashboard);
         layoutStudentHero = findViewById(R.id.layoutStudentHero);
         layoutStudentQuickActions = findViewById(R.id.layoutStudentQuickActions);
         layoutStudentWeek = findViewById(R.id.layoutStudentWeek);
@@ -123,6 +130,9 @@ public class HomeActivity extends AppCompatActivity {
 
         // Principal Dashboard buttons & Records setup
         initPrincipalDashboard();
+
+        // Teacher Dashboard buttons setup
+        initTeacherDashboard();
 
         // Section links and cards
         View linkOpenCalendar = findViewById(R.id.linkOpenCalendar);
@@ -183,7 +193,22 @@ public class HomeActivity extends AppCompatActivity {
 
         View btnUploadNotice = findViewById(R.id.btnPrincipalUploadNotice);
         if (btnUploadNotice != null) {
-            btnUploadNotice.setOnClickListener(v -> showNewNoticeDialog());
+            btnUploadNotice.setOnClickListener(v -> showAllNoticesDialog());
+        }
+
+        View btnPrincipalRequests = findViewById(R.id.btnPrincipalRequests);
+        if (btnPrincipalRequests != null) {
+            btnPrincipalRequests.setOnClickListener(v -> startActivity(new Intent(this, RequestsActivity.class)));
+        }
+
+        View btnPrincipalMonthlyRegister = findViewById(R.id.btnPrincipalMonthlyRegister);
+        if (btnPrincipalMonthlyRegister != null) {
+            btnPrincipalMonthlyRegister.setOnClickListener(v -> showSelectStudentForMonthlyAttendanceDialog());
+        }
+
+        View btnPrincipalEventsAndPractice = findViewById(R.id.btnPrincipalEventsAndPractice);
+        if (btnPrincipalEventsAndPractice != null) {
+            btnPrincipalEventsAndPractice.setOnClickListener(v -> showEventsAndPracticeDialog());
         }
 
         tabRecordStudents = findViewById(R.id.tabRecordStudents);
@@ -260,6 +285,38 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    private void initTeacherDashboard() {
+        View btnTeacherAddStudent = findViewById(R.id.btnTeacherAddStudent);
+        if (btnTeacherAddStudent != null) {
+            btnTeacherAddStudent.setOnClickListener(v -> showAddStudentDialog());
+        }
+
+        View btnTeacherReviewRequests = findViewById(R.id.btnTeacherReviewRequests);
+        if (btnTeacherReviewRequests != null) {
+            btnTeacherReviewRequests.setOnClickListener(v -> startActivity(new Intent(this, RequestsActivity.class)));
+        }
+
+        View btnTeacherNoticeAction = findViewById(R.id.btnTeacherNoticeAction);
+        if (btnTeacherNoticeAction != null) {
+            btnTeacherNoticeAction.setOnClickListener(v -> showAllNoticesDialog());
+        }
+
+        View btnTeacherInterchangeLectures = findViewById(R.id.btnTeacherInterchangeLectures);
+        if (btnTeacherInterchangeLectures != null) {
+            btnTeacherInterchangeLectures.setOnClickListener(v -> showInterchangeLectureDialog(null, null));
+        }
+
+        View btnTeacherMonthlyRegister = findViewById(R.id.btnTeacherMonthlyRegister);
+        if (btnTeacherMonthlyRegister != null) {
+            btnTeacherMonthlyRegister.setOnClickListener(v -> showSelectStudentForMonthlyAttendanceDialog());
+        }
+
+        View btnTeacherEventsAndPractice = findViewById(R.id.btnTeacherEventsAndPractice);
+        if (btnTeacherEventsAndPractice != null) {
+            btnTeacherEventsAndPractice.setOnClickListener(v -> showEventsAndPracticeDialog());
+        }
+    }
+
     private void filterAndRenderStudents() {
         if (containerStudentsRecords == null || spinnerRecordStream == null || spinnerRecordSubject == null) return;
         String selStream = spinnerRecordStream.getSelectedItem() != null ? spinnerRecordStream.getSelectedItem().toString() : "All Streams";
@@ -301,16 +358,23 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
 
+        float density = getResources().getDisplayMetrics().density;
+        int cardPadH = (int) (16 * density);
+        int cardPadV = (int) (12 * density);
+        int cardMarginTop = (int) (10 * density);
+        int badgePadH = (int) (8 * density);
+        int badgePadV = (int) (3 * density);
+
         for (int i = 0; i < filtered.size(); i++) {
             User s = filtered.get(i);
             android.widget.LinearLayout card = new android.widget.LinearLayout(this);
             card.setOrientation(android.widget.LinearLayout.VERTICAL);
             card.setBackgroundResource(R.drawable.bg_input_box);
-            card.setPadding(22, 16, 22, 16);
+            card.setPadding(cardPadH, cardPadV, cardPadH, cardPadV);
 
             android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(
                     android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
-            if (i > 0) lp.topMargin = 12;
+            if (i > 0) lp.topMargin = cardMarginTop;
             card.setLayoutParams(lp);
 
             // Row 1: Roll No & Stream badge
@@ -333,7 +397,7 @@ public class HomeActivity extends AppCompatActivity {
             tvBadge.setTextColor(getColor(R.color.pastel_mint_text));
             tvBadge.setTextSize(10.5f);
             tvBadge.setTypeface(null, android.graphics.Typeface.BOLD);
-            tvBadge.setPadding(14, 5, 14, 5);
+            tvBadge.setPadding(badgePadH, badgePadV, badgePadH, badgePadV);
             r1.addView(tvBadge);
             card.addView(r1);
 
@@ -388,6 +452,27 @@ public class HomeActivity extends AppCompatActivity {
 
             card.addView(r4);
 
+            // Row 5: Action button to Update Monthly Attendance & Merge Duty Passes
+            User currentUser = userManager.getCurrentUser();
+            boolean isStaff = currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal());
+            if (isStaff) {
+                com.google.android.material.button.MaterialButton btnUpdateAtt = new com.google.android.material.button.MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle);
+                btnUpdateAtt.setText("📊 Update Monthly Attendance & Merge Passes");
+                btnUpdateAtt.setTextSize(11f);
+                btnUpdateAtt.setTypeface(null, android.graphics.Typeface.BOLD);
+                btnUpdateAtt.setTextColor(getColor(R.color.charcoal_dark));
+                btnUpdateAtt.setStrokeColorResource(R.color.outline);
+                btnUpdateAtt.setCornerRadius((int) (12 * density));
+                btnUpdateAtt.setInsetTop(0);
+                btnUpdateAtt.setInsetBottom(0);
+                android.widget.LinearLayout.LayoutParams btnLp = new android.widget.LinearLayout.LayoutParams(
+                        android.widget.LinearLayout.LayoutParams.MATCH_PARENT, (int) (40 * density));
+                btnLp.topMargin = (int) (8 * density);
+                btnUpdateAtt.setLayoutParams(btnLp);
+                btnUpdateAtt.setOnClickListener(v -> showMonthlyAttendanceDialog(s));
+                card.addView(btnUpdateAtt);
+            }
+
             containerStudentsRecords.addView(card);
         }
     }
@@ -412,16 +497,23 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
 
+        float density = getResources().getDisplayMetrics().density;
+        int cardPadH = (int) (16 * density);
+        int cardPadV = (int) (12 * density);
+        int cardMarginTop = (int) (10 * density);
+        int badgePadH = (int) (8 * density);
+        int badgePadV = (int) (3 * density);
+
         for (int i = 0; i < filtered.size(); i++) {
             User t = filtered.get(i);
             android.widget.LinearLayout card = new android.widget.LinearLayout(this);
             card.setOrientation(android.widget.LinearLayout.VERTICAL);
             card.setBackgroundResource(R.drawable.bg_input_box);
-            card.setPadding(22, 16, 22, 16);
+            card.setPadding(cardPadH, cardPadV, cardPadH, cardPadV);
 
             android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(
                     android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
-            if (i > 0) lp.topMargin = 12;
+            if (i > 0) lp.topMargin = cardMarginTop;
             card.setLayoutParams(lp);
 
             // Row 1: Name and ID badge
@@ -444,7 +536,7 @@ public class HomeActivity extends AppCompatActivity {
             tvId.setTextColor(getColor(R.color.pastel_lavender_text));
             tvId.setTextSize(10.5f);
             tvId.setTypeface(null, android.graphics.Typeface.BOLD);
-            tvId.setPadding(14, 5, 14, 5);
+            tvId.setPadding(badgePadH, badgePadV, badgePadH, badgePadV);
             r1.addView(tvId);
             card.addView(r1);
 
@@ -467,7 +559,7 @@ public class HomeActivity extends AppCompatActivity {
 
             // Row 4: Email & Phone
             TextView tvContact = new TextView(this);
-            tvContact.setText("📧 " + t.getEmail() + " • 📞 " + (t.getPhoneNumber().isEmpty() ? "+91 9823000000" : t.getPhoneNumber()));
+            tvContact.setText("📧 " + t.getEmail() + " • 📞 " + (t.getPhoneNumber().isEmpty() ? "9823000000" : UserManager.normalizePhone(t.getPhoneNumber())));
             tvContact.setTextColor(getColor(R.color.text_muted));
             tvContact.setTextSize(11f);
             tvContact.setPadding(0, 4, 0, 0);
@@ -477,26 +569,284 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Dialog for Teachers and Principal to select a student to update their monthly attendance
+     * and merge availed spot passes.
+     */
+    private void showSelectStudentForMonthlyAttendanceDialog() {
+        List<User> students = userManager.getStudents();
+        if (students.isEmpty()) {
+            Toast.makeText(this, "No enrolled students found in records.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String[] items = new String[students.size()];
+        for (int i = 0; i < students.size(); i++) {
+            User s = students.get(i);
+            items[i] = "🆔 " + s.getId() + " • " + s.getFullName() + " (" + String.format(java.util.Locale.US, "%.1f%%", s.getAttendancePercentage()) + ")";
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("📊 Select Student for Monthly Attendance")
+                .setItems(items, (d, which) -> {
+                    User selected = students.get(which);
+                    showMonthlyAttendanceDialog(selected);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /**
+     * Dialog for Teachers and Principal to update a student's monthly attendance
+     * and automatically consider & merge all approved Spot Passes and Event Duty Leaves.
+     */
+    private void showMonthlyAttendanceDialog(User student) {
+        if (student == null) return;
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_monthly_attendance, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        TextView tvAvatar = dialogView.findViewById(R.id.tvAttStudentAvatar);
+        TextView tvName = dialogView.findViewById(R.id.tvAttStudentName);
+        TextView tvMeta = dialogView.findViewById(R.id.tvAttStudentMeta);
+        TextView tvCurrentBadge = dialogView.findViewById(R.id.tvAttCurrentPctBadge);
+
+        Spinner spMonth = dialogView.findViewById(R.id.spinnerAttMonthCycle);
+        EditText etTotal = dialogView.findViewById(R.id.etAttTotalConducted);
+        EditText etAttended = dialogView.findViewById(R.id.etAttClassroomAttended);
+
+        TextView tvDutyBadge = dialogView.findViewById(R.id.tvAttDutyCountBadge);
+        android.widget.LinearLayout containerPasses = dialogView.findViewById(R.id.containerAvailedPassesList);
+
+        TextView tvMergedFormula = dialogView.findViewById(R.id.tvMergedAttFormula);
+        TextView tvMergedPct = dialogView.findViewById(R.id.tvMergedAttPercentage);
+        TextView tvMergedStatus = dialogView.findViewById(R.id.tvMergedAttStatusText);
+
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelMonthlyAtt);
+        MaterialButton btnMerge = dialogView.findViewById(R.id.btnMergeAttendance);
+
+        // Populate student profile
+        if (tvAvatar != null) tvAvatar.setText(student.getInitials());
+        if (tvName != null) tvName.setText(student.getFullName());
+        if (tvMeta != null) {
+            tvMeta.setText(student.getId() + " • " + (student.getYearOrClass().isEmpty() ? "FY B.Sc." : student.getYearOrClass())
+                    + " (" + (student.getDepartment().isEmpty() ? "Science" : student.getDepartment()) + ")");
+        }
+        if (tvCurrentBadge != null) {
+            tvCurrentBadge.setText("Current: " + String.format(java.util.Locale.US, "%.1f%%", student.getAttendancePercentage()));
+        }
+
+        // Setup Month Cycle Spinner
+        String[] months = new String[]{
+                "October 2026 (Current Academic Month)",
+                "September 2026 (Previous Cycle)",
+                "November 2026 (Upcoming Consolidation)",
+                "Cumulative Term 2025-2026"
+        };
+        ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, months);
+        if (spMonth != null) spMonth.setAdapter(monthAdapter);
+
+        // Pre-fill lecture values
+        int defaultTotal = student.getTotalClasses() > 0 ? student.getTotalClasses() : 120;
+        int defaultAttended = student.getAttendedClasses() > 0 ? student.getAttendedClasses() : (int) Math.round(defaultTotal * 0.70);
+        if (etTotal != null) etTotal.setText(String.valueOf(defaultTotal));
+        if (etAttended != null) etAttended.setText(String.valueOf(defaultAttended));
+
+        // Query Approved Spot Passes & Permission Requests for this student
+        List<SpotPass> approvedPasses = spotPassManager.getApprovedPassesForStudent(student.getId());
+        List<PermissionRequest> approvedPerms = permissionRequestManager.getApprovedRequestsForStudent(student.getId());
+
+        int totalDutyLeaves = approvedPasses.size() + approvedPerms.size();
+        if (totalDutyLeaves == 0 && student.getDutyLeaveApprovedCount() > 0) {
+            totalDutyLeaves = student.getDutyLeaveApprovedCount();
+        }
+
+        if (tvDutyBadge != null) {
+            tvDutyBadge.setText("+" + totalDutyLeaves + " Duty Credits");
+        }
+
+        if (containerPasses != null) {
+            containerPasses.removeAllViews();
+            float density = getResources().getDisplayMetrics().density;
+
+            if (approvedPasses.isEmpty() && approvedPerms.isEmpty() && student.getDutyLeaveApprovedCount() == 0) {
+                TextView tvEmpty = new TextView(this);
+                tvEmpty.setText("No spot passes or permission requests availed yet for this student.");
+                tvEmpty.setTextColor(getColor(R.color.text_muted));
+                tvEmpty.setTextSize(11f);
+                tvEmpty.setPadding(0, (int)(4 * density), 0, (int)(4 * density));
+                containerPasses.addView(tvEmpty);
+            } else {
+                for (SpotPass p : approvedPasses) {
+                    android.widget.LinearLayout item = new android.widget.LinearLayout(this);
+                    item.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                    item.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                    item.setPadding(0, (int)(4 * density), 0, (int)(4 * density));
+
+                    TextView tvPassInfo = new TextView(this);
+                    android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                    tvPassInfo.setLayoutParams(lp);
+                    tvPassInfo.setText("✅ " + p.getId() + ": " + p.getActivityTitle() + " (" + p.getDate() + " • " + p.getTimeSlot() + ")");
+                    tvPassInfo.setTextColor(getColor(R.color.charcoal_dark));
+                    tvPassInfo.setTextSize(11.5f);
+                    tvPassInfo.setTypeface(null, android.graphics.Typeface.BOLD);
+                    item.addView(tvPassInfo);
+
+                    TextView tvTag = new TextView(this);
+                    tvTag.setText("+1 Credit");
+                    tvTag.setTextColor(getColor(R.color.pastel_mint_text));
+                    tvTag.setTextSize(10.5f);
+                    tvTag.setTypeface(null, android.graphics.Typeface.BOLD);
+                    item.addView(tvTag);
+
+                    containerPasses.addView(item);
+                }
+
+                for (PermissionRequest r : approvedPerms) {
+                    android.widget.LinearLayout item = new android.widget.LinearLayout(this);
+                    item.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                    item.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                    item.setPadding(0, (int)(4 * density), 0, (int)(4 * density));
+
+                    TextView tvPermInfo = new TextView(this);
+                    android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                    tvPermInfo.setLayoutParams(lp);
+                    tvPermInfo.setText("✅ " + r.getId() + ": " + r.getEventTitle() + " (" + r.getEventDates() + ")");
+                    tvPermInfo.setTextColor(getColor(R.color.charcoal_dark));
+                    tvPermInfo.setTextSize(11.5f);
+                    tvPermInfo.setTypeface(null, android.graphics.Typeface.BOLD);
+                    item.addView(tvPermInfo);
+
+                    TextView tvTag = new TextView(this);
+                    tvTag.setText("+1 Credit");
+                    tvTag.setTextColor(getColor(R.color.pastel_mint_text));
+                    tvTag.setTextSize(10.5f);
+                    tvTag.setTypeface(null, android.graphics.Typeface.BOLD);
+                    item.addView(tvTag);
+
+                    containerPasses.addView(item);
+                }
+
+                if (approvedPasses.isEmpty() && approvedPerms.isEmpty() && student.getDutyLeaveApprovedCount() > 0) {
+                    TextView tvPreseeded = new TextView(this);
+                    tvPreseeded.setText("✅ Verified Co-Curricular Event Participation (Inter-Collegiate Sports & Youth Fest)");
+                    tvPreseeded.setTextColor(getColor(R.color.charcoal_dark));
+                    tvPreseeded.setTextSize(11.5f);
+                    tvPreseeded.setTypeface(null, android.graphics.Typeface.BOLD);
+                    containerPasses.addView(tvPreseeded);
+                }
+            }
+        }
+
+        final int finalDutyLeaves = totalDutyLeaves;
+
+        Runnable updateFormula = () -> {
+            int tot = 120;
+            int att = 88;
+            try {
+                if (etTotal != null) tot = Integer.parseInt(etTotal.getText().toString().trim());
+                if (etAttended != null) att = Integer.parseInt(etAttended.getText().toString().trim());
+            } catch (Exception ignored) {}
+            if (tot <= 0) tot = 120;
+            int mergedAttended = Math.min(tot, att + finalDutyLeaves);
+            double pct = ((double) mergedAttended / tot) * 100.0;
+
+            if (tvMergedFormula != null) {
+                tvMergedFormula.setText(att + " (Class) + " + finalDutyLeaves + " (Duty) = " + mergedAttended + " / " + tot);
+            }
+            if (tvMergedPct != null) {
+                tvMergedPct.setText(String.format(java.util.Locale.US, "%.1f%%", pct));
+            }
+            if (tvMergedStatus != null) {
+                if (pct >= 75.0) {
+                    tvMergedStatus.setText("✅ Safe (≥75% Attendance Requirement Met)");
+                    tvMergedStatus.setTextColor(getColor(R.color.pastel_mint_text));
+                } else if (pct >= 70.0) {
+                    tvMergedStatus.setText("⚡ Borderline (70% - 74.9% Attendance)");
+                    tvMergedStatus.setTextColor(getColor(R.color.chip_yellow_text));
+                } else {
+                    tvMergedStatus.setText("⚠️ Defaulter (<70% - Warning Notice Triggered)");
+                    tvMergedStatus.setTextColor(getColor(R.color.chip_red_text));
+                }
+            }
+        };
+
+        android.text.TextWatcher watcher = new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { updateFormula.run(); }
+            @Override public void afterTextChanged(android.text.Editable s) {}
+        };
+
+        if (etTotal != null) etTotal.addTextChangedListener(watcher);
+        if (etAttended != null) etAttended.addTextChangedListener(watcher);
+        updateFormula.run();
+
+        if (btnCancel != null) btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        if (btnMerge != null) {
+            btnMerge.setOnClickListener(v -> {
+                int tot = 120;
+                int att = 88;
+                try {
+                    if (etTotal != null) tot = Integer.parseInt(etTotal.getText().toString().trim());
+                    if (etAttended != null) att = Integer.parseInt(etAttended.getText().toString().trim());
+                } catch (Exception ex) {
+                    Toast.makeText(this, "Please enter valid numeric attendance counts", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (tot <= 0) {
+                    if (etTotal != null) etTotal.setError("Total lectures must be greater than 0");
+                    return;
+                }
+                if (att > tot) {
+                    if (etAttended != null) etAttended.setError("Attended lectures cannot exceed total conducted");
+                    return;
+                }
+
+                int merged = Math.min(tot, att + finalDutyLeaves);
+                student.setTotalClasses(tot);
+                student.setAttendedClasses(merged);
+                student.setDutyLeaveApprovedCount(finalDutyLeaves);
+                double newPct = ((double) merged / tot) * 100.0;
+                student.setAttendancePercentage(newPct);
+
+                userManager.updateUser(student);
+                dialog.dismiss();
+
+                filterAndRenderStudents();
+                Toast.makeText(this, "⚡ Monthly Attendance Merged & Credited for " + student.getFullName(), Toast.LENGTH_LONG).show();
+
+                new AlertDialog.Builder(this)
+                        .setTitle("🎉 Monthly Attendance Consolidated!")
+                        .setMessage("Consolidated attendance record saved for:\n"
+                                + "👤 Student: " + student.getFullName() + " (" + student.getId() + ")\n"
+                                + "📅 Cycle: " + (spMonth != null && spMonth.getSelectedItem() != null ? spMonth.getSelectedItem().toString() : "Current Month") + "\n\n"
+                                + "Breakdown:\n"
+                                + "• Classroom Lectures Attended: " + att + "\n"
+                                + "• Availed Spot & Duty Passes: +" + finalDutyLeaves + " lectures credited\n"
+                                + "• Consolidated Total Attended: " + merged + " / " + tot + " lectures\n"
+                                + "• Final Cumulative Attendance: " + String.format(java.util.Locale.US, "%.1f%%", newPct) + "\n\n"
+                                + (newPct >= 75.0 ? "✅ This student is SAFE. Co-curricular duty credits have removed attendance defaults and warning letters."
+                                                  : "ℹ️ Student attendance updated in institutional records."))
+                        .setPositiveButton("OK", null)
+                        .show();
+            });
+        }
+
+        dialog.show();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         loadCurrentUserData();
         updateNotificationBadge();
-        checkMandatoryProfileCompletion();
-    }
-
-    private boolean profilePromptShown = false;
-
-    private void checkMandatoryProfileCompletion() {
-        User user = userManager.getCurrentUser();
-        if (user != null && !user.isPrincipal() && !user.isProfileComplete() && !profilePromptShown) {
-            profilePromptShown = true;
-            new AlertDialog.Builder(this)
-                    .setMessage("You have access to the app.")
-                    .setCancelable(true)
-                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                    .show();
-        }
     }
 
     private void loadCurrentUserData() {
@@ -514,41 +864,13 @@ public class HomeActivity extends AppCompatActivity {
             if (tvHeaderAvatar != null) {
                 tvHeaderAvatar.setText(user.getInitials());
             }
-
-            TextView tvGreeting = findViewById(R.id.tvGreeting);
-
             // Update latest notice on Home page card
-            Notice latest = noticeManager.getLatestNotice();
-            if (latest != null) {
-                if (tvNoticeCardTitle != null) {
-                    tvNoticeCardTitle.setText(latest.getTitle());
-                }
-                if (tvNoticeCardMeta != null) {
-                    String meta = latest.getCategory() + " • " + latest.getAuthor() + " • " + latest.getDate();
-                    if (latest.getEventTime() != null && !latest.getEventTime().trim().isEmpty()) {
-                        meta += " • " + latest.getEventTime();
-                    }
-                    tvNoticeCardMeta.setText(meta);
-                }
-            } else {
-                if (tvNoticeCardTitle != null) {
-                    tvNoticeCardTitle.setText("No Official Notices Yet");
-                }
-                if (tvNoticeCardMeta != null) {
-                    if (user.isTeacherOrDirector() || user.isPrincipal()) {
-                        tvNoticeCardMeta.setText("Tap here or 'Post Notice' to publish for students");
-                    } else {
-                        tvNoticeCardMeta.setText("Teachers will publish official announcements here");
-                    }
-                }
-            }
+            refreshNoticeCard();
 
             if (user.isPrincipal()) {
-                if (tvGreeting != null) {
-                    tvGreeting.setText("Principal & Administrator");
-                }
-                // Show Principal Dashboard, hide student widgets
+                // Show Principal Dashboard, hide teacher & student widgets
                 if (layoutPrincipalDashboard != null) layoutPrincipalDashboard.setVisibility(View.VISIBLE);
+                if (layoutTeacherDashboard != null) layoutTeacherDashboard.setVisibility(View.GONE);
                 if (layoutStudentHero != null) layoutStudentHero.setVisibility(View.GONE);
                 if (layoutStudentQuickActions != null) layoutStudentQuickActions.setVisibility(View.GONE);
                 if (layoutStudentWeek != null) layoutStudentWeek.setVisibility(View.GONE);
@@ -557,65 +879,45 @@ public class HomeActivity extends AppCompatActivity {
                 filterAndRenderTeachers();
 
             } else if (user.isTeacherOrDirector()) {
-                if (tvGreeting != null) {
-                    tvGreeting.setText("Faculty / Class Teacher");
-                }
+                // Show Teacher Dashboard, hide principal and student widgets
                 if (layoutPrincipalDashboard != null) layoutPrincipalDashboard.setVisibility(View.GONE);
+                if (layoutTeacherDashboard != null) layoutTeacherDashboard.setVisibility(View.VISIBLE);
                 if (layoutStudentHero != null) layoutStudentHero.setVisibility(View.GONE);
-                if (layoutStudentQuickActions != null) layoutStudentQuickActions.setVisibility(View.VISIBLE);
+                if (layoutStudentQuickActions != null) layoutStudentQuickActions.setVisibility(View.GONE);
                 if (layoutStudentWeek != null) layoutStudentWeek.setVisibility(View.VISIBLE);
 
-                MaterialButton btnNewSpotPass = findViewById(R.id.btnNewSpotPass);
-                MaterialButton btnPermission = findViewById(R.id.btnPermission);
-                MaterialButton btnTeacherNoticeAction = findViewById(R.id.btnTeacherNoticeAction);
-                if (btnNewSpotPass != null) {
-                    btnNewSpotPass.setText("Add Student");
-                    btnNewSpotPass.setIconResource(0);
-                    btnNewSpotPass.setOnClickListener(v -> showAddStudentDialog());
+                TextView tvTeacherDeptBadge = findViewById(R.id.tvTeacherDeptBadge);
+                TextView tvTeacherHeroName = findViewById(R.id.tvTeacherHeroName);
+                TextView tvTeacherHeroMeta = findViewById(R.id.tvTeacherHeroMeta);
+
+                if (tvTeacherDeptBadge != null) {
+                    tvTeacherDeptBadge.setText(user.getDepartment().isEmpty() ? "Faculty" : user.getDepartment());
                 }
-                if (btnPermission != null) {
-                    btnPermission.setText("Requests & Passes");
-                    btnPermission.setIconResource(R.drawable.ic_file);
-                    btnPermission.setOnClickListener(v -> startActivity(new Intent(this, RequestsActivity.class)));
+                if (tvTeacherHeroName != null) {
+                    tvTeacherHeroName.setText(user.getFullName() + " • " + (user.getDesignation().isEmpty() ? "Faculty Lecturer" : user.getDesignation()));
                 }
-                if (btnTeacherNoticeAction != null) {
-                    btnTeacherNoticeAction.setVisibility(View.VISIBLE);
-                    btnTeacherNoticeAction.setOnClickListener(v -> showNewNoticeDialog());
+                if (tvTeacherHeroMeta != null) {
+                    String sub = user.getSubjects().isEmpty() ? "General" : user.getSubjects();
+                    tvTeacherHeroMeta.setText("Subjects: " + sub + " • Staff ID: " + user.getId() + " • YCASC Academic Council");
                 }
-                MaterialButton btnInterchangeLectures = findViewById(R.id.btnInterchangeLectures);
-                if (btnInterchangeLectures != null) {
-                    btnInterchangeLectures.setVisibility(View.VISIBLE);
-                    btnInterchangeLectures.setOnClickListener(v -> showInterchangeLectureDialog(null, null));
-                }
+
             } else {
                 // Student Account
-                if (tvGreeting != null) {
-                    tvGreeting.setText("Student Account");
-                }
                 if (layoutPrincipalDashboard != null) layoutPrincipalDashboard.setVisibility(View.GONE);
+                if (layoutTeacherDashboard != null) layoutTeacherDashboard.setVisibility(View.GONE);
                 if (layoutStudentHero != null) layoutStudentHero.setVisibility(View.VISIBLE);
                 if (layoutStudentQuickActions != null) layoutStudentQuickActions.setVisibility(View.VISIBLE);
                 if (layoutStudentWeek != null) layoutStudentWeek.setVisibility(View.VISIBLE);
 
                 MaterialButton btnNewSpotPass = findViewById(R.id.btnNewSpotPass);
                 MaterialButton btnPermission = findViewById(R.id.btnPermission);
-                MaterialButton btnTeacherNoticeAction = findViewById(R.id.btnTeacherNoticeAction);
-                MaterialButton btnInterchangeLectures = findViewById(R.id.btnInterchangeLectures);
                 if (btnNewSpotPass != null) {
                     btnNewSpotPass.setText(R.string.new_spot_pass);
-                    btnNewSpotPass.setIconResource(0);
                     btnNewSpotPass.setOnClickListener(v -> showNewSpotPassDialog());
                 }
                 if (btnPermission != null) {
                     btnPermission.setText(R.string.permission);
-                    btnPermission.setIconResource(R.drawable.ic_file);
                     btnPermission.setOnClickListener(v -> showNewPermissionDialog());
-                }
-                if (btnTeacherNoticeAction != null) {
-                    btnTeacherNoticeAction.setVisibility(View.GONE);
-                }
-                if (btnInterchangeLectures != null) {
-                    btnInterchangeLectures.setVisibility(View.GONE);
                 }
 
                 // Dynamic Academic Attendance Card for Student
@@ -730,14 +1032,17 @@ public class HomeActivity extends AppCompatActivity {
 
         User currentUser = userManager.getCurrentUser();
         boolean isPrincipal = currentUser != null && currentUser.isPrincipal();
+        boolean isTeacher = currentUser != null && currentUser.isTeacherOrDirector();
 
-        if (isPrincipal) {
+        if (isPrincipal || isTeacher) {
             if (tvCalendarSubtitle != null) {
-                tvCalendarSubtitle.setText("Institutional Approvals & Granted Student Passes");
+                tvCalendarSubtitle.setText(isPrincipal
+                        ? "Institutional Approvals & Granted Student Passes"
+                        : (currentUser.getDepartment() + " • Timetable & Student Requests"));
             }
-            if (layoutTimetableSection != null) layoutTimetableSection.setVisibility(View.GONE);
-            if (layoutStudentPassesSection != null) layoutStudentPassesSection.setVisibility(View.GONE);
-            if (layoutPrincipalAllowedSection != null) layoutPrincipalAllowedSection.setVisibility(View.VISIBLE);
+            if (layoutTimetableSection != null) layoutTimetableSection.setVisibility(isPrincipal ? View.GONE : View.VISIBLE);
+            if (layoutStudentPassesSection != null) layoutStudentPassesSection.setVisibility(isPrincipal ? View.GONE : View.VISIBLE);
+            if (layoutPrincipalAllowedSection != null) layoutPrincipalAllowedSection.setVisibility(isPrincipal ? View.VISIBLE : View.GONE);
             if (btnCreatePass != null) {
                 btnCreatePass.setText("Review All Requests");
                 btnCreatePass.setIconResource(R.drawable.ic_file);
@@ -975,7 +1280,7 @@ public class HomeActivity extends AppCompatActivity {
             btnClose.setOnClickListener(v -> dialog.dismiss());
         }
 
-        if (!isPrincipal && btnCreatePass != null) {
+        if (!isPrincipal && !isTeacher && btnCreatePass != null) {
             btnCreatePass.setOnClickListener(v -> {
                 dialog.dismiss();
                 showNewSpotPassDialog(currentDateHolder[0]);
@@ -1393,6 +1698,8 @@ public class HomeActivity extends AppCompatActivity {
         TextView tvDate = dialogView.findViewById(R.id.tvNoticeDateDisplay);
         EditText etEventTime = dialogView.findViewById(R.id.etNoticeEventTime);
         EditText etContent = dialogView.findViewById(R.id.etNoticeContent);
+        CheckBox cbNoticeCcPrincipal = dialogView.findViewById(R.id.cbNoticeCcPrincipal);
+        EditText etNoticeMeetingOutcomes = dialogView.findViewById(R.id.etNoticeMeetingOutcomes);
         MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelNotice);
         MaterialButton btnPublish = dialogView.findViewById(R.id.btnPublishNotice);
 
@@ -1448,18 +1755,17 @@ public class HomeActivity extends AppCompatActivity {
                         eventTime
                 );
 
+                if (cbNoticeCcPrincipal != null && cbNoticeCcPrincipal.isChecked()) {
+                    newNotice.setCcNotice(true);
+                    String outcomes = etNoticeMeetingOutcomes != null ? etNoticeMeetingOutcomes.getText().toString().trim() : "";
+                    newNotice.setMeetingOutcomes(outcomes);
+                }
+
                 noticeManager.addNotice(newNotice);
                 dialog.dismiss();
 
                 // Immediately update home page card
-                if (tvNoticeCardTitle != null) tvNoticeCardTitle.setText(newNotice.getTitle());
-                if (tvNoticeCardMeta != null) {
-                    String meta = newNotice.getCategory() + " • " + newNotice.getAuthor() + " • " + newNotice.getDate();
-                    if (!newNotice.getEventTime().isEmpty()) {
-                        meta += " • " + newNotice.getEventTime();
-                    }
-                    tvNoticeCardMeta.setText(meta);
-                }
+                refreshNoticeCard();
 
                 Toast.makeText(this, "📢 Official Notice Published!", Toast.LENGTH_SHORT).show();
             });
@@ -1469,7 +1775,40 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     /**
-     * Dialog to view full notice details.
+     * Refreshes the Notice card on the Home dashboard with the latest notice information.
+     */
+    private void refreshNoticeCard() {
+        User user = userManager.getCurrentUser();
+        List<Notice> all = noticeManager.getAllNotices();
+        Notice latest = (all != null && !all.isEmpty()) ? all.get(0) : null;
+        if (latest != null) {
+            if (tvNoticeCardTitle != null) {
+                tvNoticeCardTitle.setText(latest.getTitle());
+            }
+            if (tvNoticeCardMeta != null) {
+                String meta = latest.getCategory() + " • " + latest.getAuthor() + " • " + latest.getDate();
+                if (latest.getEventTime() != null && !latest.getEventTime().trim().isEmpty()) {
+                    meta += " • " + latest.getEventTime();
+                }
+                if (all.size() > 1) {
+                    meta += " • 📋 (" + all.size() + " Notices)";
+                }
+                tvNoticeCardMeta.setText(meta);
+                tvNoticeCardMeta.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (tvNoticeCardTitle != null) {
+                tvNoticeCardTitle.setText("No Official Notices Yet");
+            }
+            if (tvNoticeCardMeta != null) {
+                tvNoticeCardMeta.setText("");
+                tvNoticeCardMeta.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    /**
+     * Dialog to view full notice details with staff controls (Edit & Remove).
      */
     private void showNoticeDetailsDialog(Notice notice) {
         User currentUser = userManager.getCurrentUser();
@@ -1507,6 +1846,10 @@ public class HomeActivity extends AppCompatActivity {
         TextView tvCategory = dialogView.findViewById(R.id.tvNoticeDetailCategoryBadge);
         TextView tvDate = dialogView.findViewById(R.id.tvNoticeDetailDate);
         TextView tvContent = dialogView.findViewById(R.id.tvNoticeDetailContent);
+        View layoutStaffActions = dialogView.findViewById(R.id.layoutNoticeStaffActions);
+        View btnEdit = dialogView.findViewById(R.id.btnEditNoticeDetail);
+        View btnDelete = dialogView.findViewById(R.id.btnDeleteNoticeDetail);
+        MaterialButton btnViewAll = dialogView.findViewById(R.id.btnViewAllNotices);
         View btnClose = dialogView.findViewById(R.id.btnCloseNoticeDetail);
 
         if (tvTitle != null) tvTitle.setText(notice.getTitle());
@@ -1521,18 +1864,316 @@ public class HomeActivity extends AppCompatActivity {
         }
         if (tvContent != null) tvContent.setText(notice.getContent());
 
-        if (currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal()) && btnClose instanceof MaterialButton) {
-            ((MaterialButton) btnClose).setText("Close (Or Tap to Upload Notice)");
-            btnClose.setOnClickListener(v -> {
+        // Cc Higher Authority & Meeting Outcomes Section
+        View layoutNoticeCcSection = dialogView.findViewById(R.id.layoutNoticeCcSection);
+        TextView tvNoticeCcStatusBadge = dialogView.findViewById(R.id.tvNoticeCcStatusBadge);
+        TextView tvNoticeMeetingOutcomes = dialogView.findViewById(R.id.tvNoticeMeetingOutcomes);
+        MaterialButton btnAcknowledgeNotice = dialogView.findViewById(R.id.btnAcknowledgeNotice);
+
+        if (notice.isCcNotice()) {
+            if (layoutNoticeCcSection != null) layoutNoticeCcSection.setVisibility(View.VISIBLE);
+            if (tvNoticeMeetingOutcomes != null) {
+                String outcomes = notice.getMeetingOutcomes();
+                if (outcomes != null && !outcomes.trim().isEmpty()) {
+                    tvNoticeMeetingOutcomes.setText(outcomes);
+                } else {
+                    tvNoticeMeetingOutcomes.setText("Formal meeting resolutions and co-curricular duty credits recorded for this circulation.");
+                }
+            }
+            if (tvNoticeCcStatusBadge != null) {
+                if (notice.isAcknowledgedByPrincipal()) {
+                    String ackBy = notice.getAcknowledgedBy() != null ? notice.getAcknowledgedBy() : "Principal";
+                    tvNoticeCcStatusBadge.setText("✅ Acknowledged by Principal (" + ackBy + ")");
+                    tvNoticeCcStatusBadge.setBackgroundResource(R.drawable.bg_chip_mint);
+                    if (btnAcknowledgeNotice != null) btnAcknowledgeNotice.setVisibility(View.GONE);
+                } else {
+                    tvNoticeCcStatusBadge.setText("⏳ Pending Principal Review");
+                    tvNoticeCcStatusBadge.setBackgroundResource(R.drawable.bg_chip_yellow);
+                    if (currentUser != null && currentUser.isPrincipal()) {
+                        if (btnAcknowledgeNotice != null) {
+                            btnAcknowledgeNotice.setVisibility(View.VISIBLE);
+                            btnAcknowledgeNotice.setOnClickListener(v -> {
+                                notice.setAcknowledgedByPrincipal(true);
+                                notice.setAcknowledgedBy(currentUser.getFullName());
+                                notice.setAcknowledgedTimestamp(System.currentTimeMillis());
+                                noticeManager.updateNotice(notice);
+                                dialog.dismiss();
+                                showNoticeDetailsDialog(notice);
+                                Toast.makeText(this, "🏛️ Circular acknowledged and signed off by Principal!", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    } else {
+                        if (btnAcknowledgeNotice != null) btnAcknowledgeNotice.setVisibility(View.GONE);
+                    }
+                }
+            }
+        } else {
+            if (layoutNoticeCcSection != null) layoutNoticeCcSection.setVisibility(View.GONE);
+        }
+
+        // Teachers and Principal can Edit and Remove notices
+        if (isStaff && layoutStaffActions != null) {
+            layoutStaffActions.setVisibility(View.VISIBLE);
+            if (btnEdit != null) {
+                btnEdit.setOnClickListener(v -> {
+                    dialog.dismiss();
+                    showEditNoticeDialog(notice);
+                });
+            }
+            if (btnDelete != null) {
+                btnDelete.setOnClickListener(v -> {
+                    confirmDeleteNotice(notice, dialog);
+                });
+            }
+        } else if (layoutStaffActions != null) {
+            layoutStaffActions.setVisibility(View.GONE);
+        }
+
+        List<Notice> allNotices = noticeManager.getAllNotices();
+        if (btnViewAll != null) {
+            if (allNotices.size() > 1 || isStaff) {
+                btnViewAll.setVisibility(View.VISIBLE);
+                btnViewAll.setText("📋 View Notice Board (" + allNotices.size() + ")");
+                btnViewAll.setOnClickListener(v -> {
+                    dialog.dismiss();
+                    showAllNoticesDialog();
+                });
+            } else {
+                btnViewAll.setVisibility(View.GONE);
+            }
+        }
+
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * Dialog for Teachers and Principal to edit an existing official notice.
+     */
+    private void showEditNoticeDialog(Notice notice) {
+        if (notice == null) return;
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_new_notice, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        TextView tvHeaderTitle = dialogView.findViewById(R.id.tvNoticeDialogHeaderTitle);
+        if (tvHeaderTitle != null) {
+            tvHeaderTitle.setText("Edit Notice");
+        }
+
+        EditText etTitle = dialogView.findViewById(R.id.etNoticeTitle);
+        Spinner spCategory = dialogView.findViewById(R.id.spinnerNoticeCategory);
+        TextView tvDate = dialogView.findViewById(R.id.tvNoticeDateDisplay);
+        EditText etEventTime = dialogView.findViewById(R.id.etNoticeEventTime);
+        EditText etContent = dialogView.findViewById(R.id.etNoticeContent);
+        CheckBox cbNoticeCcPrincipal = dialogView.findViewById(R.id.cbNoticeCcPrincipal);
+        EditText etNoticeMeetingOutcomes = dialogView.findViewById(R.id.etNoticeMeetingOutcomes);
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelNotice);
+        MaterialButton btnPublish = dialogView.findViewById(R.id.btnPublishNotice);
+
+        if (btnPublish != null) {
+            btnPublish.setText("Save Changes");
+        }
+
+        String[] categories = new String[]{
+                "Sports & Athletics",
+                "Academic Council",
+                "Examination Notice",
+                "Duty Leave & Passes",
+                "Cultural & Annual Day",
+                "General Administration"
+        };
+        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categories);
+        if (spCategory != null) {
+            spCategory.setAdapter(catAdapter);
+            for (int i = 0; i < categories.length; i++) {
+                if (categories[i].equalsIgnoreCase(notice.getCategory())) {
+                    spCategory.setSelection(i);
+                    break;
+                }
+            }
+        }
+
+        if (etTitle != null) etTitle.setText(notice.getTitle());
+        if (tvDate != null) tvDate.setText(notice.getDate());
+        if (etEventTime != null) etEventTime.setText(notice.getEventTime());
+        if (etContent != null) etContent.setText(notice.getContent());
+        if (cbNoticeCcPrincipal != null) cbNoticeCcPrincipal.setChecked(notice.isCcNotice());
+        if (etNoticeMeetingOutcomes != null && notice.getMeetingOutcomes() != null) {
+            etNoticeMeetingOutcomes.setText(notice.getMeetingOutcomes());
+        }
+
+        if (btnCancel != null) btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        if (btnPublish != null) {
+            btnPublish.setOnClickListener(v -> {
+                String title = etTitle != null ? etTitle.getText().toString().trim() : "";
+                if (title.isEmpty()) {
+                    if (etTitle != null) etTitle.setError("Please enter notice title");
+                    return;
+                }
+
+                String category = spCategory != null ? spCategory.getSelectedItem().toString() : notice.getCategory();
+                String content = etContent != null ? etContent.getText().toString().trim() : "";
+                if (content.isEmpty()) {
+                    if (etContent != null) etContent.setError("Please enter notice content");
+                    return;
+                }
+
+                String eventTime = etEventTime != null ? etEventTime.getText().toString().trim() : "";
+
+                notice.setTitle(title);
+                notice.setCategory(category);
+                notice.setEventTime(eventTime);
+                notice.setContent(content);
+                if (cbNoticeCcPrincipal != null) {
+                    notice.setCcNotice(cbNoticeCcPrincipal.isChecked());
+                }
+                if (etNoticeMeetingOutcomes != null) {
+                    notice.setMeetingOutcomes(etNoticeMeetingOutcomes.getText().toString().trim());
+                }
+
+                noticeManager.updateNotice(notice);
                 dialog.dismiss();
-                new AlertDialog.Builder(this)
-                        .setTitle("📢 Notice Board")
-                        .setMessage("Would you like to publish a new notice or announcement?")
-                        .setPositiveButton("Upload Notice", (d, w) -> showNewNoticeDialog())
-                        .setNegativeButton("Dismiss", null)
-                        .show();
+
+                refreshNoticeCard();
+                Toast.makeText(this, "✏️ Official Notice Updated Successfully!", Toast.LENGTH_SHORT).show();
+
+                // Re-open updated notice detail
+                showNoticeDetailsDialog(notice);
             });
-        } else if (btnClose != null) {
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * Confirmation dialog for Teachers and Principal to delete a notice.
+     */
+    private void confirmDeleteNotice(Notice notice, AlertDialog parentDialog) {
+        if (notice == null) return;
+
+        new AlertDialog.Builder(this)
+                .setTitle("🗑️ Remove Notice?")
+                .setMessage("Are you sure you want to remove this notice?\n\n\"" + notice.getTitle() + "\"\n\nIt will be permanently deleted from the notice board.")
+                .setPositiveButton("Remove Notice", (d, w) -> {
+                    noticeManager.deleteNotice(notice.getId());
+                    if (parentDialog != null) {
+                        parentDialog.dismiss();
+                    }
+                    refreshNoticeCard();
+                    Toast.makeText(this, "🗑️ Notice removed from board", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /**
+     * Dialog showing the full Notice Board with all notices,
+     * allowing Teachers and Principal to edit, delete, or add notices.
+     */
+    private void showAllNoticesDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_all_notices, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        User currentUser = userManager.getCurrentUser();
+        boolean isStaff = currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal());
+
+        View btnNewNotice = dialogView.findViewById(R.id.btnAllNoticesNewNotice);
+        View layoutEmpty = dialogView.findViewById(R.id.layoutEmptyAllNotices);
+        android.widget.LinearLayout containerList = dialogView.findViewById(R.id.containerAllNoticesList);
+        View btnClose = dialogView.findViewById(R.id.btnCloseAllNotices);
+
+        if (isStaff && btnNewNotice != null) {
+            btnNewNotice.setVisibility(View.VISIBLE);
+            btnNewNotice.setOnClickListener(v -> {
+                dialog.dismiss();
+                showNewNoticeDialog();
+            });
+        }
+
+        List<Notice> notices = noticeManager.getAllNotices();
+        if (notices.isEmpty()) {
+            if (layoutEmpty != null) layoutEmpty.setVisibility(View.VISIBLE);
+            if (containerList != null) containerList.setVisibility(View.GONE);
+        } else {
+            if (layoutEmpty != null) layoutEmpty.setVisibility(View.GONE);
+            if (containerList != null) {
+                containerList.setVisibility(View.VISIBLE);
+                containerList.removeAllViews();
+
+                for (Notice n : notices) {
+                    View itemView = LayoutInflater.from(this).inflate(R.layout.item_notice_card, containerList, false);
+
+                    TextView tvCategory = itemView.findViewById(R.id.tvItemNoticeCategory);
+                    TextView tvDate = itemView.findViewById(R.id.tvItemNoticeDate);
+                    TextView tvTime = itemView.findViewById(R.id.tvItemNoticeEventTime);
+                    TextView tvTitle = itemView.findViewById(R.id.tvItemNoticeTitle);
+                    TextView tvContent = itemView.findViewById(R.id.tvItemNoticeContent);
+                    TextView tvAuthor = itemView.findViewById(R.id.tvItemNoticeAuthor);
+                    View layoutActions = itemView.findViewById(R.id.layoutItemNoticeActions);
+                    View btnItemEdit = itemView.findViewById(R.id.btnItemNoticeEdit);
+                    View btnItemDelete = itemView.findViewById(R.id.btnItemNoticeDelete);
+
+                    if (tvCategory != null) tvCategory.setText(n.getCategory());
+                    if (tvDate != null) tvDate.setText(n.getDate());
+                    if (tvTime != null) {
+                        if (n.getEventTime() != null && !n.getEventTime().trim().isEmpty()) {
+                            tvTime.setText("⏰ " + n.getEventTime());
+                            tvTime.setVisibility(View.VISIBLE);
+                        } else {
+                            tvTime.setVisibility(View.GONE);
+                        }
+                    }
+                    if (tvTitle != null) tvTitle.setText(n.getTitle());
+                    if (tvContent != null) tvContent.setText(n.getContent());
+                    if (tvAuthor != null) tvAuthor.setText("By: " + n.getAuthor());
+
+                    if (isStaff && layoutActions != null) {
+                        layoutActions.setVisibility(View.VISIBLE);
+                        if (btnItemEdit != null) {
+                            btnItemEdit.setOnClickListener(v -> {
+                                dialog.dismiss();
+                                showEditNoticeDialog(n);
+                            });
+                        }
+                        if (btnItemDelete != null) {
+                            btnItemDelete.setOnClickListener(v -> {
+                                confirmDeleteNotice(n, null);
+                                dialog.dismiss();
+                                showAllNoticesDialog();
+                            });
+                        }
+                    } else if (layoutActions != null) {
+                        layoutActions.setVisibility(View.GONE);
+                    }
+
+                    itemView.setOnClickListener(v -> {
+                        dialog.dismiss();
+                        showNoticeDetailsDialog(n);
+                    });
+
+                    containerList.addView(itemView);
+                }
+            }
+        }
+
+        if (btnClose != null) {
             btnClose.setOnClickListener(v -> dialog.dismiss());
         }
 
@@ -1806,8 +2447,8 @@ public class HomeActivity extends AppCompatActivity {
      */
     public void showNewSpotPassDialog(String preSelectedDate) {
         User user = userManager.getCurrentUser();
-        if (user == null) {
-            Toast.makeText(this, "Please log in as a student to apply for a Spot Pass", Toast.LENGTH_SHORT).show();
+        if (user == null || user.isTeacherOrDirector() || user.isPrincipal()) {
+            Toast.makeText(this, "Only students can apply for Spot Passes", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -2046,8 +2687,8 @@ public class HomeActivity extends AppCompatActivity {
      */
     public void showNewPermissionDialog() {
         User user = userManager.getCurrentUser();
-        if (user == null) {
-            Toast.makeText(this, "Please log in as a student to apply for Prior Permission", Toast.LENGTH_SHORT).show();
+        if (user == null || user.isTeacherOrDirector() || user.isPrincipal()) {
+            Toast.makeText(this, "Only students can apply for Prior Permission", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -2326,25 +2967,92 @@ public class HomeActivity extends AppCompatActivity {
 
         tvReason.setText(pass.getReason());
 
-        MaterialButton btnDelete = dialogView.findViewById(R.id.btnDeleteSpotPass);
-        if (btnDelete != null) {
-            btnDelete.setOnClickListener(v -> {
-                new AlertDialog.Builder(this)
-                        .setTitle("Cancel Spot Pass")
-                        .setMessage("Do you want to cancel and remove Spot Pass " + pass.getId() + "? You can create a new pass with updated timings.")
-                        .setPositiveButton("Yes, Cancel Pass", (d, which) -> {
-                            spotPassManager.deleteSpotPass(pass.getId());
-                            dialog.dismiss();
-                            updateNotificationBadge();
-                            Toast.makeText(this, "Spot Pass cancelled and removed.", Toast.LENGTH_SHORT).show();
-                        })
-                        .setNegativeButton("Keep Pass", null)
-                        .show();
-            });
+        // Audit Trail Action History
+        android.widget.LinearLayout containerAuditLogs = dialogView.findViewById(R.id.containerAuditTrailLogs);
+        if (containerAuditLogs != null) {
+            containerAuditLogs.removeAllViews();
+            List<SpotPassAction> history = pass.getActionHistory();
+            if (history.isEmpty()) {
+                pass.addAction(new SpotPassAction(
+                        "Student / Applicant",
+                        pass.getStudentName(),
+                        "Requested",
+                        pass.getReason(),
+                        "Auto-Notified via Eventra",
+                        "Auto-Notified via Eventra"
+                ));
+                history = pass.getActionHistory();
+            }
+
+            float density = getResources().getDisplayMetrics().density;
+            for (SpotPassAction action : history) {
+                android.widget.LinearLayout logItem = new android.widget.LinearLayout(this);
+                logItem.setOrientation(android.widget.LinearLayout.VERTICAL);
+                logItem.setPadding(0, (int)(4 * density), 0, (int)(6 * density));
+
+                android.widget.LinearLayout headerRow = new android.widget.LinearLayout(this);
+                headerRow.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                headerRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+                TextView tvActionTag = new TextView(this);
+                tvActionTag.setText("🔹 " + action.getAction());
+                tvActionTag.setTextSize(11.5f);
+                tvActionTag.setTypeface(null, android.graphics.Typeface.BOLD);
+                tvActionTag.setTextColor(getColor(action.getAction().contains("Reject") ? R.color.chip_red_text : R.color.pastel_lavender_text));
+                headerRow.addView(tvActionTag);
+
+                TextView tvTime = new TextView(this);
+                tvTime.setText(" • " + action.getFormattedTimestamp());
+                tvTime.setTextSize(10f);
+                tvTime.setTextColor(getColor(R.color.text_muted));
+                headerRow.addView(tvTime);
+
+                logItem.addView(headerRow);
+
+                TextView tvActor = new TextView(this);
+                tvActor.setText("By " + action.getActedByName() + " (" + action.getActedByRole() + ")");
+                tvActor.setTextSize(11f);
+                tvActor.setTextColor(getColor(R.color.charcoal_dark));
+                logItem.addView(tvActor);
+
+                if (action.getRemarks() != null && !action.getRemarks().isEmpty()) {
+                    TextView tvRemarks = new TextView(this);
+                    tvRemarks.setText("“" + action.getRemarks() + "”");
+                    tvRemarks.setTextSize(10.5f);
+                    tvRemarks.setTextColor(getColor(R.color.text_secondary));
+                    logItem.addView(tvRemarks);
+                }
+
+                containerAuditLogs.addView(logItem);
+            }
         }
 
+        MaterialButton btnDelete = dialogView.findViewById(R.id.btnDeleteSpotPass);
         User currentUser = userManager.getCurrentUser();
-        if (currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal())) {
+        boolean isStaffOrPrincipal = currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal());
+
+        if (btnDelete != null) {
+            if (isStaffOrPrincipal) {
+                btnDelete.setVisibility(View.GONE);
+            } else {
+                btnDelete.setVisibility(View.VISIBLE);
+                btnDelete.setOnClickListener(v -> {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Cancel Spot Pass")
+                            .setMessage("Do you want to cancel and remove Spot Pass " + pass.getId() + "? You can create a new pass with updated timings.")
+                            .setPositiveButton("Yes, Cancel Pass", (d, which) -> {
+                                spotPassManager.deleteSpotPass(pass.getId());
+                                dialog.dismiss();
+                                updateNotificationBadge();
+                                Toast.makeText(this, "Spot Pass cancelled and removed.", Toast.LENGTH_SHORT).show();
+                            })
+                            .setNegativeButton("Keep Pass", null)
+                            .show();
+                });
+            }
+        }
+
+        if (isStaffOrPrincipal) {
             btnClose.setText("Review & Take Action");
             btnClose.setOnClickListener(v -> {
                 dialog.dismiss();
@@ -2357,27 +3065,50 @@ public class HomeActivity extends AppCompatActivity {
                 new AlertDialog.Builder(this)
                         .setTitle("Spot Pass Review: " + pass.getId())
                         .setItems(reviewActions, (d, which) -> {
+                            String role = (currentUser != null && currentUser.isPrincipal()) ? "Principal / HOD" : "Faculty / Teacher";
+                            String actor = (currentUser != null && currentUser.getFullName() != null) ? currentUser.getFullName() : "Faculty Staff";
+                            String actionName;
+                            String remarks;
+
                             if (which == 0) {
                                 // Faculty approved -> HOD status is "Approved & Verified"
-                                pass.setSubjectTeacherStatus("Approved by " + currentUser.getFullName());
+                                pass.setSubjectTeacherStatus("Approved by " + actor);
                                 pass.setClassTeacherStatus("Approved & Verified");
                                 pass.setStatus("Approved & Verified");
                                 pass.setProgress(100);
+                                actionName = "Approved by Faculty";
+                                remarks = "Clashing lecture absence sanctioned with duty credit.";
                             } else if (which == 1) {
                                 // HOD approved -> Faculty status is "Approved & Verified"
-                                pass.setClassTeacherStatus("Approved by " + currentUser.getFullName());
+                                pass.setClassTeacherStatus("Approved by " + actor);
                                 pass.setSubjectTeacherStatus("Approved & Verified");
                                 pass.setStatus("Approved & Verified");
                                 pass.setProgress(100);
+                                actionName = "Approved by HOD";
+                                remarks = "Department Head authorized student leave for event.";
                             } else if (which == 2) {
                                 pass.setClassTeacherStatus("Approved & Verified");
                                 pass.setSubjectTeacherStatus("Approved & Verified");
                                 pass.setStatus("Approved & Verified");
                                 pass.setProgress(100);
+                                actionName = "Fully Approved & Verified";
+                                remarks = "Executive academic clearance granted.";
                             } else {
                                 pass.setStatus("Rejected");
                                 pass.setProgress(100);
+                                actionName = "Rejected";
+                                remarks = "Spot Pass request was declined upon faculty review.";
                             }
+
+                            pass.addAction(new SpotPassAction(
+                                    role,
+                                    actor,
+                                    actionName,
+                                    remarks,
+                                    "Notified via Eventra",
+                                    "Recorded in Attendance Register"
+                            ));
+
                             spotPassManager.updateSpotPass(pass);
                             Toast.makeText(this, "Spot Pass " + pass.getId() + " status updated: " + pass.getStatus(), Toast.LENGTH_SHORT).show();
                         })
@@ -2386,6 +3117,296 @@ public class HomeActivity extends AppCompatActivity {
             });
         } else {
             btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * Dialog showing Active Inter-Collegiate & State Events along with
+     * Scheduled Ground & Venue Practice Sessions for coaches/teachers.
+     */
+    private void showEventsAndPracticeDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_events_and_practice, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        android.widget.LinearLayout containerEvents = dialogView.findViewById(R.id.containerEventsList);
+        android.widget.LinearLayout containerSessions = dialogView.findViewById(R.id.containerPracticeSessionsList);
+        MaterialButton btnClose = dialogView.findViewById(R.id.btnCloseEventsDialog);
+
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        float density = getResources().getDisplayMetrics().density;
+
+        // 1. Render Events List
+        if (containerEvents != null) {
+            containerEvents.removeAllViews();
+            List<Event> events = eventManager.getAllEvents();
+            if (events.isEmpty()) {
+                TextView tvEmpty = new TextView(this);
+                tvEmpty.setText("No active events listed at present.");
+                tvEmpty.setTextColor(getColor(R.color.text_muted));
+                tvEmpty.setTextSize(12f);
+                containerEvents.addView(tvEmpty);
+            } else {
+                for (Event ev : events) {
+                    android.widget.LinearLayout card = new android.widget.LinearLayout(this);
+                    card.setOrientation(android.widget.LinearLayout.VERTICAL);
+                    card.setBackgroundResource(R.drawable.bg_input_box);
+                    card.setPadding((int)(12 * density), (int)(10 * density), (int)(12 * density), (int)(10 * density));
+                    android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(
+                            android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    lp.setMargins(0, 0, 0, (int)(8 * density));
+                    card.setLayoutParams(lp);
+
+                    // Row: Title and Level Badge
+                    android.widget.LinearLayout topRow = new android.widget.LinearLayout(this);
+                    topRow.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                    topRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+                    TextView tvTitle = new TextView(this);
+                    android.widget.LinearLayout.LayoutParams titleLp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                    tvTitle.setLayoutParams(titleLp);
+                    tvTitle.setText(ev.getName());
+                    tvTitle.setTextColor(getColor(R.color.charcoal_dark));
+                    tvTitle.setTextSize(13.5f);
+                    tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+                    topRow.addView(tvTitle);
+
+                    TextView tvLevel = new TextView(this);
+                    tvLevel.setText(ev.getLevel());
+                    tvLevel.setTextColor(getColor(R.color.pastel_lavender_text));
+                    tvLevel.setBackgroundResource(R.drawable.bg_chip_white);
+                    tvLevel.setPadding((int)(8 * density), (int)(3 * density), (int)(8 * density), (int)(3 * density));
+                    tvLevel.setTextSize(10f);
+                    tvLevel.setTypeface(null, android.graphics.Typeface.BOLD);
+                    topRow.addView(tvLevel);
+
+                    card.addView(topRow);
+
+                    // Dates and Organiser
+                    TextView tvMeta = new TextView(this);
+                    tvMeta.setText("📅 " + ev.getDatesDisplay() + " • " + ev.getType() + " • " + ev.getOrganiser());
+                    tvMeta.setTextColor(getColor(R.color.text_secondary));
+                    tvMeta.setTextSize(11f);
+                    tvMeta.setPadding(0, (int)(4 * density), 0, 0);
+                    card.addView(tvMeta);
+
+                    TextView tvCoord = new TextView(this);
+                    tvCoord.setText("📍 " + ev.getVenue() + " | Coordinator: " + ev.getCoordinatorName());
+                    tvCoord.setTextColor(getColor(R.color.text_muted));
+                    tvCoord.setTextSize(10.5f);
+                    tvCoord.setPadding(0, (int)(2 * density), 0, 0);
+                    card.addView(tvCoord);
+
+                    containerEvents.addView(card);
+                }
+            }
+        }
+
+        // 2. Render Practice Sessions List
+        if (containerSessions != null) {
+            containerSessions.removeAllViews();
+            List<PracticeSession> sessions = eventManager.getAllPracticeSessions();
+            if (sessions.isEmpty()) {
+                TextView tvEmpty = new TextView(this);
+                tvEmpty.setText("No scheduled ground practice sessions.");
+                tvEmpty.setTextColor(getColor(R.color.text_muted));
+                tvEmpty.setTextSize(12f);
+                containerSessions.addView(tvEmpty);
+            } else {
+                for (PracticeSession ps : sessions) {
+                    android.widget.LinearLayout card = new android.widget.LinearLayout(this);
+                    card.setOrientation(android.widget.LinearLayout.VERTICAL);
+                    card.setBackgroundResource(R.drawable.bg_card_lavender);
+                    card.setPadding((int)(12 * density), (int)(12 * density), (int)(12 * density), (int)(12 * density));
+                    android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(
+                            android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    lp.setMargins(0, 0, 0, (int)(10 * density));
+                    card.setLayoutParams(lp);
+
+                    // Row: Session Title and Attendees count
+                    android.widget.LinearLayout topRow = new android.widget.LinearLayout(this);
+                    topRow.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                    topRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+                    TextView tvTitle = new TextView(this);
+                    android.widget.LinearLayout.LayoutParams titleLp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                    tvTitle.setLayoutParams(titleLp);
+                    tvTitle.setText(ps.getEventName());
+                    tvTitle.setTextColor(getColor(R.color.charcoal_dark));
+                    tvTitle.setTextSize(13.5f);
+                    tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+                    topRow.addView(tvTitle);
+
+                    TextView tvCount = new TextView(this);
+                    int presentCount = ps.getPresentStudentIds().size();
+                    tvCount.setText("⚽ " + presentCount + " Present");
+                    tvCount.setTextColor(getColor(R.color.pastel_mint_text));
+                    tvCount.setBackgroundResource(R.drawable.bg_chip_mint);
+                    tvCount.setPadding((int)(8 * density), (int)(3 * density), (int)(8 * density), (int)(3 * density));
+                    tvCount.setTextSize(10.5f);
+                    tvCount.setTypeface(null, android.graphics.Typeface.BOLD);
+                    topRow.addView(tvCount);
+
+                    card.addView(topRow);
+
+                    // Meta: Date, time, venue, coach
+                    TextView tvMeta = new TextView(this);
+                    tvMeta.setText("⏰ " + ps.getPracticeDate() + " (" + ps.getTimeSlot() + ") • " + ps.getSchedulingType());
+                    tvMeta.setTextColor(getColor(R.color.text_secondary));
+                    tvMeta.setTextSize(11f);
+                    tvMeta.setPadding(0, (int)(4 * density), 0, 0);
+                    card.addView(tvMeta);
+
+                    TextView tvVenue = new TextView(this);
+                    tvVenue.setText("📍 " + ps.getVenue() + " • Coach / Mentor: " + ps.getCoachName());
+                    tvVenue.setTextColor(getColor(R.color.text_muted));
+                    tvVenue.setTextSize(10.5f);
+                    tvVenue.setPadding(0, (int)(2 * density), 0, 0);
+                    card.addView(tvVenue);
+
+                    // Action Button: Take Ground Attendance
+                    MaterialButton btnTakeAttendance = new MaterialButton(this);
+                    btnTakeAttendance.setText("⚽ Take Ground Roll-Call");
+                    btnTakeAttendance.setTextColor(getColor(R.color.white));
+                    btnTakeAttendance.setTextSize(12f);
+                    btnTakeAttendance.setTypeface(null, android.graphics.Typeface.BOLD);
+                    btnTakeAttendance.setBackgroundTintList(android.content.res.ColorStateList.valueOf(getColor(R.color.charcoal_dark)));
+                    btnTakeAttendance.setCornerRadius((int)(12 * density));
+                    android.widget.LinearLayout.LayoutParams btnLp = new android.widget.LinearLayout.LayoutParams(
+                            android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                            (int)(44 * density)
+                    );
+                    btnLp.setMargins(0, (int)(10 * density), 0, 0);
+                    btnTakeAttendance.setLayoutParams(btnLp);
+                    btnTakeAttendance.setOnClickListener(v -> {
+                        dialog.dismiss();
+                        showGroundAttendanceDialog(ps);
+                    });
+                    card.addView(btnTakeAttendance);
+
+                    containerSessions.addView(card);
+                }
+            }
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * Dialog for Coaches / Event Coordinators to mark Ground Practice Attendance.
+     * Physically marking students as present will immediately credit co-curricular duty leaves.
+     */
+    private void showGroundAttendanceDialog(PracticeSession session) {
+        if (session == null) return;
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_ground_attendance, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        TextView tvMeta = dialogView.findViewById(R.id.tvGroundSessionMeta);
+        TextView tvPresentBadge = dialogView.findViewById(R.id.tvGroundPresentCountBadge);
+        android.widget.LinearLayout containerRoster = dialogView.findViewById(R.id.containerGroundRosterList);
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelGroundAtt);
+        MaterialButton btnSave = dialogView.findViewById(R.id.btnSaveGroundAtt);
+
+        if (tvMeta != null) {
+            tvMeta.setText(session.getEventName() + " • " + session.getVenue() + " (" + session.getPracticeDate() + " " + session.getStartTime() + ")");
+        }
+
+        List<User> students = userManager.getStudents();
+        List<String> currentPresent = new ArrayList<>(session.getPresentStudentIds());
+        Map<String, CheckBox> checkBoxMap = new HashMap<>();
+
+        Runnable updateBadge = () -> {
+            int count = 0;
+            for (CheckBox cb : checkBoxMap.values()) {
+                if (cb.isChecked()) count++;
+            }
+            if (tvPresentBadge != null) {
+                tvPresentBadge.setText(count + " Present");
+            }
+        };
+
+        if (containerRoster != null) {
+            containerRoster.removeAllViews();
+            float density = getResources().getDisplayMetrics().density;
+
+            for (User s : students) {
+                android.widget.LinearLayout item = new android.widget.LinearLayout(this);
+                item.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                item.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                item.setPadding(0, (int)(6 * density), 0, (int)(6 * density));
+
+                CheckBox cb = new CheckBox(this);
+                cb.setChecked(currentPresent.contains(s.getId()));
+                cb.setOnCheckedChangeListener((btn, isChecked) -> updateBadge.run());
+                checkBoxMap.put(s.getId(), cb);
+                item.addView(cb);
+
+                android.widget.LinearLayout info = new android.widget.LinearLayout(this);
+                info.setOrientation(android.widget.LinearLayout.VERTICAL);
+                android.widget.LinearLayout.LayoutParams infoLp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                info.setLayoutParams(infoLp);
+
+                TextView tvName = new TextView(this);
+                tvName.setText(s.getFullName() + " (" + s.getId() + ")");
+                tvName.setTextColor(getColor(R.color.charcoal_dark));
+                tvName.setTextSize(12.5f);
+                tvName.setTypeface(null, android.graphics.Typeface.BOLD);
+                info.addView(tvName);
+
+                TextView tvSub = new TextView(this);
+                tvSub.setText(s.getYearOrClass() + " • " + s.getDepartment() + " • Current: " + String.format(java.util.Locale.US, "%.1f%%", s.getAttendancePercentage()));
+                tvSub.setTextColor(getColor(R.color.text_muted));
+                tvSub.setTextSize(10.5f);
+                info.addView(tvSub);
+
+                item.addView(info);
+                containerRoster.addView(item);
+            }
+        }
+
+        updateBadge.run();
+
+        if (btnCancel != null) btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        if (btnSave != null) {
+            btnSave.setOnClickListener(v -> {
+                List<String> selectedIds = new ArrayList<>();
+                for (Map.Entry<String, CheckBox> entry : checkBoxMap.entrySet()) {
+                    if (entry.getValue().isChecked()) {
+                        selectedIds.add(entry.getKey());
+                    }
+                }
+
+                eventManager.recordGroundAttendance(session.getId(), selectedIds);
+                dialog.dismiss();
+
+                filterAndRenderStudents();
+                Toast.makeText(this, "⚽ Ground attendance recorded! Co-curricular duty credits applied to " + selectedIds.size() + " student(s).", Toast.LENGTH_LONG).show();
+
+                // Re-open events dialog with updated counts
+                showEventsAndPracticeDialog();
+            });
         }
 
         dialog.show();
@@ -2470,12 +3491,11 @@ public class HomeActivity extends AppCompatActivity {
                     email = email.split("@")[0] + "@ycasc";
                 }
 
+                String phone = UserManager.normalizePhone("");
                 String password = etPassword != null ? etPassword.getText().toString().trim() : "";
-                if (password.isEmpty()) {
-                    password = "123456789";
+                if (password.isEmpty() || password.equals("123456789")) {
+                    password = phone;
                 }
-
-                String phone = "";
 
                 User newStudent = userManager.enrollStudent(name, roll, selectedClass, selectedStream, subjects, email, password, phone);
                 if (newStudent == null) {
@@ -2590,12 +3610,11 @@ public class HomeActivity extends AppCompatActivity {
                     email = email.split("@")[0] + "@ycasc";
                 }
 
+                String phone = UserManager.normalizePhone("");
                 String password = etPassword != null ? etPassword.getText().toString().trim() : "";
-                if (password.isEmpty()) {
-                    password = "123456789";
+                if (password.isEmpty() || password.equals("123456789")) {
+                    password = phone;
                 }
-
-                String phone = "";
 
                 User newTeacher = userManager.provisionTeacher(name, staffId, desig, selectedDept, subjects, email, password, phone);
                 if (newTeacher == null) {

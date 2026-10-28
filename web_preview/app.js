@@ -9,13 +9,13 @@ let lastRegisteredUser = null;
 // Mock Local User Database with unified multi-buyer format
 let usersDatabase = [
   // YASHODA COLLEGE OF ARTS, SCIENCE AND COMMERCE (YCASC)
-  // Provisioned @ycasc.com accounts with default password 123456789
+  // Provisioned @ycasc.com accounts with 10-digit Indian phone as default password
   {
     id: "SCI-26-001",
     fullName: "Akash Kamat",
     email: "akash.kamat@ycasc.com",
-    phoneNumber: "9823000001",
-    password: "123456789",
+    phoneNumber: "9823222001",
+    password: "9823222001",
     role: "STUDENT",
     roleDisplayName: "Student (B.Sc. Science)",
     department: "Science Division",
@@ -31,7 +31,7 @@ let usersDatabase = [
     fullName: "Dr. Shashikant V. Mayekar",
     email: "principal@ycasc.com",
     phoneNumber: "9823000001",
-    password: "123456789",
+    password: "9823000001",
     role: "DIRECTOR",
     roleDisplayName: "Principal",
     department: "Executive Administration",
@@ -47,7 +47,7 @@ let usersDatabase = [
     fullName: "Dr. Ramakant Deshmukh",
     email: "ramakant.deshmukh@ycasc.com",
     phoneNumber: "9823000002",
-    password: "123456789",
+    password: "9823000002",
     role: "DIRECTOR",
     roleDisplayName: "Vice Principal",
     department: "Executive Administration",
@@ -63,7 +63,7 @@ let usersDatabase = [
     fullName: "Dr. Pramod Naik",
     email: "pramod.naik@ycasc.com",
     phoneNumber: "9823000003",
-    password: "123456789",
+    password: "9823000003",
     role: "DIRECTOR",
     roleDisplayName: "HOD Science",
     department: "Department of Science",
@@ -82,8 +82,8 @@ let usersDatabase = [
     id: "SCI-26-015",
     fullName: "Kiran M Nair",
     email: "kiran.m.nair@ycasc.com",
-    phoneNumber: "9823000015",
-    password: "123456789",
+    phoneNumber: "9823222015",
+    password: "9823222015",
     role: "STUDENT",
     roleDisplayName: "Student",
     department: "Science Division",
@@ -468,29 +468,35 @@ function handleUnifiedSignIn(event) {
 function autofillDemo(type) {
   const inputId = document.getElementById('loginUnifiedIdentifier');
   const inputPass = document.getElementById('loginUnifiedPassword');
-  inputPass.value = "123456789";
 
   if (type === 'BSC' || type === 'HSS_STUDENT' || type === 'SCI' || type === 'STUDENT' || type === 'UNIVERSITY_STUDENT') {
     inputId.value = "akash.kamat@ycasc.com";
-    showToast("🧪 B.Sc. Student: akash.kamat@ycasc.com (Default pass: 123456789)");
+    inputPass.value = "9823222001";
+    showToast("🧪 B.Sc. Student: akash.kamat@ycasc.com (Default pass: 9823222001)");
   } else if (type === 'BCOM') {
     inputId.value = "anil.shah@ycasc.com";
-    showToast("📈 B.Com Student: anil.shah@ycasc.com (Default pass: 123456789)");
+    inputPass.value = "9823222016";
+    showToast("📈 B.Com Student: anil.shah@ycasc.com (Default pass: 9823222016)");
   } else if (type === 'BA') {
     inputId.value = "aditi.sharma@ycasc.com";
-    showToast("🎨 B.A. Student: aditi.sharma@ycasc.com (Default pass: 123456789)");
+    inputPass.value = "9823222031";
+    showToast("🎨 B.A. Student: aditi.sharma@ycasc.com (Default pass: 9823222031)");
   } else if (type === 'PRINCIPAL' || type === 'HSS_PRINCIPAL') {
     inputId.value = "principal@ycasc.com";
-    showToast("🏛️ College Principal: principal@ycasc.com (Default pass: 123456789)");
+    inputPass.value = "9823000001";
+    showToast("🏛️ College Principal: principal@ycasc.com (Default pass: 9823000001)");
   } else if (type === 'HOD_SCI' || type === 'HSS_HOD' || type === 'TEACHER') {
     inputId.value = "pramod.naik@ycasc.com";
-    showToast("👨‍🏫 HOD Science: pramod.naik@ycasc.com (Default pass: 123456789)");
+    inputPass.value = "9823000003";
+    showToast("👨‍🏫 HOD Science: pramod.naik@ycasc.com (Default pass: 9823000003)");
   } else if (type === 'SAME_NAME_COLLISION') {
     inputId.value = "015.ananya@ycasc.com";
-    showToast("⚡ Collision Demo (Duplicate Name): 015.ananya@ycasc.com (Pass: 123456789)");
+    inputPass.value = "9823222030";
+    showToast("⚡ Collision Demo (Duplicate Name): 015.ananya@ycasc.com (Pass: 9823222030)");
   } else if (type === 'IDENTICAL_NAME_SURNAME') {
     inputId.value = "015.kiran@ycasc.com";
-    showToast("⚡ Collision Demo (Same Name & Surname): 015.kiran@ycasc.com (Pass: 123456789)");
+    inputPass.value = "9823222015";
+    showToast("⚡ Collision Demo (Same Name & Surname): 015.kiran@ycasc.com (Pass: 9823222015)");
   }
 }
 
@@ -526,8 +532,9 @@ function handlePasswordResetSubmit(event) {
     return;
   }
 
-  if (found.password !== currentPass && currentPass !== '123456789') {
-    showToast("❌ Current password incorrect. Default password is 123456789.");
+  const defaultPhonePass = found.phoneNumber || "9823222001";
+  if (found.password !== currentPass && currentPass !== defaultPhonePass) {
+    showToast(`❌ Current password incorrect. Default password is your 10-digit phone number (${defaultPhonePass}).`);
     return;
   }
 
@@ -800,55 +807,55 @@ const hssFacultyData = collegeFacultyData;
 // Authentic Yashoda College Student Directory (15 students per general degree stream = 45 total)
 const hssStudentsData = {
   Arts: [
-    { roll: "ART-26-001", year: "2026", name: "Aditi Sharma", email: "aditi.sharma@ycasc", pass: "123456789" },
-    { roll: "ART-26-002", year: "2026", name: "Rohan Patil", email: "rohan.patil@ycasc", pass: "123456789" },
-    { roll: "ART-26-003", year: "2026", name: "Sneha Desai", email: "sneha.desai@ycasc", pass: "123456789" },
-    { roll: "ART-26-004", year: "2026", name: "Pratik Kulkarni", email: "pratik.kulkarni@ycasc", pass: "123456789" },
-    { roll: "ART-26-005", year: "2026", name: "Neha Iyer", email: "neha.iyer@ycasc", pass: "123456789" },
-    { roll: "ART-26-006", year: "2026", name: "Rutuja More", email: "rutuja.more@ycasc", pass: "123456789" },
-    { roll: "ART-26-007", year: "2026", name: "Devika Menon", email: "devika.menon@ycasc", pass: "123456789" },
-    { roll: "ART-26-008", year: "2026", name: "Kabir Sen", email: "kabir.sen@ycasc", pass: "123456789" },
-    { roll: "ART-26-009", year: "2026", name: "Ayesha Qureshi", email: "ayesha.qureshi@ycasc", pass: "123456789" },
-    { roll: "ART-26-010", year: "2026", name: "Manasvi Gokhale", email: "manasvi.gokhale@ycasc", pass: "123456789" },
-    { roll: "ART-26-011", year: "2026", name: "Nikhil Vartak", email: "nikhil.vartak@ycasc", pass: "123456789" },
-    { roll: "ART-26-012", year: "2026", name: "Sharmila Tagore", email: "sharmila.tagore@ycasc", pass: "123456789" },
-    { roll: "ART-26-013", year: "2026", name: "Farhan Akhtar", email: "farhan.akhtar@ycasc", pass: "123456789" },
-    { roll: "ART-26-014", year: "2026", name: "Gayatri Devi", email: "gayatri.devi@ycasc", pass: "123456789" },
-    { roll: "ART-26-015", year: "2026", name: "Rahul Dravid", email: "rahul.dravid@ycasc", pass: "123456789" }
+    { roll: "ART-26-001", year: "2026", name: "Aditi Sharma", email: "aditi.sharma@ycasc", phone: "9823222031", pass: "9823222031" },
+    { roll: "ART-26-002", year: "2026", name: "Rohan Patil", email: "rohan.patil@ycasc", phone: "9823222032", pass: "9823222032" },
+    { roll: "ART-26-003", year: "2026", name: "Sneha Desai", email: "sneha.desai@ycasc", phone: "9823222033", pass: "9823222033" },
+    { roll: "ART-26-004", year: "2026", name: "Pratik Kulkarni", email: "pratik.kulkarni@ycasc", phone: "9823222034", pass: "9823222034" },
+    { roll: "ART-26-005", year: "2026", name: "Neha Iyer", email: "neha.iyer@ycasc", phone: "9823222035", pass: "9823222035" },
+    { roll: "ART-26-006", year: "2026", name: "Rutuja More", email: "rutuja.more@ycasc", phone: "9823222036", pass: "9823222036" },
+    { roll: "ART-26-007", year: "2026", name: "Devika Menon", email: "devika.menon@ycasc", phone: "9823222037", pass: "9823222037" },
+    { roll: "ART-26-008", year: "2026", name: "Kabir Sen", email: "kabir.sen@ycasc", phone: "9823222038", pass: "9823222038" },
+    { roll: "ART-26-009", year: "2026", name: "Ayesha Qureshi", email: "ayesha.qureshi@ycasc", phone: "9823222039", pass: "9823222039" },
+    { roll: "ART-26-010", year: "2026", name: "Manasvi Gokhale", email: "manasvi.gokhale@ycasc", phone: "9823222040", pass: "9823222040" },
+    { roll: "ART-26-011", year: "2026", name: "Nikhil Vartak", email: "nikhil.vartak@ycasc", phone: "9823222041", pass: "9823222041" },
+    { roll: "ART-26-012", year: "2026", name: "Sharmila Tagore", email: "sharmila.tagore@ycasc", phone: "9823222042", pass: "9823222042" },
+    { roll: "ART-26-013", year: "2026", name: "Farhan Akhtar", email: "farhan.akhtar@ycasc", phone: "9823222043", pass: "9823222043" },
+    { roll: "ART-26-014", year: "2026", name: "Gayatri Devi", email: "gayatri.devi@ycasc", phone: "9823222044", pass: "9823222044" },
+    { roll: "ART-26-015", year: "2026", name: "Rahul Dravid", email: "rahul.dravid@ycasc", phone: "9823222045", pass: "9823222045" }
   ],
   Commerce: [
-    { roll: "COM-26-001", year: "2026", name: "Anil Shah", email: "anil.shah@ycasc", pass: "123456789" },
-    { roll: "COM-26-002", year: "2026", name: "Pooja Mehta", email: "pooja.mehta@ycasc", pass: "123456789" },
-    { roll: "COM-26-003", year: "2026", name: "Karan Singh", email: "karan.singh@ycasc", pass: "123456789" },
-    { roll: "COM-26-004", year: "2026", name: "Isha Patel", email: "isha.patel@ycasc", pass: "123456789" },
-    { roll: "COM-26-005", year: "2026", name: "Sahil Gupta", email: "sahil.gupta@ycasc", pass: "123456789" },
-    { roll: "COM-26-006", year: "2026", name: "Tanvi Joshi", email: "tanvi.joshi@ycasc", pass: "123456789" },
-    { roll: "COM-26-007", year: "2026", name: "Bhavik Agarwal", email: "bhavik.agarwal@ycasc", pass: "123456789" },
-    { roll: "COM-26-008", year: "2026", name: "Megha Singhania", email: "megha.singhania@ycasc", pass: "123456789" },
-    { roll: "COM-26-009", year: "2026", name: "Yashvardhan Goel", email: "yashvardhan.goel@ycasc", pass: "123456789" },
-    { roll: "COM-26-010", year: "2026", name: "Ritu Maheshwari", email: "ritu.maheshwari@ycasc", pass: "123456789" },
-    { roll: "COM-26-011", year: "2026", name: "Kunal Somani", email: "kunal.somani@ycasc", pass: "123456789" },
-    { roll: "COM-26-012", year: "2026", name: "Simran Kaur", email: "simran.kaur@ycasc", pass: "123456789" },
-    { roll: "COM-26-013", year: "2026", name: "Gaurav Biyani", email: "gaurav.biyani@ycasc", pass: "123456789" },
-    { roll: "COM-26-014", year: "2026", name: "Nidhi Khandelwal", email: "nidhi.khandelwal@ycasc", pass: "123456789" },
-    { roll: "COM-26-015", year: "2026", name: "Ananya Prabhu", email: "015.ananya@ycasc", pass: "123456789", isCollisionDemo: true }
+    { roll: "COM-26-001", year: "2026", name: "Anil Shah", email: "anil.shah@ycasc", phone: "9823222016", pass: "9823222016" },
+    { roll: "COM-26-002", year: "2026", name: "Pooja Mehta", email: "pooja.mehta@ycasc", phone: "9823222017", pass: "9823222017" },
+    { roll: "COM-26-003", year: "2026", name: "Karan Singh", email: "karan.singh@ycasc", phone: "9823222018", pass: "9823222018" },
+    { roll: "COM-26-004", year: "2026", name: "Isha Patel", email: "isha.patel@ycasc", phone: "9823222019", pass: "9823222019" },
+    { roll: "COM-26-005", year: "2026", name: "Sahil Gupta", email: "sahil.gupta@ycasc", phone: "9823222020", pass: "9823222020" },
+    { roll: "COM-26-006", year: "2026", name: "Tanvi Joshi", email: "tanvi.joshi@ycasc", phone: "9823222021", pass: "9823222021" },
+    { roll: "COM-26-007", year: "2026", name: "Bhavik Agarwal", email: "bhavik.agarwal@ycasc", phone: "9823222022", pass: "9823222022" },
+    { roll: "COM-26-008", year: "2026", name: "Megha Singhania", email: "megha.singhania@ycasc", phone: "9823222023", pass: "9823222023" },
+    { roll: "COM-26-009", year: "2026", name: "Yashvardhan Goel", email: "yashvardhan.goel@ycasc", phone: "9823222024", pass: "9823222024" },
+    { roll: "COM-26-010", year: "2026", name: "Ritu Maheshwari", email: "ritu.maheshwari@ycasc", phone: "9823222025", pass: "9823222025" },
+    { roll: "COM-26-011", year: "2026", name: "Kunal Somani", email: "kunal.somani@ycasc", phone: "9823222026", pass: "9823222026" },
+    { roll: "COM-26-012", year: "2026", name: "Simran Kaur", email: "simran.kaur@ycasc", phone: "9823222027", pass: "9823222027" },
+    { roll: "COM-26-013", year: "2026", name: "Gaurav Biyani", email: "gaurav.biyani@ycasc", phone: "9823222028", pass: "9823222028" },
+    { roll: "COM-26-014", year: "2026", name: "Nidhi Khandelwal", email: "nidhi.khandelwal@ycasc", phone: "9823222029", pass: "9823222029" },
+    { roll: "COM-26-015", year: "2026", name: "Ananya Prabhu", email: "015.ananya@ycasc", phone: "9823222030", pass: "9823222030", isCollisionDemo: true }
   ],
   Science: [
-    { roll: "SCI-26-001", year: "2026", name: "Aditya Kamat", email: "aditya.kamat@ycasc", pass: "123456789" },
-    { roll: "SCI-26-002", year: "2026", name: "Riya Patil", email: "riya.patil@ycasc", pass: "123456789" },
-    { roll: "SCI-26-003", year: "2026", name: "Pallavi Deshmukh", email: "pallavi.deshmukh@ycasc", pass: "123456789" },
-    { roll: "SCI-26-004", year: "2026", name: "Siddharth Kulkarni", email: "siddharth.kulkarni@ycasc", pass: "123456789" },
-    { roll: "SCI-26-005", year: "2026", name: "Shruti Nair", email: "shruti.nair@ycasc", pass: "123456789" },
-    { roll: "SCI-26-006", year: "2026", name: "Omkar Bhosale", email: "omkar.bhosale@ycasc", pass: "123456789" },
-    { roll: "SCI-26-007", year: "2026", name: "Tanvi Gawde", email: "tanvi.gawde@ycasc", pass: "123456789" },
-    { roll: "SCI-26-008", year: "2026", name: "Harshvardhan Joshi", email: "harshvardhan.joshi@ycasc", pass: "123456789" },
-    { roll: "SCI-26-009", year: "2026", name: "Ananya Prabhu", email: "ananya.prabhu@ycasc", pass: "123456789" },
-    { roll: "SCI-26-010", year: "2026", name: "Varun Shenoy", email: "varun.shenoy@ycasc", pass: "123456789" },
-    { roll: "SCI-26-011", year: "2026", name: "Sanika Shirodkar", email: "sanika.shirodkar@ycasc", pass: "123456789" },
-    { roll: "SCI-26-012", year: "2026", name: "Prathamesh Naik", email: "prathamesh.naik@ycasc", pass: "123456789" },
-    { roll: "SCI-26-013", year: "2026", name: "Divya Chodankar", email: "divya.chodankar@ycasc", pass: "123456789" },
-    { roll: "SCI-26-014", year: "2026", name: "Chinmay Rane", email: "chinmay.rane@ycasc", pass: "123456789" },
-    { roll: "SCI-26-015", year: "2026", name: "Kiran Kiran", email: "015.kiran@ycasc", pass: "123456789", isCollisionDemo: true }
+    { roll: "SCI-26-001", year: "2026", name: "Aditya Kamat", email: "aditya.kamat@ycasc", phone: "9823222001", pass: "9823222001" },
+    { roll: "SCI-26-002", year: "2026", name: "Riya Patil", email: "riya.patil@ycasc", phone: "9823222002", pass: "9823222002" },
+    { roll: "SCI-26-003", year: "2026", name: "Pallavi Deshmukh", email: "pallavi.deshmukh@ycasc", phone: "9823222003", pass: "9823222003" },
+    { roll: "SCI-26-004", year: "2026", name: "Siddharth Kulkarni", email: "siddharth.kulkarni@ycasc", phone: "9823222004", pass: "9823222004" },
+    { roll: "SCI-26-005", year: "2026", name: "Shruti Nair", email: "shruti.nair@ycasc", phone: "9823222005", pass: "9823222005" },
+    { roll: "SCI-26-006", year: "2026", name: "Omkar Bhosale", email: "omkar.bhosale@ycasc", phone: "9823222006", pass: "9823222006" },
+    { roll: "SCI-26-007", year: "2026", name: "Tanvi Gawde", email: "tanvi.gawde@ycasc", phone: "9823222007", pass: "9823222007" },
+    { roll: "SCI-26-008", year: "2026", name: "Harshvardhan Joshi", email: "harshvardhan.joshi@ycasc", phone: "9823222008", pass: "9823222008" },
+    { roll: "SCI-26-009", year: "2026", name: "Ananya Prabhu", email: "ananya.prabhu@ycasc", phone: "9823222009", pass: "9823222009" },
+    { roll: "SCI-26-010", year: "2026", name: "Varun Shenoy", email: "varun.shenoy@ycasc", phone: "9823222010", pass: "9823222010" },
+    { roll: "SCI-26-011", year: "2026", name: "Sanika Shirodkar", email: "sanika.shirodkar@ycasc", phone: "9823222011", pass: "9823222011" },
+    { roll: "SCI-26-012", year: "2026", name: "Prathamesh Naik", email: "prathamesh.naik@ycasc", phone: "9823222012", pass: "9823222012" },
+    { roll: "SCI-26-013", year: "2026", name: "Divya Chodankar", email: "divya.chodankar@ycasc", phone: "9823222013", pass: "9823222013" },
+    { roll: "SCI-26-014", year: "2026", name: "Chinmay Rane", email: "chinmay.rane@ycasc", phone: "9823222014", pass: "9823222014" },
+    { roll: "SCI-26-015", year: "2026", name: "Kiran Kiran", email: "015.kiran@ycasc", phone: "9823222015", pass: "9823222015", isCollisionDemo: true }
   ]
 };
 
@@ -1202,20 +1209,47 @@ function renderAnnouncements() {
   }
 
   container.innerHTML = collegeAnnouncements.map(n => `
-    <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:14px; padding:18px 22px; box-shadow:0 2px 10px rgba(0,0,0,0.03);">
+    <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:14px; padding:18px 22px; box-shadow:0 2px 10px rgba(0,0,0,0.03); margin-bottom:14px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
         <div style="display:flex; gap:8px; align-items:center;">
           <span class="badge lavender-dark">${n.ref}</span>
           <span class="badge mint-dark" style="font-size:11px;">${n.category}</span>
           <span style="font-size:11px; color:#64748B;">• Target: ${n.audience}</span>
         </div>
-        <span style="font-size:11px; color:#94A3B8;">${n.date}</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:11px; color:#94A3B8;">${n.date}</span>
+          <button onclick="editNoticePrompt('${n.ref}')" style="background:#F1F5F9; border:1px solid #CBD5E1; border-radius:6px; padding:3px 8px; font-size:11px; cursor:pointer; font-weight:700; color:#334155;">✏️ Edit</button>
+          <button onclick="deleteNoticeConfirm('${n.ref}')" style="background:#FFF1F2; border:1px solid #FECDD3; border-radius:6px; padding:3px 8px; font-size:11px; cursor:pointer; font-weight:700; color:#E11D48;">🗑️ Delete</button>
+        </div>
       </div>
       <h3 style="font-size:16px; font-weight:800; color:#18191E; margin-bottom:6px;">${n.title}</h3>
       <p style="font-size:13px; color:#475569; line-height:1.5; white-space:pre-wrap;">${n.content}</p>
       <div style="margin-top:10px; font-size:11.5px; color:#7B52DE; font-weight:700;">By: ${n.author}</div>
     </div>
   `).join('');
+}
+
+function editNoticePrompt(ref) {
+  const notice = collegeAnnouncements.find(a => a.ref === ref);
+  if (!notice) return;
+  const newTitle = prompt("Edit Notice Title:", notice.title);
+  if (newTitle === null) return;
+  const newContent = prompt("Edit Notice Content:", notice.content);
+  if (newContent === null) return;
+  notice.title = newTitle.trim() || notice.title;
+  notice.content = newContent.trim() || notice.content;
+  renderAnnouncements();
+  showToast(`✏️ Official Notice [${ref}] updated!`);
+}
+
+function deleteNoticeConfirm(ref) {
+  const notice = collegeAnnouncements.find(a => a.ref === ref);
+  if (!notice) return;
+  if (confirm(`Are you sure you want to remove notice "${notice.title}"?`)) {
+    collegeAnnouncements = collegeAnnouncements.filter(a => a.ref !== ref);
+    renderAnnouncements();
+    showToast(`🗑️ Notice [${ref}] removed from board.`);
+  }
 }
 
 // Teacher Logout

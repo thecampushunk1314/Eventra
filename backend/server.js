@@ -71,6 +71,31 @@ app.get('/api/buyer-info', (req, res) => {
 
 const passwordOverrides = new Map();
 
+// Indian standard 10-digit default phone numbers per account
+const defaultPhoneMap = {
+  'ycasc_principal': '9823000001',
+  'principal@ycasc.com': '9823000001',
+  'ycasc_vp': '9823000002',
+  'ramakant.deshmukh@ycasc.com': '9823000002',
+  't-sci-101': '9823000003',
+  'pramod.naik@ycasc.com': '9823000003',
+  't-com-101': '9823000004',
+  'hod.commerce@ycasc': '9823000004',
+  't-art-101': '9823000005',
+  'hod.arts@ycasc': '9823000005',
+  'sci-26-001': '9823222001',
+  'akash.kamat@ycasc.com': '9823222001',
+  'com-26-001': '9823222016',
+  'rohan.phadte@ycasc': '9823222016',
+  'art-26-001': '9823222031',
+  'kunal.shirodkar@ycasc': '9823222031'
+};
+
+function getDefaultPasswordForUser(cleanId) {
+  if (defaultPhoneMap[cleanId]) return defaultPhoneMap[cleanId];
+  return '9823222001';
+}
+
 app.post('/api/auth/login', async (req, res) => {
   const { identifier, password } = req.body;
   if (!identifier || !password) {
@@ -78,10 +103,11 @@ app.post('/api/auth/login', async (req, res) => {
   }
 
   const cleanId = identifier.trim().toLowerCase();
-  const effectivePassword = passwordOverrides.get(cleanId) || '123456789';
+  const defaultPass = getDefaultPasswordForUser(cleanId);
+  const effectivePassword = passwordOverrides.get(cleanId) || defaultPass;
 
-  if (password !== effectivePassword && password !== '123456789') {
-    return res.status(401).json({ error: 'Invalid password. (Default is 123456789)' });
+  if (password !== effectivePassword && password !== defaultPass) {
+    return res.status(401).json({ error: `Invalid password. (Default is user's 10-digit phone number: ${defaultPass})` });
   }
 
   res.json({
@@ -89,7 +115,7 @@ app.post('/api/auth/login', async (req, res) => {
     institution: 'Yashoda College of Arts, Science and Commerce',
     identifier: cleanId,
     emailExtension: '@ycasc',
-    isDefaultPassword: effectivePassword === '123456789'
+    isDefaultPassword: effectivePassword === defaultPass
   });
 });
 
@@ -100,10 +126,11 @@ app.post('/api/auth/reset-password', (req, res) => {
   }
 
   const cleanId = identifier.trim().toLowerCase();
-  const effectivePassword = passwordOverrides.get(cleanId) || '123456789';
+  const defaultPass = getDefaultPasswordForUser(cleanId);
+  const effectivePassword = passwordOverrides.get(cleanId) || defaultPass;
 
-  if (currentPassword !== effectivePassword) {
-    return res.status(401).json({ error: 'Current password does not match. Default is 123456789.' });
+  if (currentPassword !== effectivePassword && currentPassword !== defaultPass) {
+    return res.status(401).json({ error: `Current password does not match. Default is 10-digit phone number: ${defaultPass}.` });
   }
 
   passwordOverrides.set(cleanId, newPassword);
@@ -134,19 +161,19 @@ app.get('/api/admin/provisioned-accounts', async (req, res) => {
       institution: 'Yashoda College of Arts, Science and Commerce',
       database: 'yashoda_college_db',
       domain: '@ycasc',
-      defaultPassword: '123456789',
+      defaultPassword: 'User 10-digit Phone Number (Indian standard)',
       namingStandard: 'firstname.lastname@ycasc',
       mechanism: 'College SIS Database Provisioning'
     },
     sampleCredentials: [
-      { role: 'Principal', name: 'Dr. Shashikant V. Mayekar', email: 'principal@ycasc.com', id: 'YCASC_Principal', defaultPass: '123456789' },
-      { role: 'Vice Principal', name: 'Dr. Ramakant Deshmukh', email: 'ramakant.deshmukh@ycasc.com', id: 'YCASC_VP', defaultPass: '123456789' },
-      { role: 'HOD Science', name: 'Prof. Pramod Naik', email: 'pramod.naik@ycasc.com', id: 'T-SCI-101', defaultPass: '123456789' },
-      { role: 'HOD Commerce', name: 'Prof. Sujata Kamat', email: 'hod.commerce@ycasc', id: 'T-COM-101', defaultPass: '123456789' },
-      { role: 'HOD Arts', name: 'Dr. Robert Vance', email: 'hod.arts@ycasc', id: 'T-ART-101', defaultPass: '123456789' },
-      { role: 'Student (Science)', name: 'Akash Kamat', email: 'akash.kamat@ycasc.com', id: 'SCI-26-001', defaultPass: '123456789' },
-      { role: 'Student (Commerce)', name: 'Rohan Phadte', email: 'rohan.phadte@ycasc', id: 'COM-26-001', defaultPass: '123456789' },
-      { role: 'Student (Arts)', name: 'Kunal Shirodkar', email: 'kunal.shirodkar@ycasc', id: 'ART-26-001', defaultPass: '123456789' }
+      { role: 'Principal', name: 'Dr. Shashikant V. Mayekar', email: 'principal@ycasc.com', id: 'YCASC_Principal', phone: '9823000001', defaultPass: '9823000001' },
+      { role: 'Vice Principal', name: 'Dr. Ramakant Deshmukh', email: 'ramakant.deshmukh@ycasc.com', id: 'YCASC_VP', phone: '9823000002', defaultPass: '9823000002' },
+      { role: 'HOD Science', name: 'Prof. Pramod Naik', email: 'pramod.naik@ycasc.com', id: 'T-SCI-101', phone: '9823000003', defaultPass: '9823000003' },
+      { role: 'HOD Commerce', name: 'Prof. Sujata Kamat', email: 'hod.commerce@ycasc', id: 'T-COM-101', phone: '9823000004', defaultPass: '9823000004' },
+      { role: 'HOD Arts', name: 'Dr. Robert Vance', email: 'hod.arts@ycasc', id: 'T-ART-101', phone: '9823000005', defaultPass: '9823000005' },
+      { role: 'Student (Science)', name: 'Akash Kamat', email: 'akash.kamat@ycasc.com', id: 'SCI-26-001', phone: '9823222001', defaultPass: '9823222001' },
+      { role: 'Student (Commerce)', name: 'Rohan Phadte', email: 'rohan.phadte@ycasc', id: 'COM-26-001', phone: '9823222016', defaultPass: '9823222016' },
+      { role: 'Student (Arts)', name: 'Kunal Shirodkar', email: 'kunal.shirodkar@ycasc', id: 'ART-26-001', phone: '9823222031', defaultPass: '9823222031' }
     ]
   });
 });

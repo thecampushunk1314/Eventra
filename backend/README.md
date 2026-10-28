@@ -8,8 +8,8 @@ When an institution installs Eventra, the **Institution Administrator** integrat
 - **No public self-registration**: Like Moodle/Blackboard/Canvas, user accounts are centrally provisioned from the institution's collegiate student information system.
 - **Institutional Email Domain**: All provisioned accounts receive an official email ending in `@ycasc` (e.g. `aditya.kamat@ycasc`, `principal@ycasc`, `pramod.naik@ycasc`).
 - **Collision Resolution (`rollno.name@ycasc`)**: If a person has the same first name and surname (e.g. `Kiran Kiran`), or if two students share the identical name and surname in the institution, their official email is generated as `rollno.name@ycasc` (e.g. `015.kiran@ycasc`) to ensure zero email conflicts.
-- **Standard Default Password**: Every account is initially created with the default password `123456789`.
-- **First-Time Activation & Password Reset**: Users log in using their `@ycasc` email and `123456789`, or click the provided Eventra reset password link (`/api/auth/reset-password` or interactive modal) to choose their permanent password.
+- **Standard Default Password**: Every account is initially created with their 10-digit phone number as the default password.
+- **First-Time Activation & Password Reset**: Users log in using their `@ycasc` email and their 10-digit phone number, or click the provided Eventra reset password link (`/api/auth/reset-password` or interactive modal) to choose their permanent password.
 
 ### Institutional Specifications: Yashoda College (YCASC)
 * **Institution Name**: Yashoda College of Arts, Science and Commerce

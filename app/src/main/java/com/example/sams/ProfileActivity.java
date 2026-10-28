@@ -203,9 +203,17 @@ public class ProfileActivity extends AppCompatActivity {
         // Email & Roll No
         tvProfileEmail.setText(user.getEmail() != null ? user.getEmail() : "user@ycasc.com");
         tvProfileRollNo.setText(user.getId() != null ? user.getId() : "N/A");
+        View rowProfileAddress = findViewById(R.id.rowProfileAddress);
         if (tvProfileAddress != null) {
-            tvProfileAddress.setText(user.getAddress() != null && !user.getAddress().isEmpty() ? 
-                    user.getAddress() : "Address not provided (Tap Edit to update)");
+            String addr = user.getAddress();
+            boolean hasAddr = addr != null && !addr.trim().isEmpty();
+            tvProfileAddress.setText(hasAddr ? addr.trim() : "Add address");
+            tvProfileAddress.setTextColor(getColor(hasAddr ? R.color.charcoal_dark : R.color.pastel_lavender_text));
+        }
+        if (rowProfileAddress != null) {
+            rowProfileAddress.setOnClickListener(v -> showAddressDialog());
+        } else if (tvProfileAddress != null) {
+            tvProfileAddress.setOnClickListener(v -> showAddressDialog());
         }
 
         // Buyer-Adaptive Academic details (College: Degree, Year, Department)
@@ -521,6 +529,45 @@ public class ProfileActivity extends AppCompatActivity {
         if (chipFilterScience != null) chipFilterScience.setOnClickListener(v -> selectStudentStreamFilter("Science"));
         if (chipFilterCommerce != null) chipFilterCommerce.setOnClickListener(v -> selectStudentStreamFilter("Commerce"));
         if (chipFilterArts != null) chipFilterArts.setOnClickListener(v -> selectStudentStreamFilter("Arts"));
+    }
+
+    /**
+     * Minimal dialog to quickly add or update residential address.
+     */
+    private void showAddressDialog() {
+        if (currentUser == null) return;
+
+        EditText etInput = new EditText(this);
+        etInput.setHint("Enter residential address");
+        etInput.setText(currentUser.getAddress());
+        etInput.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        etInput.setBackgroundResource(R.drawable.bg_input_box);
+        float density = getResources().getDisplayMetrics().density;
+        int pad = (int) (14 * density);
+        etInput.setPadding(pad, pad, pad, pad);
+
+        android.widget.FrameLayout container = new android.widget.FrameLayout(this);
+        int margin = (int) (20 * density);
+        android.widget.FrameLayout.LayoutParams lp = new android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        lp.setMargins(margin, (int)(10 * density), margin, (int)(10 * density));
+        etInput.setLayoutParams(lp);
+        container.addView(etInput);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Residential Address")
+                .setView(container)
+                .setPositiveButton("Save", (d, which) -> {
+                    String newAddress = etInput.getText().toString().trim();
+                    currentUser.setAddress(newAddress);
+                    userManager.updateUser(currentUser);
+                    bindUserData(currentUser);
+                    Toast.makeText(this, "Address updated", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void showEditProfileDialog() {

@@ -107,80 +107,191 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <!-- Principal Quick Action Cards -->
+                <!-- Principal Executive Card -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_card_lavender"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="🏛️ PRINCIPAL EXECUTIVE OFFICE"
+                            android:textColor="@color/pastel_lavender_text"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_chip_mint"
+                            android:paddingStart="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="3dp"
+                            android:text="Authority"
+                            android:textColor="@color/pastel_mint_text"
+                            android:textSize="10.5sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Yashoda College of Arts, Science and Commerce"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="3 Degree Streams • 45 Students • 11 Faculty &amp; Staff"
+                        android:textColor="@color/text_muted"
+                        android:textSize="11.5sp" />
+                </LinearLayout>
+
+                <!-- Principal Quick Action Grid (2x2 Balanced) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
                     android:orientation="horizontal">
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnPrincipalAddFaculty"
                         style="@style/Widget.Eventra.Button.Pill"
                         android:layout_width="0dp"
-                        android:layout_height="52dp"
-                        android:layout_marginEnd="4dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="6dp"
                         android:layout_weight="1"
                         android:backgroundTint="@color/charcoal_dark"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
-                        android:text="+ Faculty"
+                        android:text="👩‍🏫 + Faculty"
                         android:textAllCaps="false"
                         android:textColor="@color/white"
                         android:textSize="13sp"
                         android:textStyle="bold"
-                        app:cornerRadius="16dp"
-                        app:icon="@drawable/ic_teacher"
-                        app:iconGravity="textStart"
-                        app:iconPadding="6dp"
-                        app:iconSize="16dp"
-                        app:iconTint="@color/white" />
+                        app:cornerRadius="16dp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnPrincipalEnrollStudent"
                         style="@style/Widget.Eventra.Button.Pill"
                         android:layout_width="0dp"
-                        android:layout_height="52dp"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1.1"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
                         android:backgroundTint="@color/charcoal_dark"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
-                        android:text="+ Student"
+                        android:text="👨‍🎓 + Student"
                         android:textAllCaps="false"
                         android:textColor="@color/white"
                         android:textSize="13sp"
                         android:textStyle="bold"
-                        app:cornerRadius="16dp"
-                        app:icon="@drawable/ic_student"
-                        app:iconGravity="textStart"
-                        app:iconPadding="6dp"
-                        app:iconSize="16dp"
-                        app:iconTint="@color/white" />
+                        app:cornerRadius="16dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnPrincipalUploadNotice"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/pastel_lavender_surface"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="📢 Notice Board"
+                        android:textAllCaps="false"
+                        android:textColor="@color/pastel_lavender_text"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrincipalRequests"
                         style="@style/Widget.Material3.Button.OutlinedButton"
                         android:layout_width="0dp"
-                        android:layout_height="52dp"
-                        android:layout_marginStart="4dp"
-                        android:layout_weight="1.1"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
                         android:backgroundTint="@color/white"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
-                        android:text="+ Notice"
+                        android:text="📁 Requests"
                         android:textAllCaps="false"
                         android:textColor="@color/charcoal_dark"
                         android:textSize="13sp"
                         android:textStyle="bold"
                         app:cornerRadius="16dp"
-                        app:icon="@drawable/ic_chat"
+                        app:icon="@drawable/ic_file"
                         app:iconGravity="textStart"
                         app:iconPadding="6dp"
                         app:iconSize="16dp"
                         app:iconTint="@color/charcoal_dark"
                         app:strokeColor="@color/outline" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrincipalMonthlyRegister"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/white"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="📊 Attendance Register"
+                        android:textAllCaps="false"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp"
+                        app:strokeColor="@color/outline" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrincipalEventsAndPractice"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/pastel_lavender_surface"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="🏟️ Events &amp; Practice"
+                        android:textAllCaps="false"
+                        android:textColor="@color/pastel_lavender_text"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
                 </LinearLayout>
 
                 <!-- Institutional Records Card -->
@@ -457,6 +568,67 @@
                             android:layout_marginTop="4dp"
                             android:background="@drawable/bg_input_box" />
 
+                        <!-- Faculty Allocation Summary Card -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_card_lavender"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="FACULTY STREAM ALLOCATION"
+                                android:textColor="@color/pastel_lavender_text"
+                                android:textSize="10.5sp"
+                                android:textStyle="bold" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="🧪 Science: 4"
+                                    android:textColor="@color/charcoal_dark"
+                                    android:textSize="11.5sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="📈 Commerce: 3"
+                                    android:textColor="@color/charcoal_dark"
+                                    android:textSize="11.5sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="🎨 Arts: 3"
+                                    android:textColor="@color/charcoal_dark"
+                                    android:textSize="11.5sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="🏛️ Admin: 1"
+                                    android:textColor="@color/charcoal_dark"
+                                    android:textSize="11.5sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+
                         <TextView
                             android:id="@+id/tvTeachersRecordCount"
                             android:layout_width="wrap_content"
@@ -478,6 +650,211 @@
 
                 </LinearLayout>
 
+            </LinearLayout>
+
+            <!-- ============ Teacher / Faculty Dashboard ============ -->
+            <LinearLayout
+                android:id="@+id/layoutTeacherDashboard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- Faculty Hero Banner -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_card_lavender"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="👩‍🏫 FACULTY ACADEMIC AUTHORITY"
+                            android:textColor="@color/pastel_lavender_text"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvTeacherDeptBadge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_chip_mint"
+                            android:paddingStart="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="3dp"
+                            android:text="Faculty"
+                            android:textColor="@color/pastel_mint_text"
+                            android:textSize="10.5sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvTeacherHeroName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Faculty Classroom Dashboard"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvTeacherHeroMeta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Review spot passes, manage student enrollment &amp; publish official circulars."
+                        android:textColor="@color/text_muted"
+                        android:textSize="11.5sp" />
+                </LinearLayout>
+
+                <!-- Teacher Quick Action Grid (2x2 Balanced) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTeacherAddStudent"
+                        style="@style/Widget.Eventra.Button.Pill"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/charcoal_dark"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="👨‍🎓 + Student"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTeacherReviewRequests"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/white"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="📁 Requests"
+                        android:textAllCaps="false"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp"
+                        app:icon="@drawable/ic_file"
+                        app:iconGravity="textStart"
+                        app:iconPadding="6dp"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/charcoal_dark"
+                        app:strokeColor="@color/outline" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTeacherNoticeAction"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/pastel_lavender_surface"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="📢 Notice Board"
+                        android:textAllCaps="false"
+                        android:textColor="@color/pastel_lavender_text"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTeacherInterchangeLectures"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/pastel_mint_bg"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="⚡ Swap Lecture"
+                        android:textAllCaps="false"
+                        android:textColor="@color/pastel_mint_text"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+                </LinearLayout>
+
+                <!-- Monthly Attendance & Events Actions -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTeacherMonthlyRegister"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/white"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="📊 Attendance"
+                        android:textAllCaps="false"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp"
+                        app:icon="@drawable/ic_file"
+                        app:iconGravity="textStart"
+                        app:iconPadding="6dp"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/charcoal_dark"
+                        app:strokeColor="@color/outline" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTeacherEventsAndPractice"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/pastel_lavender_surface"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="🏟️ Events &amp; Practice"
+                        android:textAllCaps="false"
+                        android:textColor="@color/pastel_lavender_text"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- ============ Hero attendance card ============ -->
@@ -589,7 +966,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ============ Quick actions ============ -->
+            <!-- ============ Student Quick actions ============ -->
             <LinearLayout
                 android:id="@+id/layoutStudentQuickActions"
                 android:layout_width="match_parent"
@@ -633,40 +1010,6 @@
                     app:iconSize="18dp"
                     app:iconTint="@color/ink"
                     app:strokeColor="@color/outline" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnTeacherNoticeAction"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="0dp"
-                    android:layout_height="52dp"
-                    android:layout_marginStart="6dp"
-                    android:layout_weight="1"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:text="📢 Notice"
-                    android:textColor="@color/lavender_dark"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    app:backgroundTint="@color/lavender_subtle"
-                    app:cornerRadius="18dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnInterchangeLectures"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="0dp"
-                    android:layout_height="52dp"
-                    android:layout_marginStart="6dp"
-                    android:layout_weight="1"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:text="⚡ Swap Lecture"
-                    android:textColor="@color/pastel_mint_text"
-                    android:textSize="12.5sp"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    app:backgroundTint="@color/pastel_mint_bg"
-                    app:cornerRadius="18dp" />
             </LinearLayout>
 
             <!-- ============ This week ============ -->
@@ -1027,7 +1370,8 @@
                         android:layout_marginTop="2dp"
                         android:text="@string/notice_meta"
                         android:textColor="@color/muted"
-                        android:textSize="12sp" />
+                        android:textSize="12sp"
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <View

@@ -27,12 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText etLoginEmail;
     private EditText etLoginPassword;
     private ImageView btnLoginTogglePassword;
-    private TextView btnForgotPassword;
     private MaterialButton btnLoginSubmit;
 
-    private TextView chipFillStudent;
-    private TextView chipFillTeacher;
-    private TextView chipFillPrincipal;
 
     private boolean isLoginPasswordVisible = false;
     private UserManager userManager;
@@ -76,12 +72,8 @@ public class MainActivity extends AppCompatActivity {
         etLoginEmail = findViewById(R.id.etLoginEmail);
         etLoginPassword = findViewById(R.id.etLoginPassword);
         btnLoginTogglePassword = findViewById(R.id.btnLoginTogglePassword);
-        btnForgotPassword = findViewById(R.id.btnForgotPassword);
         btnLoginSubmit = findViewById(R.id.btnLoginSubmit);
 
-        chipFillStudent = findViewById(R.id.chipFillStudent);
-        chipFillTeacher = findViewById(R.id.chipFillTeacher);
-        chipFillPrincipal = findViewById(R.id.chipFillPrincipal);
     }
 
     private void setupListeners() {
@@ -100,35 +92,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        // Quick Fill Helper Chips for Easy Demo Testing
-        if (chipFillStudent != null) {
-            chipFillStudent.setOnClickListener(v -> {
-                etLoginEmail.setText("SCI-26-001");
-                etLoginPassword.setText("123456789");
-                Toast.makeText(this, "Filled Student credentials (SCI-26-001)", Toast.LENGTH_SHORT).show();
-            });
-        }
 
-        if (chipFillTeacher != null) {
-            chipFillTeacher.setOnClickListener(v -> {
-                etLoginEmail.setText("hod.science@ycasc");
-                etLoginPassword.setText("123456789");
-                Toast.makeText(this, "Filled HOD Science credentials", Toast.LENGTH_SHORT).show();
-            });
-        }
-
-        if (chipFillPrincipal != null) {
-            chipFillPrincipal.setOnClickListener(v -> {
-                etLoginEmail.setText("principal@ycasc");
-                etLoginPassword.setText("123456789");
-                Toast.makeText(this, "Filled Principal credentials", Toast.LENGTH_SHORT).show();
-            });
-        }
-
-        // Forgot / Change Password
-        if (btnForgotPassword != null) {
-            btnForgotPassword.setOnClickListener(v -> showForgotPasswordDialog());
-        }
 
         // Login Submit
         if (btnLoginSubmit != null) {
@@ -299,46 +263,6 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void showForgotPasswordDialog() {
-        android.widget.LinearLayout layout = new android.widget.LinearLayout(this);
-        layout.setOrientation(android.widget.LinearLayout.VERTICAL);
-        layout.setPadding(60, 30, 60, 20);
-
-        EditText etEmailOrId = new EditText(this);
-        etEmailOrId.setHint("Enter your email or UserID *");
-        etEmailOrId.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        layout.addView(etEmailOrId);
-
-        EditText etNewPassword = new EditText(this);
-        etNewPassword.setHint("Enter new password *");
-        etNewPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        layout.addView(etNewPassword);
-
-        new AlertDialog.Builder(this)
-                .setTitle("Reset Password")
-                .setMessage("Enter your enrolled ID or email to reset your access password:")
-                .setView(layout)
-                .setPositiveButton("Reset Password", (dialog, which) -> {
-                    String id = etEmailOrId.getText().toString().trim();
-                    String newPass = etNewPassword.getText().toString().trim();
-
-                    if (id.isEmpty() || newPass.isEmpty()) {
-                        Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    boolean success = userManager.changePassword(id, newPass);
-                    if (success) {
-                        Toast.makeText(this, "Password reset successfully! Please log in.", Toast.LENGTH_LONG).show();
-                        etLoginEmail.setText(id);
-                        etLoginPassword.setText(newPass);
-                    } else {
-                        Toast.makeText(this, "User ID / Email not found in campus database.", Toast.LENGTH_LONG).show();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
 
     private void goToHome(User user) {
         Intent intent = new Intent(this, HomeActivity.class);

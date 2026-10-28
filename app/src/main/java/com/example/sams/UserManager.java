@@ -31,6 +31,31 @@ public class UserManager {
         return instance;
     }
 
+    /**
+     * Normalizes any input phone number to a 10-digit Indian standard mobile number.
+     * (e.g. "+91 9823222001" -> "9823222001", "09823222001" -> "9823222001").
+     * Falls back to a deterministic 10-digit number if empty.
+     */
+    public static String normalizePhone(String rawPhone) {
+        if (rawPhone == null || rawPhone.trim().isEmpty()) {
+            return "9823" + String.format(java.util.Locale.US, "%06d", (int)(Math.random() * 900000 + 100000));
+        }
+        String digits = rawPhone.replaceAll("[^0-9]", "");
+        if (digits.length() == 12 && digits.startsWith("91")) {
+            digits = digits.substring(2);
+        } else if (digits.length() == 11 && digits.startsWith("0")) {
+            digits = digits.substring(1);
+        }
+        if (digits.length() == 10) {
+            return digits;
+        }
+        if (digits.length() > 10) {
+            return digits.substring(digits.length() - 10);
+        }
+        String fallback = "9823000000" + digits;
+        return fallback.substring(fallback.length() - 10);
+    }
+
     private void seedDefaultAccountsIfEmpty() {
         List<User> list = prefs.contains(KEY_USERS) ? getAllUsers() : new ArrayList<>();
 
@@ -55,11 +80,15 @@ public class UserManager {
             }
         }
 
-        if (list.isEmpty() || isOldHssData || studentCount < 40 || needsEmailOrAttendanceUpgrade) {
+        boolean needsPhonePasswordUpgrade = !prefs.getBoolean("has_seeded_phone_passwords_v5", false);
+        if (list.isEmpty() || isOldHssData || studentCount < 40 || needsEmailOrAttendanceUpgrade || needsPhonePasswordUpgrade) {
             list.clear();
             list.add(getPrincipalUser());
             seedInstitutionalFacultyAndStudents(list);
-            prefs.edit().putBoolean("has_seeded_attendance_v3", true).apply();
+            prefs.edit()
+                    .putBoolean("has_seeded_attendance_v3", true)
+                    .putBoolean("has_seeded_phone_passwords_v5", true)
+                    .apply();
             saveUsers(list);
             return;
         }
@@ -85,8 +114,10 @@ public class UserManager {
         if (!cleanEmail.endsWith("@ycasc.com")) {
             cleanEmail = cleanEmail.split("@")[0] + "@ycasc.com";
         }
-        User u = new User(id, name, cleanEmail, "123456789", User.ROLE_STUDENT, stream, degree, 
-                rollInfo, phone, User.INSTITUTION_COLLEGE, dob, yearOrClass, degree, subjects);
+        String cleanPhone = normalizePhone(phone);
+        // Default password is their 10-digit Indian standard phone number
+        User u = new User(id, name, cleanEmail, cleanPhone, User.ROLE_STUDENT, stream, degree, 
+                rollInfo, cleanPhone, User.INSTITUTION_COLLEGE, dob, yearOrClass, degree, subjects);
         u.setAttendancePercentage(attendancePct);
         u.setTotalClasses(120);
         u.setAttendedClasses((int) Math.round(120 * (attendancePct / 100.0)));
@@ -105,7 +136,7 @@ public class UserManager {
                 "YCASC_VP",
                 "Dr. Ramakant Deshmukh",
                 "ramakant.deshmukh@ycasc.com",
-                "123456789",
+                "9823000002",
                 User.ROLE_PROGRAMME_DIRECTOR,
                 "Executive Administration",
                 "Dean of Academic Affairs",
@@ -123,7 +154,7 @@ public class UserManager {
                 "T-SCI-101",
                 "Dr. Pramod Naik",
                 "pramod.naik@ycasc.com",
-                "123456789",
+                "9823000003",
                 User.ROLE_TEACHER,
                 "Science Stream",
                 "Bachelor of Science (B.Sc.)",
@@ -139,9 +170,9 @@ public class UserManager {
                 "T-SCI-102",
                 "Dr. Sneha Gaonkar",
                 "sneha.gaonkar@ycasc.com",
-                "123456789",
+                "9823000004",
                 User.ROLE_TEACHER,
-                "Science Stream",
+                "Science",
                 "Bachelor of Science (B.Sc.)",
                 "Assistant Professor of Chemistry",
                 "9823000004",
@@ -155,9 +186,9 @@ public class UserManager {
                 "T-SCI-103",
                 "Prof. Vikram Dessai",
                 "vikram.dessai@ycasc.com",
-                "123456789",
+                "9823000005",
                 User.ROLE_TEACHER,
-                "Science Stream",
+                "Science",
                 "Bachelor of Science (B.Sc.)",
                 "Assistant Professor of Computer Science & Mathematics",
                 "9823000005",
@@ -168,14 +199,14 @@ public class UserManager {
                 "Mathematics, Computer Science, Data Structures, Discrete Math"
         ));
 
-        // 3. Commerce Stream Faculty (HOD + 2 Teachers)
+        // 3. Commerce Faculty (HOD + 2 Teachers)
         list.add(new User(
                 "T-COM-101",
                 "Prof. Sujata Kamat",
                 "hod.commerce@ycasc.com",
-                "123456789",
+                "9823000006",
                 User.ROLE_TEACHER,
-                "Commerce Stream",
+                "Commerce",
                 "Bachelor of Commerce (B.Com)",
                 "HOD Commerce & Associate Professor",
                 "9823000006",
@@ -189,9 +220,9 @@ public class UserManager {
                 "T-COM-102",
                 "Prof. Aarti Faldesai",
                 "aarti.faldesai@ycasc.com",
-                "123456789",
+                "9823000007",
                 User.ROLE_TEACHER,
-                "Commerce Stream",
+                "Commerce",
                 "Bachelor of Commerce (B.Com)",
                 "Assistant Professor of Economics & Banking",
                 "9823000007",
@@ -205,9 +236,9 @@ public class UserManager {
                 "T-COM-103",
                 "Prof. Nitin Shenvi",
                 "nitin.shenvi@ycasc.com",
-                "123456789",
+                "9823000008",
                 User.ROLE_TEACHER,
-                "Commerce Stream",
+                "Commerce",
                 "Bachelor of Commerce (B.Com)",
                 "Assistant Professor of Commerce & Business Law",
                 "9823000008",
@@ -218,14 +249,14 @@ public class UserManager {
                 "Business Law, Corporate Governance, Marketing & International Trade"
         ));
 
-        // 4. Arts Stream Faculty (HOD + 2 Teachers)
+        // 4. Arts Faculty (HOD + 2 Teachers)
         list.add(new User(
                 "T-ART-101",
                 "Dr. Robert Vance",
                 "hod.arts@ycasc.com",
-                "123456789",
+                "9823000009",
                 User.ROLE_TEACHER,
-                "Arts Stream",
+                "Arts",
                 "Bachelor of Arts (B.A.)",
                 "HOD Arts & Associate Professor",
                 "9823000009",
@@ -239,9 +270,9 @@ public class UserManager {
                 "T-ART-102",
                 "Prof. Sanjay Bandodkar",
                 "sanjay.bandodkar@ycasc.com",
-                "123456789",
+                "9823000010",
                 User.ROLE_TEACHER,
-                "Arts Stream",
+                "Arts",
                 "Bachelor of Arts (B.A.)",
                 "Assistant Professor of History & Heritage",
                 "9823000010",
@@ -255,9 +286,9 @@ public class UserManager {
                 "T-ART-103",
                 "Prof. Meera Chodankar",
                 "meera.chodankar@ycasc.com",
-                "123456789",
+                "9823000011",
                 User.ROLE_TEACHER,
-                "Arts Stream",
+                "Arts",
                 "Bachelor of Arts (B.A.)",
                 "Assistant Professor of Political Science & Sociology",
                 "9823000011",
@@ -273,7 +304,7 @@ public class UserManager {
                 "NT-OFF-201",
                 "Mr. Rajesh Shirodkar",
                 "registrar@ycasc.com",
-                "123456789",
+                "9823000015",
                 User.ROLE_TEACHER,
                 "Administration",
                 "Superintendent Office",
@@ -293,57 +324,57 @@ public class UserManager {
 
         // A. Science Stream (15 Students: SCI-26-001 to SCI-26-015)
         String sciDeg = "Bachelor of Science (B.Sc.)";
-        list.add(createStudent("SCI-26-001", "Akash Kamat", "akash.kamat@ycasc.com", "Science Stream", sciDeg, "Roll SCI-001 • Football Captain", "+91 9823222001", "05/01/2006", "First Year (Batch 2026)", "Physics, Chemistry, Mathematics", 82.5));
-        list.add(createStudent("SCI-26-002", "Priya Vernekar", "priya.vernekar@ycasc.com", "Science Stream", sciDeg, "Roll SCI-002 • Science Society Lead", "+91 9823222002", "20/09/2004", "SY B.Sc. (Chemistry)", "Chemistry, Organic Chemistry, Analytical Chemistry, Biology", 64.0)); // Below 70%
-        list.add(createStudent("SCI-26-003", "Sahil Fernandes", "sahil.fernandes@ycasc.com", "Science Stream", sciDeg, "Roll SCI-003 • Coding Club Lead", "+91 9823222003", "05/03/2005", "FY B.Sc. (Comp Sci)", "Computer Science, Data Structures, Mathematics, Physics", 91.5));
-        list.add(createStudent("SCI-26-004", "Shruti Dessai", "shruti.dessai@ycasc.com", "Science Stream", sciDeg, "Roll SCI-004 • Math Olympiad Winner", "+91 9823222004", "12/11/2004", "TY B.Sc. (Mathematics)", "Advanced Calculus, Linear Algebra, Statistics, Physics", 88.0));
-        list.add(createStudent("SCI-26-005", "Varun Rane", "varun.rane@ycasc.com", "Science Stream", sciDeg, "Roll SCI-005 • NCC Cadet Corps", "+91 9823222005", "28/01/2005", "FY B.Sc. (Physics)", "Physics, Chemistry, Electronics, Mathematics", 58.5)); // Below 70%
-        list.add(createStudent("SCI-26-006", "Neha Chari", "neha.chari@ycasc.com", "Science Stream", sciDeg, "Roll SCI-006 • Environmental Cell", "+91 9823222006", "19/07/2004", "SY B.Sc. (Chemistry)", "Chemistry, Biochemistry, Physics, English", 73.0)); // Borderline
-        list.add(createStudent("SCI-26-007", "Pranav Naik", "pranav.naik@ycasc.com", "Science Stream", sciDeg, "Roll SCI-007 • Robotics Cell", "+91 9823222007", "22/08/2005", "FY B.Sc. (Comp Sci)", "Computer Science, Mathematics, Electronics, Physics", 67.5)); // Below 70%
-        list.add(createStudent("SCI-26-008", "Ananya Gawde", "ananya.gawde@ycasc.com", "Science Stream", sciDeg, "Roll SCI-008 • Astronomy Club", "+91 9823222008", "15/04/2004", "TY B.Sc. (Physics)", "Astrophysics, Quantum Mechanics, Classical Mechanics", 94.0));
-        list.add(createStudent("SCI-26-009", "Siddharth Borkar", "siddharth.borkar@ycasc.com", "Science Stream", sciDeg, "Roll SCI-009 • Athletics Team", "+91 9823222009", "30/10/2005", "FY B.Sc. (Mathematics)", "Calculus, Discrete Mathematics, Statistics, Computer Science", 61.2)); // Below 70%
-        list.add(createStudent("SCI-26-010", "Tanvi Shirodkar", "tanvi.shirodkar@ycasc.com", "Science Stream", sciDeg, "Roll SCI-010 • Hackathon Finalist", "+91 9823222010", "18/02/2004", "SY B.Sc. (Comp Sci)", "Database Systems, Computer Science, Algorithms, Math", 85.5));
-        list.add(createStudent("SCI-26-011", "Gaurav Sawant", "gaurav.sawant@ycasc.com", "Science Stream", sciDeg, "Roll SCI-011 • Chemistry Lab Tech", "+91 9823222011", "11/06/2005", "FY B.Sc. (Chemistry)", "Organic Chemistry, Inorganic Chemistry, Mathematics", 76.0));
-        list.add(createStudent("SCI-26-012", "Rashmi Kudchadkar", "rashmi.kudchadkar@ycasc.com", "Science Stream", sciDeg, "Roll SCI-012 • Optics Researcher", "+91 9823222012", "04/12/2004", "TY B.Sc. (Physics)", "Optics & Laser Physics, Thermodynamics, Physics", 69.0)); // Below 70%
-        list.add(createStudent("SCI-26-013", "Manish Tari", "manish.tari@ycasc.com", "Science Stream", sciDeg, "Roll SCI-013 • Cyber Security Lead", "+91 9823222013", "17/09/2005", "FY B.Sc. (Comp Sci)", "Computer Networks, Operating Systems, Computer Science", 89.2));
-        list.add(createStudent("SCI-26-014", "Isha Prabhu", "isha.prabhu@ycasc.com", "Science Stream", sciDeg, "Roll SCI-014 • Statistics Representative", "+91 9823222014", "25/08/2004", "SY B.Sc. (Mathematics)", "Mathematics, Applied Statistics, Linear Algebra", 71.5)); // Borderline
-        list.add(createStudent("SCI-26-015", "Kiran M Nair", "kiran.m.nair@ycasc.com", "Science Stream", sciDeg, "Collision if name and surname already exists.", "+91 9823222015", "14/03/2006", "First Year", "Physics, Chemistry, Computer Science, English", 78.4));
+        list.add(createStudent("SCI-26-001", "Akash Kamat", "akash.kamat@ycasc.com", "Science Stream", sciDeg, "Roll SCI-001 • Football Captain", "9823222001", "05/01/2006", "First Year (Batch 2026)", "Physics, Chemistry, Mathematics", 82.5));
+        list.add(createStudent("SCI-26-002", "Priya Vernekar", "priya.vernekar@ycasc.com", "Science Stream", sciDeg, "Roll SCI-002 • Science Society Lead", "9823222002", "20/09/2004", "SY B.Sc. (Chemistry)", "Chemistry, Organic Chemistry, Analytical Chemistry, Biology", 64.0)); // Below 70%
+        list.add(createStudent("SCI-26-003", "Sahil Fernandes", "sahil.fernandes@ycasc.com", "Science Stream", sciDeg, "Roll SCI-003 • Coding Club Lead", "9823222003", "05/03/2005", "FY B.Sc. (Comp Sci)", "Computer Science, Data Structures, Mathematics, Physics", 91.5));
+        list.add(createStudent("SCI-26-004", "Shruti Dessai", "shruti.dessai@ycasc.com", "Science Stream", sciDeg, "Roll SCI-004 • Math Olympiad Winner", "9823222004", "12/11/2004", "TY B.Sc. (Mathematics)", "Advanced Calculus, Linear Algebra, Statistics, Physics", 88.0));
+        list.add(createStudent("SCI-26-005", "Varun Rane", "varun.rane@ycasc.com", "Science Stream", sciDeg, "Roll SCI-005 • NCC Cadet Corps", "9823222005", "28/01/2005", "FY B.Sc. (Physics)", "Physics, Chemistry, Electronics, Mathematics", 58.5)); // Below 70%
+        list.add(createStudent("SCI-26-006", "Neha Chari", "neha.chari@ycasc.com", "Science Stream", sciDeg, "Roll SCI-006 • Environmental Cell", "9823222006", "19/07/2004", "SY B.Sc. (Chemistry)", "Chemistry, Biochemistry, Physics, English", 73.0)); // Borderline
+        list.add(createStudent("SCI-26-007", "Pranav Naik", "pranav.naik@ycasc.com", "Science Stream", sciDeg, "Roll SCI-007 • Robotics Cell", "9823222007", "22/08/2005", "FY B.Sc. (Comp Sci)", "Computer Science, Mathematics, Electronics, Physics", 67.5)); // Below 70%
+        list.add(createStudent("SCI-26-008", "Ananya Gawde", "ananya.gawde@ycasc.com", "Science Stream", sciDeg, "Roll SCI-008 • Astronomy Club", "9823222008", "15/04/2004", "TY B.Sc. (Physics)", "Astrophysics, Quantum Mechanics, Classical Mechanics", 94.0));
+        list.add(createStudent("SCI-26-009", "Siddharth Borkar", "siddharth.borkar@ycasc.com", "Science Stream", sciDeg, "Roll SCI-009 • Athletics Team", "9823222009", "30/10/2005", "FY B.Sc. (Mathematics)", "Calculus, Discrete Mathematics, Statistics, Computer Science", 61.2)); // Below 70%
+        list.add(createStudent("SCI-26-010", "Tanvi Shirodkar", "tanvi.shirodkar@ycasc.com", "Science Stream", sciDeg, "Roll SCI-010 • Hackathon Finalist", "9823222010", "18/02/2004", "SY B.Sc. (Comp Sci)", "Database Systems, Computer Science, Algorithms, Math", 85.5));
+        list.add(createStudent("SCI-26-011", "Gaurav Sawant", "gaurav.sawant@ycasc.com", "Science Stream", sciDeg, "Roll SCI-011 • Chemistry Lab Tech", "9823222011", "11/06/2005", "FY B.Sc. (Chemistry)", "Organic Chemistry, Inorganic Chemistry, Mathematics", 76.0));
+        list.add(createStudent("SCI-26-012", "Rashmi Kudchadkar", "rashmi.kudchadkar@ycasc.com", "Science Stream", sciDeg, "Roll SCI-012 • Optics Researcher", "9823222012", "04/12/2004", "TY B.Sc. (Physics)", "Optics & Laser Physics, Thermodynamics, Physics", 69.0)); // Below 70%
+        list.add(createStudent("SCI-26-013", "Manish Tari", "manish.tari@ycasc.com", "Science Stream", sciDeg, "Roll SCI-013 • Cyber Security Lead", "9823222013", "17/09/2005", "FY B.Sc. (Comp Sci)", "Computer Networks, Operating Systems, Computer Science", 89.2));
+        list.add(createStudent("SCI-26-014", "Isha Prabhu", "isha.prabhu@ycasc.com", "Science Stream", sciDeg, "Roll SCI-014 • Statistics Representative", "9823222014", "25/08/2004", "SY B.Sc. (Mathematics)", "Mathematics, Applied Statistics, Linear Algebra", 71.5)); // Borderline
+        list.add(createStudent("SCI-26-015", "Kiran M Nair", "kiran.m.nair@ycasc.com", "Science Stream", sciDeg, "Collision if name and surname already exists.", "9823222015", "14/03/2006", "First Year", "Physics, Chemistry, Computer Science, English", 78.4));
 
         // B. Commerce Stream (15 Students: COM-26-001 to COM-26-015)
         String comDeg = "Bachelor of Commerce (B.Com)";
-        list.add(createStudent("COM-26-001", "Rohan Phadte", "rohan.phadte@ycasc.com", "Commerce Stream", comDeg, "Roll COM-001 • Class Representative", "+91 9823222016", "18/04/2005", "FY B.Com (Accountancy)", "Financial Accounting, Business Economics, Corporate Law, Business Math", 86.0));
-        list.add(createStudent("COM-26-002", "Meera Deshmukh", "meera.deshmukh@ycasc.com", "Commerce Stream", comDeg, "Roll COM-002 • Finance Club Head", "+91 9823222017", "28/01/2004", "TY B.Com (Banking & Finance)", "Financial Markets, Investment Analysis, Banking, Business Economics", 95.0));
-        list.add(createStudent("COM-26-003", "Rohan Kamat", "rohan.kamat@ycasc.com", "Commerce Stream", comDeg, "Roll COM-003 • Debate Society Secretary", "+91 9823222018", "17/12/2005", "FY B.Com (Auditing)", "Cost Accounting, Auditing, Corporate Law, Business Economics", 63.5)); // Below 70%
-        list.add(createStudent("COM-26-004", "Tanvi Shenvi", "tanvi.shenvi@ycasc.com", "Commerce Stream", comDeg, "Roll COM-004 • Taxation Cell Head", "+91 9823222019", "22/06/2004", "SY B.Com (Corporate Law)", "Corporate Law, Direct & Indirect Tax, Financial Accounting", 77.5));
-        list.add(createStudent("COM-26-005", "Gaurav Borkar", "gaurav.borkar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-005 • Commerce Forum Lead", "+91 9823222020", "14/03/2005", "FY B.Com (Accountancy)", "Accountancy, Business Law, Economics, Environmental Commerce", 59.0)); // Below 70%
-        list.add(createStudent("COM-26-006", "Divya Velip", "divya.velip@ycasc.com", "Commerce Stream", comDeg, "Roll COM-006 • NSS Volunteer", "+91 9823222021", "09/10/2004", "SY B.Com (Economics)", "Macroeconomics, Public Finance, Accountancy, Banking", 72.5)); // Borderline
-        list.add(createStudent("COM-26-007", "Sanket Prabhu", "sanket.prabhu@ycasc.com", "Commerce Stream", comDeg, "Roll COM-007 • Cricket Team Vice-Captain", "+91 9823222022", "03/07/2005", "FY B.Com (Taxation)", "Income Tax, Auditing, Business Mathematics, Economics", 66.0)); // Below 70%
-        list.add(createStudent("COM-26-008", "Rhea Kakodkar", "rhea.kakodkar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-008 • Stock Trading Lead", "+91 9823222023", "29/05/2004", "TY B.Com (Finance)", "Financial Management, International Banking, Cost Accounting", 84.0));
-        list.add(createStudent("COM-26-009", "Abhishek Gauns", "abhishek.gauns@ycasc.com", "Commerce Stream", comDeg, "Roll COM-009 • Entrepreneurship Cell", "+91 9823222024", "21/11/2005", "FY B.Com (Business Law)", "Business Law, Accounting, Business Communication, Economics", 68.5)); // Below 70%
-        list.add(createStudent("COM-26-010", "Pooja Mandrekar", "pooja.mandrekar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-010 • Annual Fest Treasurer", "+91 9823222025", "16/03/2004", "SY B.Com (Accountancy)", "Cost Accounting, Corporate Accounting, Business Law, Banking", 79.5));
-        list.add(createStudent("COM-26-011", "Ketan Salgaonkar", "ketan.salgaonkar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-011 • Table Tennis Lead", "+91 9823222026", "07/08/2005", "FY B.Com (Auditing)", "Financial Accounting, Economics, Secretarial Practice, English", 62.0)); // Below 70%
-        list.add(createStudent("COM-26-012", "Snehal Tirodkar", "snehal.tirodkar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-012 • Gold Medalist Aspirant", "+91 9823222027", "30/09/2004", "TY B.Com (Banking)", "Banking, Insurance, Auditing, Corporate Accounting", 92.5));
-        list.add(createStudent("COM-26-013", "Yash Dharwadkar", "yash.dharwadkar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-013 • E-Commerce Cell", "+91 9823222028", "12/02/2005", "FY B.Com (Accountancy)", "Accounting, Digital Marketing, Business Economics, Math", 74.0)); // Borderline
-        list.add(createStudent("COM-26-014", "Simran Kadam", "simran.kadam@ycasc.com", "Commerce Stream", comDeg, "Roll COM-014 • Women Empowerment Cell", "+91 9823222029", "27/07/2004", "SY B.Com (Economics)", "Business Economics, Financial Management, Direct Tax, Law", 81.0));
-        list.add(createStudent("COM-26-015", "Omkar Lotlikar", "omkar.lotlikar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-015 • Youth Parliamentarian", "+91 9823222030", "05/01/2005", "FY B.Com (Finance)", "Corporate Finance, Financial Accounting, Economics, Law", 87.5));
+        list.add(createStudent("COM-26-001", "Rohan Phadte", "rohan.phadte@ycasc.com", "Commerce Stream", comDeg, "Roll COM-001 • Class Representative", "9823222016", "18/04/2005", "FY B.Com (Accountancy)", "Financial Accounting, Business Economics, Corporate Law, Business Math", 86.0));
+        list.add(createStudent("COM-26-002", "Meera Deshmukh", "meera.deshmukh@ycasc.com", "Commerce Stream", comDeg, "Roll COM-002 • Finance Club Head", "9823222017", "28/01/2004", "TY B.Com (Banking & Finance)", "Financial Markets, Investment Analysis, Banking, Business Economics", 95.0));
+        list.add(createStudent("COM-26-003", "Rohan Kamat", "rohan.kamat@ycasc.com", "Commerce Stream", comDeg, "Roll COM-003 • Debate Society Secretary", "9823222018", "17/12/2005", "FY B.Com (Auditing)", "Cost Accounting, Auditing, Corporate Law, Business Economics", 63.5)); // Below 70%
+        list.add(createStudent("COM-26-004", "Tanvi Shenvi", "tanvi.shenvi@ycasc.com", "Commerce Stream", comDeg, "Roll COM-004 • Taxation Cell Head", "9823222019", "22/06/2004", "SY B.Com (Corporate Law)", "Corporate Law, Direct & Indirect Tax, Financial Accounting", 77.5));
+        list.add(createStudent("COM-26-005", "Gaurav Borkar", "gaurav.borkar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-005 • Commerce Forum Lead", "9823222020", "14/03/2005", "FY B.Com (Accountancy)", "Accountancy, Business Law, Economics, Environmental Commerce", 59.0)); // Below 70%
+        list.add(createStudent("COM-26-006", "Divya Velip", "divya.velip@ycasc.com", "Commerce Stream", comDeg, "Roll COM-006 • NSS Volunteer", "9823222021", "09/10/2004", "SY B.Com (Economics)", "Macroeconomics, Public Finance, Accountancy, Banking", 72.5)); // Borderline
+        list.add(createStudent("COM-26-007", "Sanket Prabhu", "sanket.prabhu@ycasc.com", "Commerce Stream", comDeg, "Roll COM-007 • Cricket Team Vice-Captain", "9823222022", "03/07/2005", "FY B.Com (Taxation)", "Income Tax, Auditing, Business Mathematics, Economics", 66.0)); // Below 70%
+        list.add(createStudent("COM-26-008", "Rhea Kakodkar", "rhea.kakodkar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-008 • Stock Trading Lead", "9823222023", "29/05/2004", "TY B.Com (Finance)", "Financial Management, International Banking, Cost Accounting", 84.0));
+        list.add(createStudent("COM-26-009", "Abhishek Gauns", "abhishek.gauns@ycasc.com", "Commerce Stream", comDeg, "Roll COM-009 • Entrepreneurship Cell", "9823222024", "21/11/2005", "FY B.Com (Business Law)", "Business Law, Accounting, Business Communication, Economics", 68.5)); // Below 70%
+        list.add(createStudent("COM-26-010", "Pooja Mandrekar", "pooja.mandrekar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-010 • Annual Fest Treasurer", "9823222025", "16/03/2004", "SY B.Com (Accountancy)", "Cost Accounting, Corporate Accounting, Business Law, Banking", 79.5));
+        list.add(createStudent("COM-26-011", "Ketan Salgaonkar", "ketan.salgaonkar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-011 • Table Tennis Lead", "9823222026", "07/08/2005", "FY B.Com (Auditing)", "Financial Accounting, Economics, Secretarial Practice, English", 62.0)); // Below 70%
+        list.add(createStudent("COM-26-012", "Snehal Tirodkar", "snehal.tirodkar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-012 • Gold Medalist Aspirant", "9823222027", "30/09/2004", "TY B.Com (Banking)", "Banking, Insurance, Auditing, Corporate Accounting", 92.5));
+        list.add(createStudent("COM-26-013", "Yash Dharwadkar", "yash.dharwadkar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-013 • E-Commerce Cell", "9823222028", "12/02/2005", "FY B.Com (Accountancy)", "Accounting, Digital Marketing, Business Economics, Math", 74.0)); // Borderline
+        list.add(createStudent("COM-26-014", "Simran Kadam", "simran.kadam@ycasc.com", "Commerce Stream", comDeg, "Roll COM-014 • Women Empowerment Cell", "9823222029", "27/07/2004", "SY B.Com (Economics)", "Business Economics, Financial Management, Direct Tax, Law", 81.0));
+        list.add(createStudent("COM-26-015", "Omkar Lotlikar", "omkar.lotlikar@ycasc.com", "Commerce Stream", comDeg, "Roll COM-015 • Youth Parliamentarian", "9823222030", "05/01/2005", "FY B.Com (Finance)", "Corporate Finance, Financial Accounting, Economics, Law", 87.5));
 
         // C. Arts Stream (15 Students: ART-26-001 to ART-26-015)
         String artDeg = "Bachelor of Arts (B.A.)";
-        list.add(createStudent("ART-26-001", "Kunal Shirodkar", "kunal.shirodkar@ycasc.com", "Arts Stream", artDeg, "Roll ART-001 • History Society Head", "+91 9823222031", "25/06/2005", "FY B.A. (History)", "History, Western Civilization, Political Science, English", 78.0));
-        list.add(createStudent("ART-26-002", "Ananya Naik", "ananya.naik@ycasc.com", "Arts Stream", artDeg, "Roll ART-002 • Annual Drama Director", "+91 9823222032", "11/06/2004", "TY B.A. (Psychology)", "Psychology, Cognitive Psychology, Social Psychology, Sociology", 89.0));
-        list.add(createStudent("ART-26-003", "Sanika Bandodkar", "sanika.bandodkar@ycasc.com", "Arts Stream", artDeg, "Roll ART-003 • Literary Magazine Editor", "+91 9823222033", "19/02/2005", "FY B.A. (English Lit)", "English Literature, Creative Writing, History, Sociology", 65.5)); // Below 70%
-        list.add(createStudent("ART-26-004", "Nilesh Sawant", "nilesh.sawant@ycasc.com", "Arts Stream", artDeg, "Roll ART-004 • Youth Leadership Cell", "+91 9823222034", "14/08/2004", "SY B.A. (Political Science)", "Political Science, Western Political Thought, History, English", 71.0)); // Borderline
-        list.add(createStudent("ART-26-005", "Rhea Tari", "rhea.tari@ycasc.com", "Arts Stream", artDeg, "Roll ART-005 • Campus Counselor Peer", "+91 9823222035", "03/04/2005", "FY B.A. (Psychology)", "Psychology, Child Development, English, History", 83.0));
-        list.add(createStudent("ART-26-006", "Gautam Vernekar", "gautam.vernekar@ycasc.com", "Arts Stream", artDeg, "Roll ART-006 • Archaeology Enthusiast", "+91 9823222036", "08/12/2004", "SY B.A. (History)", "History, World Civilization, Heritage Conservation, Sociology", 57.5)); // Below 70%
-        list.add(createStudent("ART-26-007", "Maitreyi Kulkarni", "maitreyi.kulkarni@ycasc.com", "Arts Stream", artDeg, "Roll ART-007 • Social Research Cell", "+91 9823222037", "21/07/2005", "FY B.A. (Sociology)", "Sociology, Indian Society, Political Science, English", 90.5));
-        list.add(createStudent("ART-26-008", "Sameer Khan", "sameer.khan@ycasc.com", "Arts Stream", artDeg, "Roll ART-008 • Poetry Club Head", "+91 9823222038", "17/05/2004", "TY B.A. (English Lit)", "Modern English Literature, Postcolonial Studies, Philosophy", 68.0)); // Below 70%
-        list.add(createStudent("ART-26-009", "Aparna Joshi", "aparna.joshi@ycasc.com", "Arts Stream", artDeg, "Roll ART-009 • Model UN Secretary", "+91 9823222039", "10/10/2005", "FY B.A. (Political Science)", "Political Science, International Relations, History, English", 76.5));
-        list.add(createStudent("ART-26-010", "Chinmay Nadkarni", "chinmay.nadkarni@ycasc.com", "Arts Stream", artDeg, "Roll ART-010 • Behavioral Science Lab", "+91 9823222040", "24/03/2004", "SY B.A. (Psychology)", "Psychology, Research Methodology, Statistics for Social Sci", 60.5)); // Below 70%
-        list.add(createStudent("ART-26-011", "Devika Shet", "devika.shet@ycasc.com", "Arts Stream", artDeg, "Roll ART-011 • Classical Literature Club", "+91 9823222041", "02/09/2005", "FY B.A. (English Lit)", "English Literature, Elizabethan Drama, Cultural Studies", 85.0));
-        list.add(createStudent("ART-26-012", "Akshay Redkar", "akshay.redkar@ycasc.com", "Arts Stream", artDeg, "Roll ART-012 • Museum Studies Intern", "+91 9823222042", "13/01/2004", "TY B.A. (History)", "Modern History, Indian Freedom Movement, Epigraphy", 73.5)); // Borderline
-        list.add(createStudent("ART-26-013", "Pallavi Chopdekar", "pallavi.chopdekar@ycasc.com", "Arts Stream", artDeg, "Roll ART-013 • Rural Development Cell", "+91 9823222043", "31/08/2005", "FY B.A. (Sociology)", "Sociology, Social Psychology, Human Geography, English", 93.0));
-        list.add(createStudent("ART-26-014", "Tejas Madkaikar", "tejas.madkaikar@ycasc.com", "Arts Stream", artDeg, "Roll ART-014 • Political Analysis Lead", "+91 9823222044", "26/11/2004", "SY B.A. (Political Science)", "Political Science, Public Administration, Constitutional Law", 67.0)); // Below 70%
-        list.add(createStudent("ART-26-015", "Kavya Sukhtankar", "kavya.sukhtankar@ycasc.com", "Arts Stream", artDeg, "Roll ART-015 • Fine Arts Coordinator", "+91 9823222045", "08/03/2005", "FY B.A. (Psychology)", "Psychology, English Literature, Sociology, Philosophy", 82.0));
+        list.add(createStudent("ART-26-001", "Kunal Shirodkar", "kunal.shirodkar@ycasc.com", "Arts Stream", artDeg, "Roll ART-001 • History Society Head", "9823222031", "25/06/2005", "FY B.A. (History)", "History, Western Civilization, Political Science, English", 78.0));
+        list.add(createStudent("ART-26-002", "Ananya Naik", "ananya.naik@ycasc.com", "Arts Stream", artDeg, "Roll ART-002 • Annual Drama Director", "9823222032", "11/06/2004", "TY B.A. (Psychology)", "Psychology, Cognitive Psychology, Social Psychology, Sociology", 89.0));
+        list.add(createStudent("ART-26-003", "Sanika Bandodkar", "sanika.bandodkar@ycasc.com", "Arts Stream", artDeg, "Roll ART-003 • Literary Magazine Editor", "9823222033", "19/02/2005", "FY B.A. (English Lit)", "English Literature, Creative Writing, History, Sociology", 65.5)); // Below 70%
+        list.add(createStudent("ART-26-004", "Nilesh Sawant", "nilesh.sawant@ycasc.com", "Arts Stream", artDeg, "Roll ART-004 • Youth Leadership Cell", "9823222034", "14/08/2004", "SY B.A. (Political Science)", "Political Science, Western Political Thought, History, English", 71.0)); // Borderline
+        list.add(createStudent("ART-26-005", "Rhea Tari", "rhea.tari@ycasc.com", "Arts Stream", artDeg, "Roll ART-005 • Campus Counselor Peer", "9823222035", "03/04/2005", "FY B.A. (Psychology)", "Psychology, Child Development, English, History", 83.0));
+        list.add(createStudent("ART-26-006", "Gautam Vernekar", "gautam.vernekar@ycasc.com", "Arts Stream", artDeg, "Roll ART-006 • Archaeology Enthusiast", "9823222036", "08/12/2004", "SY B.A. (History)", "History, World Civilization, Heritage Conservation, Sociology", 57.5)); // Below 70%
+        list.add(createStudent("ART-26-007", "Maitreyi Kulkarni", "maitreyi.kulkarni@ycasc.com", "Arts Stream", artDeg, "Roll ART-007 • Social Research Cell", "9823222037", "21/07/2005", "FY B.A. (Sociology)", "Sociology, Indian Society, Political Science, English", 90.5));
+        list.add(createStudent("ART-26-008", "Sameer Khan", "sameer.khan@ycasc.com", "Arts Stream", artDeg, "Roll ART-008 • Poetry Club Head", "9823222038", "17/05/2004", "TY B.A. (English Lit)", "Modern English Literature, Postcolonial Studies, Philosophy", 68.0)); // Below 70%
+        list.add(createStudent("ART-26-009", "Aparna Joshi", "aparna.joshi@ycasc.com", "Arts Stream", artDeg, "Roll ART-009 • Model UN Secretary", "9823222039", "10/10/2005", "FY B.A. (Political Science)", "Political Science, International Relations, History, English", 76.5));
+        list.add(createStudent("ART-26-010", "Chinmay Nadkarni", "chinmay.nadkarni@ycasc.com", "Arts Stream", artDeg, "Roll ART-010 • Behavioral Science Lab", "9823222040", "24/03/2004", "SY B.A. (Psychology)", "Psychology, Research Methodology, Statistics for Social Sci", 60.5)); // Below 70%
+        list.add(createStudent("ART-26-011", "Devika Shet", "devika.shet@ycasc.com", "Arts Stream", artDeg, "Roll ART-011 • Classical Literature Club", "9823222041", "02/09/2005", "FY B.A. (English Lit)", "English Literature, Elizabethan Drama, Cultural Studies", 85.0));
+        list.add(createStudent("ART-26-012", "Akshay Redkar", "akshay.redkar@ycasc.com", "Arts Stream", artDeg, "Roll ART-012 • Museum Studies Intern", "9823222042", "13/01/2004", "TY B.A. (History)", "Modern History, Indian Freedom Movement, Epigraphy", 73.5)); // Borderline
+        list.add(createStudent("ART-26-013", "Pallavi Chopdekar", "pallavi.chopdekar@ycasc.com", "Arts Stream", artDeg, "Roll ART-013 • Rural Development Cell", "9823222043", "31/08/2005", "FY B.A. (Sociology)", "Sociology, Social Psychology, Human Geography, English", 93.0));
+        list.add(createStudent("ART-26-014", "Tejas Madkaikar", "tejas.madkaikar@ycasc.com", "Arts Stream", artDeg, "Roll ART-014 • Political Analysis Lead", "9823222044", "26/11/2004", "SY B.A. (Political Science)", "Political Science, Public Administration, Constitutional Law", 67.0)); // Below 70%
+        list.add(createStudent("ART-26-015", "Kavya Sukhtankar", "kavya.sukhtankar@ycasc.com", "Arts Stream", artDeg, "Roll ART-015 • Fine Arts Coordinator", "9823222045", "08/03/2005", "FY B.A. (Psychology)", "Psychology, English Literature, Sociology, Philosophy", 82.0));
     }
 
     public synchronized List<User> getStudents() {
@@ -422,7 +453,7 @@ public class UserManager {
                 "YCASC_Principal",
                 "Dr. Shashikant V. Mayekar",
                 "principal@ycasc.com",
-                "123456789",
+                "9823000001",
                 User.ROLE_PROGRAMME_DIRECTOR,
                 "Executive Administration",
                 "Principal Office",
@@ -470,16 +501,21 @@ public class UserManager {
                         email = email.split("@")[0] + "@ycasc.com";
                     }
                 }
+                String phone = normalizePhone(obj.optString("phoneNumber"));
+                String pass = obj.optString("password");
+                if (pass.isEmpty() || pass.equals("123456789")) {
+                    pass = phone;
+                }
                 User u = new User(
                         obj.optString("id"),
                         obj.optString("fullName"),
                         email,
-                        obj.optString("password"),
+                        pass,
                         obj.optString("role"),
                         obj.optString("department"),
                         obj.optString("programme"),
                         obj.optString("additionalInfo"),
-                        obj.optString("phoneNumber"),
+                        phone,
                         obj.optString("institutionType", User.INSTITUTION_UNIVERSITY),
                         obj.optString("dob", ""),
                         obj.optString("yearOrClass", ""),
@@ -1089,7 +1125,8 @@ public class UserManager {
             cleanEmail = cleanEmail.split("@")[0] + "@ycasc.com";
         }
 
-        String cleanPass = password != null && !password.trim().isEmpty() ? password.trim() : "123456789";
+        String cleanPhone = normalizePhone(phone);
+        String cleanPass = password != null && !password.trim().isEmpty() && !password.equals("123456789") ? password.trim() : cleanPhone;
         String degree = cleanStream.contains("Science") ? "Bachelor of Science (B.Sc.)" :
                 (cleanStream.contains("Commerce") ? "Bachelor of Commerce (B.Com)" :
                 (cleanStream.contains("Arts") ? "Bachelor of Arts (B.A.)" : "Bachelor of Vocation (B.Voc)"));
@@ -1101,7 +1138,7 @@ public class UserManager {
                 cleanPass,
                 User.ROLE_STUDENT,
                 User.INSTITUTION_COLLEGE,
-                phone != null ? phone.trim() : "",
+                cleanPhone,
                 "",
                 cleanClass,
                 degree,
@@ -1129,7 +1166,8 @@ public class UserManager {
             cleanEmail = cleanEmail.split("@")[0] + "@ycasc.com";
         }
 
-        String cleanPass = password != null && !password.trim().isEmpty() ? password.trim() : "123456789";
+        String cleanPhone = normalizePhone(phone);
+        String cleanPass = password != null && !password.trim().isEmpty() && !password.equals("123456789") ? password.trim() : cleanPhone;
 
         return registerCleanUser(
                 cleanName,
@@ -1138,7 +1176,7 @@ public class UserManager {
                 cleanPass,
                 User.ROLE_TEACHER,
                 User.INSTITUTION_COLLEGE,
-                phone != null ? phone.trim() : "",
+                cleanPhone,
                 "",
                 cleanDesig,
                 "Faculty Degree",
