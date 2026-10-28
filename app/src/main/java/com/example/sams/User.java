@@ -27,6 +27,14 @@ public class User implements Serializable {
     private String yearOrClass; // e.g. "11th Standard", "2nd Year / Batch 2026"
     private String degree; // e.g. "MCA", "B.Tech", "Higher Secondary Certificate"
     private String subjects; // e.g. "Physics, Chemistry, Mathematics, English"
+    private String address = ""; // Residential Address
+    private boolean passwordChanged = false;
+
+    // Academic Attendance Tracking
+    private double attendancePercentage = 80.0;
+    private int totalClasses = 120;
+    private int attendedClasses = 96;
+    private int dutyLeaveApprovedCount = 2;
 
     public User() {
         this.institutionType = INSTITUTION_UNIVERSITY;
@@ -64,6 +72,8 @@ public class User implements Serializable {
         this.yearOrClass = yearOrClass != null ? yearOrClass : "";
         this.degree = degree != null ? degree : "";
         this.subjects = subjects != null ? subjects : "";
+        this.address = "";
+        this.passwordChanged = false;
     }
 
     public String getInstitutionType() {
@@ -157,18 +167,91 @@ public class User implements Serializable {
     }
 
     public boolean isTeacherOrDirector() {
-        return ROLE_TEACHER.equals(role) || ROLE_PROGRAMME_DIRECTOR.equals(role);
+        return ROLE_TEACHER.equals(role) || ROLE_PROGRAMME_DIRECTOR.equals(role) || isPrincipal();
+    }
+
+    public boolean isPrincipal() {
+        return "PRINCIPAL".equalsIgnoreCase(role) || ROLE_PROGRAMME_DIRECTOR.equalsIgnoreCase(role) ||
+               (email != null && (email.toLowerCase().startsWith("principal@") || email.toLowerCase().contains("shashikant.mayekar"))) ||
+               (additionalInfo != null && additionalInfo.toLowerCase().contains("principal")) ||
+               (programme != null && programme.toLowerCase().contains("principal"));
+    }
+
+    public String getAddress() { return address != null ? address : ""; }
+    public void setAddress(String address) { this.address = address; }
+
+    public boolean isPasswordChanged() { return passwordChanged; }
+    public void setPasswordChanged(boolean passwordChanged) { this.passwordChanged = passwordChanged; }
+
+    public boolean isProfileComplete() {
+        if (isPrincipal()) return true;
+        return address != null && !address.trim().isEmpty()
+                && phoneNumber != null && !phoneNumber.trim().isEmpty()
+                && dob != null && !dob.trim().isEmpty();
     }
 
     public String getRoleDisplayName() {
-        if (ROLE_STUDENT.equals(role)) {
+        if (isPrincipal()) {
+            return "Principal / Admin";
+        } else if (ROLE_STUDENT.equals(role)) {
             return "Student";
         } else if (ROLE_ORGANIZER.equals(role)) {
             return "Organizer";
-        } else if (ROLE_PROGRAMME_DIRECTOR.equals(role)) {
-            return "Programme Director";
         } else {
             return "Faculty";
+        }
+    }
+
+    public double getAttendancePercentage() { 
+        return attendancePercentage; 
+    }
+
+    public void setAttendancePercentage(double attendancePercentage) { 
+        this.attendancePercentage = attendancePercentage; 
+        if (totalClasses > 0) {
+            this.attendedClasses = (int) Math.round(totalClasses * (attendancePercentage / 100.0));
+        }
+    }
+
+    public int getTotalClasses() { 
+        return totalClasses; 
+    }
+
+    public void setTotalClasses(int totalClasses) { 
+        this.totalClasses = totalClasses; 
+    }
+
+    public int getAttendedClasses() { 
+        return attendedClasses; 
+    }
+
+    public void setAttendedClasses(int attendedClasses) { 
+        this.attendedClasses = attendedClasses; 
+    }
+
+    public int getDutyLeaveApprovedCount() { 
+        return dutyLeaveApprovedCount; 
+    }
+
+    public void setDutyLeaveApprovedCount(int dutyLeaveApprovedCount) { 
+        this.dutyLeaveApprovedCount = dutyLeaveApprovedCount; 
+    }
+
+    public boolean isAttendanceBelow70() {
+        return attendancePercentage < 70.0;
+    }
+
+    public boolean isAttendanceSafe() {
+        return attendancePercentage >= 75.0;
+    }
+
+    public String getAttendanceStatusBadgeText() {
+        if (attendancePercentage < 70.0) {
+            return "⚠️ " + String.format(java.util.Locale.US, "%.1f%% (Low Attendance)", attendancePercentage);
+        } else if (attendancePercentage < 75.0) {
+            return "⚡ " + String.format(java.util.Locale.US, "%.1f%% (Borderline)", attendancePercentage);
+        } else {
+            return "✅ " + String.format(java.util.Locale.US, "%.1f%% (Safe)", attendancePercentage);
         }
     }
 }

@@ -17,13 +17,13 @@
   --pastel-lavender-text: #482E92;
   --pastel-lavender-chip: #E4DBF8;
 
-  /* Pastel Mint */
-  --pastel-mint-bg: #D9F3EC;
-  --pastel-mint-surface: #EAF8F4;
-  --pastel-mint-border: #C4ECE0;
-  --pastel-mint-primary: #1F8E73;
-  --pastel-mint-text: #105847;
-  --pastel-mint-chip: #CEEFE5;
+  /* Dark Blue / Indigo (Replaced Pastel Mint/Green) */
+  --pastel-mint-bg: #E0E7FF;
+  --pastel-mint-surface: #EEF2FF;
+  --pastel-mint-border: #C7D2FE;
+  --pastel-mint-primary: #1D4ED8;
+  --pastel-mint-text: #1E3A8A;
+  --pastel-mint-chip: #E0E7FF;
 
   /* Pastel Butter Yellow */
   --pastel-butter-bg: #FFF2CE;
@@ -1399,7 +1399,7 @@ body {
 }
 
 .smart-cred-card.lavender::before { background: #7B52DE; }
-.smart-cred-card.mint::before { background: #1F8E73; }
+.smart-cred-card.mint::before { background: #1D4ED8; }
 .smart-cred-card.butter::before { background: #D97706; }
 
 .smart-cred-card:hover {
@@ -1421,7 +1421,7 @@ body {
 }
 
 .cred-avatar.lavender { background: #EAE3FC; color: #482E92; }
-.cred-avatar.mint { background: #D9F3EC; color: #105847; }
+.cred-avatar.mint { background: #E0E7FF; color: #1E3A8A; }
 .cred-avatar.butter { background: #FFF2CE; color: #8C4B06; }
 
 .cred-details {
@@ -1590,7 +1590,7 @@ body {
   flex-shrink: 0;
 }
 .wb-user-avatar.butter { background: #FFF2CE; }
-.wb-user-avatar.mint { background: #D9F3EC; }
+.wb-user-avatar.mint { background: #E0E7FF; color: #1E3A8A; }
 .wb-user-avatar.lavender { background: #EAE3FC; }
 
 .wb-user-info {
@@ -1812,7 +1812,7 @@ body {
 }
 
 /* ========================================================================== */
-/* TEACHER USER INTERFACE (WAKANDA HSS DESKTOP PORTAL)                        */
+/* TEACHER USER INTERFACE (YASHODA COLLEGE DEGREE PORTAL)                     */
 /* Structural design from screenshots + signature pastel color palette        */
 /* ========================================================================== */
 
@@ -2260,10 +2260,10 @@ body {
   box-shadow: 0 4px 12px rgba(123, 82, 222, 0.25);
 }
 
-/* 2x2 Grid of Stream Cards */
+/* 3-Column Grid of Stream Cards */
 .t-stream-cards-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
@@ -2828,6 +2828,140 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ========================================================================== */
+/* SPLASH SCREEN OVERLAY (SYNCED WITH ANDROID SPLASHACTIVITY)                 */
+/* ========================================================================== */
+.app-splash-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: radial-gradient(circle at 50% 38%, #0F172A 0%, #090D16 65%, #05070B 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+.app-splash-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.splash-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 24px;
+  max-width: 420px;
+  animation: splashZoomIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes splashZoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.splash-logo-wrap {
+  width: 140px;
+  height: 140px;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(123, 82, 222, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 24px;
+}
+
+.splash-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.splash-title {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
+  margin: 0 0 6px 0;
+}
+
+.splash-college {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #CBD5E1;
+  letter-spacing: 0.02em;
+  margin: 0 0 14px 0;
+  max-width: 320px;
+  line-height: 1.4;
+}
+
+.splash-degree-pill {
+  display: inline-block;
+  background: #1E293B;
+  color: #F59E0B;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  margin-bottom: 36px;
+}
+
+.splash-progress-track {
+  width: 140px;
+  height: 4px;
+  background: #1E293B;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.splash-progress-bar {
+  width: 45%;
+  height: 100%;
+  background: #7B52DE;
+  border-radius: 4px;
+  position: absolute;
+  animation: splashIndeterminate 1.4s infinite ease-in-out;
+}
+
+@keyframes splashIndeterminate {
+  0% {
+    left: -40%;
+    width: 35%;
+  }
+  50% {
+    left: 30%;
+    width: 55%;
+  }
+  100% {
+    left: 105%;
+    width: 35%;
+  }
+}
+
+.splash-status {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: #64748B;
+  margin: 0;
+}
+
 
 
 

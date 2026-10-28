@@ -11,14 +11,27 @@
 </head>
 <body>
 
+  <!-- App Splash Screen Overlay (2.4s brand delay, synced with Android SplashActivity) -->
+  <div id="appSplashScreen" class="app-splash-overlay" onclick="dismissSplash()">
+    <div class="splash-card">
+      <div class="splash-logo-wrap">
+        <img src="app_logo.jpg" alt="Eventra Logo" class="splash-logo-img">
+      </div>
+      <h1 class="splash-title">Eventra</h1>
+      <p class="splash-college">Yashoda College of Arts, Science and Commerce</p>
+      <div class="splash-degree-pill">✨ B.Sc. • B.Com • B.A. Degree Portal</div>
+      <div class="splash-progress-track">
+        <div class="splash-progress-bar"></div>
+      </div>
+      <p class="splash-status">AUTHENTICATING CAMPUS PORTAL...</p>
+    </div>
+  </div>
+
   <!-- Top Global Navigation -->
   <header class="top-nav">
     <div class="brand">
-      <div class="brand-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-          <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-        </svg>
+      <div class="brand-icon" style="overflow:hidden; padding:0; background:none;">
+        <img src="app_logo.jpg" alt="Eventra Logo" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">
       </div>
       <div>
         <h1>Eventra</h1>
@@ -33,8 +46,7 @@
         <button id="btnRoleTeacher" class="pill-btn" onclick="switchRole('TEACHER')">👨‍🏫 Teacher / Director</button>
       </div>
       <div class="control-pill-group secondary">
-        <button id="btnModeRegister" class="pill-btn active" onclick="switchMode('REGISTER')">✨ Register (Get ID)</button>
-        <button id="btnModeLogIn" class="pill-btn" onclick="switchMode('LOGIN')">🔑 Log in</button>
+        <button id="btnModeLogIn" class="pill-btn active" onclick="switchMode('LOGIN')">🔑 Enrolled Log In</button>
       </div>
     </div>
   </header>
@@ -43,15 +55,15 @@
   <div class="buyer-selector-bar">
     <div class="buyer-pill-group">
       <span class="buyer-label">Institutional System:</span>
-      <button type="button" class="buyer-pill active" onclick="selectBuyerPersona('HIGHER_SEC')">
-        🔬 Wakanda Higher Secondary School (Wakanda HSS)
+      <button type="button" class="buyer-pill active" onclick="selectBuyerPersona('COLLEGE')">
+        🏛️ Yashoda College of Arts, Science and Commerce (YCASC)
       </button>
       <button type="button" class="buyer-pill" onclick="selectBuyerPersona('UNIVERSITY')">
-        🏛️ University / Higher Ed
+        🎓 University / Higher Ed
       </button>
     </div>
     <div id="backendStatusBadge" class="backend-badge online">
-      ⚡ <strong>API Endpoint:</strong> http://localhost:3000 (higher_secondary_db)
+      ⚡ <strong>API Endpoint:</strong> http://localhost:3000 (yashoda_college_db)
     </div>
   </div>
 
@@ -60,7 +72,7 @@
     <div class="view-switch-pill-group">
       <button id="btnSwitchTeacherPortal" class="view-switch-pill active" onclick="switchMainPortalView('TEACHER_PORTAL')">
         <span>👨‍🏫</span>
-        <span><strong>Teacher Interface</strong> (Wakanda HSS Desktop)</span>
+        <span><strong>Teacher Interface</strong> (YCASC Desktop)</span>
         <span class="view-pill-badge">Image Structure</span>
       </button>
       <button id="btnSwitchMobileApp" class="view-switch-pill" onclick="switchMainPortalView('MOBILE_APP')">
@@ -70,7 +82,7 @@
     </div>
     <div class="portal-quick-info">
       <span class="pulse-indicator"></span>
-      <span>Active Database: <strong>Wakanda Higher Secondary School</strong> • 4 Academic Streams</span>
+      <span>Active Database: <strong>Yashoda College of Arts, Science and Commerce</strong> • 3 Degree Streams (B.Sc., B.Com, B.A.)</span>
     </div>
   </div>
 
@@ -90,7 +102,7 @@
           </svg>
         </div>
         <div class="teacher-school-names">
-          <h3>Wakanda Higher Secondary School</h3>
+          <h3>Yashoda College of Arts, Science and Commerce</h3>
           <p>Academic &amp; Faculty Management</p>
         </div>
       </div>
@@ -146,7 +158,7 @@
             ☰
           </button>
           <div style="font-size:13px; color:#64748B; font-weight:600;">
-            <span class="badge lavender-dark" style="font-size:10px; padding:2px 7px;">Wakanda HSS</span>
+            <span class="badge lavender-dark" style="font-size:10px; padding:2px 7px;">YCASC Degree</span>
             <span style="margin: 0 6px; color:#CBD5E1;">/</span>
             <strong id="tBreadcrumbTitle" style="color:#18191E;">Departments</strong>
           </div>
@@ -166,7 +178,7 @@
             <div class="t-avatar-circle" id="tTopAvatar">PN</div>
             <div class="t-user-meta">
               <span class="t-user-name" id="tTopName">Pramod Naik</span>
-              <span class="t-user-role" id="tTopRole">HOD Science Stream • @eventra.ac.in</span>
+              <span class="t-user-role" id="tTopRole">HOD Science Stream • @ycasc.com</span>
             </div>
             <span style="font-size:10px; color:#94A3B8; margin-left:4px;">▼</span>
           </div>
@@ -193,53 +205,43 @@
             <div class="t-courses-divider"></div>
           </div>
 
-          <!-- Standard Toggle Selector (11th vs 12th) -->
+          <!-- Collegiate Year Toggle Selector (FY vs SY) -->
           <div class="t-standard-selector">
-            <button class="t-std-btn active" id="btnTStd11" onclick="setTeacherStandard('11th')">11th Standard</button>
-            <button class="t-std-btn" id="btnTStd12" onclick="setTeacherStandard('12th')">12th Standard</button>
+            <button class="t-std-btn active" id="btnTStd11" onclick="setTeacherStandard('FY')">First Year (FY)</button>
+            <button class="t-std-btn" id="btnTStd12" onclick="setTeacherStandard('SY')">Second Year (SY)</button>
           </div>
 
-          <!-- 2x2 Grid of Stream Cards -->
+          <!-- 3-Column Grid of General Degree Stream Cards -->
           <div class="t-stream-cards-grid">
 
-            <!-- Card 1: Arts -->
+            <!-- Card 1: Arts (B.A.) -->
             <div class="t-stream-card">
               <div class="t-stream-badge-circle arts">
                 <span>📖</span>
               </div>
-              <h3>Arts</h3>
-              <p class="t-std-sub stream-std-text" id="labelStdArts">11th Standard</p>
+              <h3>Arts (B.A.)</h3>
+              <p class="t-std-sub stream-std-text" id="labelStdArts">First Year (FY)</p>
               <button class="t-btn-view-details" onclick="openFacultyDrilldown('Arts')">View Details</button>
             </div>
 
-            <!-- Card 2: Commerce -->
+            <!-- Card 2: Commerce (B.Com) -->
             <div class="t-stream-card">
               <div class="t-stream-badge-circle commerce">
                 <span>📈</span>
               </div>
-              <h3>Commerce</h3>
-              <p class="t-std-sub stream-std-text" id="labelStdCommerce">11th Standard</p>
+              <h3>Commerce (B.Com)</h3>
+              <p class="t-std-sub stream-std-text" id="labelStdCommerce">First Year (FY)</p>
               <button class="t-btn-view-details" onclick="openFacultyDrilldown('Commerce')">View Details</button>
             </div>
 
-            <!-- Card 3: Science -->
+            <!-- Card 3: Science (B.Sc.) -->
             <div class="t-stream-card">
               <div class="t-stream-badge-circle science">
                 <span>🧪</span>
               </div>
-              <h3>Science</h3>
-              <p class="t-std-sub stream-std-text" id="labelStdScience">11th Standard</p>
+              <h3>Science (B.Sc.)</h3>
+              <p class="t-std-sub stream-std-text" id="labelStdScience">First Year (FY)</p>
               <button class="t-btn-view-details" onclick="openFacultyDrilldown('Science')">View Details</button>
-            </div>
-
-            <!-- Card 4: Vocational -->
-            <div class="t-stream-card">
-              <div class="t-stream-badge-circle vocational">
-                <span>🛠️</span>
-              </div>
-              <h3>Vocational</h3>
-              <p class="t-std-sub stream-std-text" id="labelStdVocational">11th Standard</p>
-              <button class="t-btn-view-details" onclick="openFacultyDrilldown('Vocational')">View Details</button>
             </div>
 
           </div>
@@ -298,8 +300,8 @@
             <div class="t-sp-school-title">
               <span class="sp-icon">🏛️</span>
               <div>
-                <strong>Wakanda Higher Secondary School</strong>
-                <span>Student Directory &amp; Moodle Access Portal</span>
+                <strong>Yashoda College of Arts, Science and Commerce</strong>
+                <span>Student Directory &amp; Academic Access Portal</span>
               </div>
             </div>
             <div class="t-sp-brand-info">
@@ -310,19 +312,16 @@
 
           <h2 class="t-sp-section-heading">College Departments</h2>
 
-          <!-- 4 Stream Filter Tabs -->
+          <!-- 3 Degree Stream Filter Tabs -->
           <div class="t-stream-tab-bar">
             <button class="t-stream-tab-btn arts active" id="sTabArts" onclick="setStudentStreamTab('Arts')">
-              <span>🎨</span> <span>Arts</span>
+              <span>🎨</span> <span>Arts (B.A.)</span>
             </button>
             <button class="t-stream-tab-btn commerce" id="sTabCommerce" onclick="setStudentStreamTab('Commerce')">
-              <span>📈</span> <span>Commerce</span>
+              <span>📈</span> <span>Commerce (B.Com)</span>
             </button>
             <button class="t-stream-tab-btn science" id="sTabScience" onclick="setStudentStreamTab('Science')">
-              <span>🔬</span> <span>Science</span>
-            </button>
-            <button class="t-stream-tab-btn vocational" id="sTabVocational" onclick="setStudentStreamTab('Vocational')">
-              <span>⚙️</span> <span>Vocational</span>
+              <span>🔬</span> <span>Science (B.Sc.)</span>
             </button>
           </div>
 
@@ -362,7 +361,7 @@
         <section id="tView_faculty" class="t-view-section">
           <div class="t-header-block">
             <h1>Academic Faculty Directory</h1>
-            <p>Faculty hierarchy &amp; department heads of Wakanda Higher Secondary School</p>
+            <p>Faculty hierarchy &amp; department heads of Yashoda College of Arts, Science and Commerce</p>
           </div>
 
           <div class="t-table-card">
@@ -390,29 +389,29 @@
         <section id="tView_dashboard" class="t-view-section">
           <div class="t-header-block">
             <h1>Academic Operations Dashboard</h1>
-            <p>Institutional metrics and schedule overview for Wakanda Higher Secondary School</p>
+            <p>Institutional metrics and schedule overview for Yashoda College of Arts, Science and Commerce</p>
           </div>
 
           <div class="t-kpi-grid">
             <div class="t-kpi-card lavender">
               <span class="badge lavender-dark" style="align-self:flex-start;">Students Enrolled</span>
               <div class="t-kpi-val">170</div>
-              <span class="t-kpi-title">Across 4 Academic Streams</span>
+              <span class="t-kpi-title">Across 3 Degree Streams</span>
             </div>
             <div class="t-kpi-card mint">
               <span class="badge mint-dark" style="align-self:flex-start;">Teaching Faculty</span>
               <div class="t-kpi-val">14</div>
-              <span class="t-kpi-title">Principal, VP, 4 HODs &amp; Lecturers</span>
+              <span class="t-kpi-title">Principal, VP, HODs &amp; Lecturers</span>
             </div>
             <div class="t-kpi-card butter">
               <span class="badge butter-dark" style="align-self:flex-start;">Academic Units</span>
-              <div class="t-kpi-val">4</div>
-              <span class="t-kpi-title">NSS, NCC, Cultural &amp; Sports</span>
+              <div class="t-kpi-val">3</div>
+              <span class="t-kpi-title">NSS, Cultural &amp; Sports</span>
             </div>
             <div class="t-kpi-card coral">
-              <span class="badge coral-dark" style="align-self:flex-start;">Academic Standards</span>
-              <div class="t-kpi-val">11 &amp; 12</div>
-              <span class="t-kpi-title">Higher Secondary Cohorts</span>
+              <span class="badge coral-dark" style="align-self:flex-start;">Degree Streams</span>
+              <div class="t-kpi-val">B.Sc, B.Com, B.A</div>
+              <span class="t-kpi-title">Degree Cohorts (FY, SY, TY)</span>
             </div>
           </div>
 
@@ -448,52 +447,39 @@
         <!-- VIEW 6: TIMETABLE                                                   -->
         <!-- =================================================================== -->
         <section id="tView_timetable" class="t-view-section">
-          <div class="t-header-block">
-            <h1>Weekly Master Timetable</h1>
-            <p>Schedule distribution across 11th and 12th standards</p>
+          <div class="t-header-block" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+            <div>
+              <h1>Weekly Master Timetable</h1>
+              <p>Lecture Routine: 8:00–9:00, 9:00–10:00, 10:00–11:00, 11:00–11:30 (Recess), 11:30–12:30, 12:30–1:30</p>
+            </div>
+            <button class="t-btn-primary" onclick="openWebInterchangeModal()" style="font-size:13px; padding:9px 18px; background:#7B52DE; color:#fff; border-radius:10px; border:none; cursor:pointer; font-weight:700;">
+              🔄 Interchange Lectures
+            </button>
           </div>
-          <div class="t-table-card">
-            <table class="t-data-table science">
-              <thead>
-                <tr>
-                  <th>Period / Time</th>
-                  <th>Science (12th)</th>
-                  <th>Commerce (12th)</th>
-                  <th>Arts (12th)</th>
-                  <th>Vocational (12th)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>08:30 - 09:30</strong></td>
-                  <td>Physics (Pramod Naik)</td>
-                  <td>Accountancy (Sujata Kamat)</td>
-                  <td>History (Sanjay Bandodkar)</td>
-                  <td>Office Mgmt (Francis D'Costa)</td>
-                </tr>
-                <tr>
-                  <td><strong>09:30 - 10:30</strong></td>
-                  <td>Chemistry (Sneha Gaonkar)</td>
-                  <td>Business Studies (Aarti Faldesai)</td>
-                  <td>Political Sci (Pradnya Sawant)</td>
-                  <td>Electronic Tech (Clifford Fernandes)</td>
-                </tr>
-                <tr>
-                  <td><strong>10:45 - 11:45</strong></td>
-                  <td>Mathematics (Dr. Shashikant)</td>
-                  <td>Economics (Nitin Shenvi)</td>
-                  <td>Economics (Shruti Kamat)</td>
-                  <td>DTP Applications (Amit Gaonkar)</td>
-                </tr>
-                <tr>
-                  <td><strong>12:00 - 01:00</strong></td>
-                  <td>Biology / CS (Vikram Dessai)</td>
-                  <td>Commercial Maths (Dr. Shashikant)</td>
-                  <td>Languages (Marathi/Konkani)</td>
-                  <td>Auditing (Nitin Shenvi)</td>
-                </tr>
-              </tbody>
-            </table>
+
+          <!-- Controls: Stream Tabs & Day Selector -->
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px;">
+            <!-- Stream Switcher -->
+            <div style="display:flex; gap:8px; background:#F1EEFD; padding:4px; border-radius:10px;">
+              <button id="ttStream_SCIENCE" class="t-tt-stream-btn active" onclick="switchWebTimetableStream('SCIENCE')" style="padding:6px 14px; border:none; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer; background:#7B52DE; color:#fff;">🧪 Science (B.Sc.)</button>
+              <button id="ttStream_COMMERCE" class="t-tt-stream-btn" onclick="switchWebTimetableStream('COMMERCE')" style="padding:6px 14px; border:none; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer; background:transparent; color:#555;">📊 Commerce (B.Com)</button>
+              <button id="ttStream_ARTS" class="t-tt-stream-btn" onclick="switchWebTimetableStream('ARTS')" style="padding:6px 14px; border:none; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer; background:transparent; color:#555;">🎨 Arts (B.A.)</button>
+            </div>
+
+            <!-- Day Switcher -->
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="t-tt-day-btn active" onclick="switchWebTimetableDay('Monday', this)" style="padding:6px 12px; border:1px solid #7B52DE; border-radius:8px; font-weight:700; font-size:11.5px; cursor:pointer; background:#7B52DE; color:#fff;">Mon</button>
+              <button class="t-tt-day-btn" onclick="switchWebTimetableDay('Tuesday', this)" style="padding:6px 12px; border:1px solid #DDD; border-radius:8px; font-weight:700; font-size:11.5px; cursor:pointer; background:#FFF; color:#555;">Tue</button>
+              <button class="t-tt-day-btn" onclick="switchWebTimetableDay('Wednesday', this)" style="padding:6px 12px; border:1px solid #DDD; border-radius:8px; font-weight:700; font-size:11.5px; cursor:pointer; background:#FFF; color:#555;">Wed</button>
+              <button class="t-tt-day-btn" onclick="switchWebTimetableDay('Thursday', this)" style="padding:6px 12px; border:1px solid #DDD; border-radius:8px; font-weight:700; font-size:11.5px; cursor:pointer; background:#FFF; color:#555;">Thu</button>
+              <button class="t-tt-day-btn" onclick="switchWebTimetableDay('Friday', this)" style="padding:6px 12px; border:1px solid #DDD; border-radius:8px; font-weight:700; font-size:11.5px; cursor:pointer; background:#FFF; color:#555;">Fri</button>
+              <button class="t-tt-day-btn" onclick="switchWebTimetableDay('Saturday', this)" style="padding:6px 12px; border:1px solid #DDD; border-radius:8px; font-weight:700; font-size:11.5px; cursor:pointer; background:#FFF; color:#555;">Sat</button>
+            </div>
+          </div>
+
+          <!-- Master Timetable Container -->
+          <div id="teacherTimetableCardContainer" class="t-table-card">
+            <!-- Dynamically populated via JS -->
           </div>
         </section>
 
@@ -501,29 +487,63 @@
         <!-- VIEW 7: ANNOUNCEMENTS                                               -->
         <!-- =================================================================== -->
         <section id="tView_announcements" class="t-view-section">
-          <div class="t-header-block">
-            <h1>Official Announcements &amp; Circulars</h1>
-            <p>Issued by Executive Administration • Wakanda Higher Secondary School</p>
+          <div class="t-header-block" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+            <div>
+              <h1>Official Announcements &amp; Circulars</h1>
+              <p>Yashoda College of Arts, Science and Commerce • Notices added by Teachers &amp; Administration</p>
+            </div>
+            <button class="t-btn-primary" onclick="toggleNoticePublisher()" style="font-size:13px; padding:8px 16px;">
+              📢 Publish New Notice
+            </button>
           </div>
-          <div style="display:flex; flex-direction:column; gap:14px;">
-            <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:14px; padding:18px 22px; box-shadow:0 2px 10px rgba(0,0,0,0.03);">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span class="badge lavender-dark">Notice Ref: WAK-2026-042</span>
-                <span style="font-size:11px; color:#94A3B8;">Today, 09:30 AM</span>
-              </div>
-              <h3 style="font-size:16px; font-weight:800; color:#18191E; margin-bottom:6px;">Term Assessment Schedule &amp; Lab Submissions</h3>
-              <p style="font-size:13px; color:#475569; line-height:1.5;">All Subject Teachers are requested to upload continuous internal evaluation marks before Friday. Science practical journals for Physics and Chemistry must be verified by HOD Pramod Naik.</p>
-              <div style="margin-top:10px; font-size:11.5px; color:#7B52DE; font-weight:700;">By: Dr. Shashikant V. Mayekar (Principal)</div>
+
+          <!-- Teacher Notice Publisher Form (Collapsible) -->
+          <div id="noticePublisherCard" style="display:none; background:#FFFFFF; border:1px solid #7B52DE; border-radius:14px; padding:20px; margin-bottom:20px; box-shadow:0 4px 14px rgba(123,82,222,0.08);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+              <h3 style="font-size:15px; font-weight:800; color:#18191E; display:flex; align-items:center; gap:8px;">
+                <span>📢</span> Publish Official Notice
+              </h3>
+              <button onclick="toggleNoticePublisher()" style="background:none; border:none; font-size:18px; cursor:pointer; color:#94A3B8;">&times;</button>
             </div>
-            <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:14px; padding:18px 22px; box-shadow:0 2px 10px rgba(0,0,0,0.03);">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span class="badge mint-dark">Notice Ref: WAK-2026-041</span>
-                <span style="font-size:11px; color:#94A3B8;">Yesterday</span>
+            <form onsubmit="handlePublishNotice(event)" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:14px;">
+              <div style="grid-column:span 2;">
+                <label style="font-size:12px; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Notice Title *</label>
+                <input type="text" id="noticeInputTitle" placeholder="e.g. Schedule for Semester Practical Assessments" required style="width:100%; padding:10px 14px; border:1px solid #CBD5E1; border-radius:8px; font-size:13px;">
               </div>
-              <h3 style="font-size:16px; font-weight:800; color:#18191E; margin-bottom:6px;">Annual NSS Blood Donation &amp; Health Camp</h3>
-              <p style="font-size:13px; color:#475569; line-height:1.5;">NSS Unit coordinator Vinayak Borkar will organize registration for 11th and 12th standard volunteers in the main auditorium.</p>
-              <div style="margin-top:10px; font-size:11.5px; color:#1F8E73; font-weight:700;">By: Maria Rodrigues (Vice Principal)</div>
-            </div>
+              <div>
+                <label style="font-size:12px; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Category</label>
+                <select id="noticeInputCategory" style="width:100%; padding:10px 14px; border:1px solid #CBD5E1; border-radius:8px; font-size:13px;">
+                  <option value="Academic Council">Academic Council</option>
+                  <option value="Examination Notice">Examination Notice</option>
+                  <option value="Sports &amp; Athletics">Sports &amp; Athletics</option>
+                  <option value="Duty Leave &amp; Passes">Duty Leave &amp; Passes</option>
+                  <option value="Cultural &amp; Youth Fest">Cultural &amp; Youth Fest</option>
+                  <option value="General Administration" selected>General Administration</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:12px; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Target Audience</label>
+                <select id="noticeInputAudience" style="width:100%; padding:10px 14px; border:1px solid #CBD5E1; border-radius:8px; font-size:13px;">
+                  <option value="All Undergraduate Students &amp; Faculty" selected>All Undergraduate Students &amp; Faculty</option>
+                  <option value="B.Sc. (Science) Stream">B.Sc. (Science) Stream</option>
+                  <option value="B.Com (Commerce) Stream">B.Com (Commerce) Stream</option>
+                  <option value="B.A. (Arts) Stream">B.A. (Arts) Stream</option>
+                </select>
+              </div>
+              <div style="grid-column:span 2;">
+                <label style="font-size:12px; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Notice Content *</label>
+                <textarea id="noticeInputContent" rows="3" placeholder="Enter circular details, instructions, or duty leave provisions..." required style="width:100%; padding:10px 14px; border:1px solid #CBD5E1; border-radius:8px; font-size:13px; font-family:inherit;"></textarea>
+              </div>
+              <div style="grid-column:span 2; display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" onclick="toggleNoticePublisher()" style="padding:8px 16px; border:1px solid #CBD5E1; background:#F8FAFC; border-radius:8px; font-size:13px; cursor:pointer;">Cancel</button>
+                <button type="submit" class="t-btn-primary" style="font-size:13px; padding:8px 18px;">Publish to Notice Board</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Notice Board Stream (Kept Empty initially) -->
+          <div id="announcementsListContainer" style="display:flex; flex-direction:column; gap:14px;">
+            <!-- Populated dynamically via renderAnnouncements() -->
           </div>
         </section>
 
@@ -532,18 +552,18 @@
         <!-- =================================================================== -->
         <section id="tView_contact" class="t-view-section">
           <div class="t-header-block">
-            <h1>Contact Wakanda Higher Secondary School</h1>
+            <h1>Contact Yashoda College of Arts, Science and Commerce</h1>
             <p>Administrative offices, department extensions, and IT helpdesk</p>
           </div>
           <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:18px;">
             <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:14px; padding:22px;">
               <h3 style="font-size:16px; font-weight:800; color:#18191E; margin-bottom:12px;">🏫 Campus Location</h3>
               <p style="font-size:13px; color:#475569; line-height:1.6;">
-                Wakanda Higher Secondary School &amp; Junior College<br>
-                Educational Complex, Wakanda Campus<br>
+                Yashoda College of Arts, Science and Commerce<br>
+                Educational Complex, Yashoda Campus<br>
                 PIN: 403 001<br>
-                Official Domain: <strong>wakandahss.edu.in</strong><br>
-                Eventra SSO Ext: <strong>@eventra.ac.in</strong>
+                Official Domain: <strong>ycasc.ac.in</strong><br>
+                Eventra SSO Ext: <strong>@ycasc.com</strong>
               </p>
             </div>
             <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:14px; padding:22px;">
@@ -551,11 +571,10 @@
               <p style="font-size:13px; color:#475569; line-height:1.6;">
                 Principal Office: +91 9823000001 (Dr. Shashikant V. Mayekar)<br>
                 Vice Principal: +91 9823000002 (Maria Rodrigues)<br>
-                Science Dept HOD: +91 9823000003 (Pramod Naik)<br>
-                Commerce Dept HOD: +91 9823000004 (Sujata Kamat)<br>
-                Arts Dept HOD: +91 9823000005 (Sanjay Bandodkar)<br>
-                Vocational HOD: +91 9823000006 (Francis D'Costa)<br>
-                Eventra IT Desk: it.helpdesk@eventra.ac.in
+                Science Dept HOD: +91 9823000003 (Dr. Pramod Naik)<br>
+                Commerce Dept HOD: +91 9823000004 (Dr. Anand Vernekar)<br>
+                Arts Dept HOD: +91 9823000005 (Dr. Meenakshi Sundaram)<br>
+                Eventra IT Desk: it.helpdesk@ycasc.com
               </p>
             </div>
           </div>
@@ -588,15 +607,12 @@
 
           <!-- Brand Header inside Phone -->
           <div class="screen-brand-header">
-            <div class="screen-brand-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-              </svg>
+            <div class="screen-brand-icon" style="overflow:hidden; padding:0; background:none;">
+              <img src="app_logo.jpg" alt="Eventra Logo" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">
             </div>
             <div>
               <h2>Eventra</h2>
-              <p class="screen-brand-sub">Wakanda HSS Academic Portal</p>
+              <p class="screen-brand-sub">Yashoda College of Arts, Science and Commerce</p>
             </div>
           </div>
 
@@ -604,9 +620,9 @@
           <div class="institutional-status-strip" id="phoneInstStrip">
             <div style="display:flex; align-items:center; gap:6px;">
               <span class="live-dot pulse"></span>
-              <span id="phoneInstLabel">🔬 <strong>Wakanda Higher Secondary</strong></span>
+              <span id="phoneInstLabel">🏛️ <strong>Yashoda College (YCASC)</strong></span>
             </div>
-            <span class="cert-role-chip" style="font-size:9.5px; padding:1px 7px;">@eventra.ac.in</span>
+            <span class="cert-role-chip" style="font-size:9.5px; padding:1px 7px;">@ycasc.com</span>
           </div>
 
           <!-- Segmented Role Switcher: Student vs Teacher/Director -->
@@ -615,16 +631,20 @@
             <button id="appTabTeacher" class="app-tab" onclick="switchRole('TEACHER')">👨‍🏫 Teacher / Director</button>
           </div>
 
-          <!-- Segmented Mode Switcher: Register vs Log in -->
-          <div class="app-segmented-subtabs">
-            <button id="appTabRegister" class="app-subtab active" onclick="switchMode('REGISTER')">✨ Register (Get ID)</button>
-            <button id="appTabLogIn" class="app-subtab" onclick="switchMode('LOGIN')">🔑 Log in</button>
+          <!-- Institutional Access Notice (Login-Only: Pre-enrolled by Principal) -->
+          <div style="background:#f4f6fa; border:1px solid #e2e8f0; border-radius:12px; padding:10px 14px; margin-bottom:14px; font-size:12px; color:#475569; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">🏛️</span>
+            <span><strong>Yashoda College Portal:</strong> Pre-enrolled access only. Log in with your institutional credentials.</span>
+          </div>
+          <div style="display:none;">
+            <button id="appTabRegister" class="app-subtab" onclick="switchMode('REGISTER')">✨ Register</button>
+            <button id="appTabLogIn" class="app-subtab active" onclick="switchMode('LOGIN')">🔑 Log in</button>
           </div>
 
           <!-- ===================================== -->
-          <!-- FORM 1: REGISTER AS STUDENT           -->
+          <!-- FORM 1: REGISTER AS STUDENT (DISABLED/ADMIN ONLY) -->
           <!-- ===================================== -->
-          <form id="formStudentRegister" class="auth-form active" onsubmit="handleStudentRegister(event)">
+          <form id="formStudentRegister" class="auth-form" onsubmit="handleStudentRegister(event)">
             <div class="pastel-banner lavender">
               <span class="badge lavender-dark">🎓 Official ID Issuance</span>
               <h3>Student registration</h3>
@@ -635,9 +655,8 @@
             <div style="margin-bottom:12px;">
               <label style="font-size:12px; font-weight:700; color:#18191e; display:block; margin-bottom:6px;">Select Institution Type</label>
               <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;">
-                <button type="button" id="chipInst_HIGHER_SEC" class="student-inst-chip app-subtab active" onclick="setStudentInstitution('HIGHER_SEC')">🔬 Wakanda HSS (11-12)</button>
-                <button type="button" id="chipInst_UNIVERSITY" class="student-inst-chip app-subtab" onclick="setStudentInstitution('UNIVERSITY')">🏛️ University</button>
-                <button type="button" id="chipInst_COLLEGE" class="student-inst-chip app-subtab" onclick="setStudentInstitution('COLLEGE')">🏫 College</button>
+                <button type="button" id="chipInst_COLLEGE" class="student-inst-chip app-subtab active" onclick="setStudentInstitution('COLLEGE')">🏛️ Yashoda College (YCASC)</button>
+                <button type="button" id="chipInst_UNIVERSITY" class="student-inst-chip app-subtab" onclick="setStudentInstitution('UNIVERSITY')">🎓 University</button>
               </div>
             </div>
 
@@ -742,9 +761,8 @@
             <div style="margin-bottom:12px;">
               <label style="font-size:12px; font-weight:700; color:#18191e; display:block; margin-bottom:6px;">Select Institution Type</label>
               <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;">
-                <button type="button" id="chipTeacherInst_HIGHER_SEC" class="teacher-inst-chip app-subtab active" onclick="setTeacherInstitution('HIGHER_SEC')">🔬 Wakanda HSS</button>
-                <button type="button" id="chipTeacherInst_UNIVERSITY" class="teacher-inst-chip app-subtab" onclick="setTeacherInstitution('UNIVERSITY')">🏛️ University</button>
-                <button type="button" id="chipTeacherInst_COLLEGE" class="teacher-inst-chip app-subtab" onclick="setTeacherInstitution('COLLEGE')">🏫 College</button>
+                <button type="button" id="chipTeacherInst_COLLEGE" class="teacher-inst-chip app-subtab active" onclick="setTeacherInstitution('COLLEGE')">🏛️ Yashoda College (YCASC)</button>
+                <button type="button" id="chipTeacherInst_UNIVERSITY" class="teacher-inst-chip app-subtab" onclick="setTeacherInstitution('UNIVERSITY')">🎓 University</button>
               </div>
             </div>
 
@@ -840,11 +858,11 @@
           <!-- ===================================== -->
           <!-- FORM 3: UNIFIED LOG IN                -->
           <!-- ===================================== -->
-          <form id="formUnifiedSignIn" class="auth-form" onsubmit="handleUnifiedSignIn(event)">
+          <form id="formUnifiedSignIn" class="auth-form active" onsubmit="handleUnifiedSignIn(event)">
             <div class="pastel-banner butter">
               <span class="badge butter-dark">Academic Portal Log In</span>
               <h3>Sign In to Eventra</h3>
-              <p>Log in with your registered University Email, Phone Number, or assigned Eventra ID.</p>
+              <p>Log in with your pre-enrolled College Email, Roll Number (e.g. SCI-26-001), or Staff ID.</p>
             </div>
 
             <div class="form-group">
@@ -876,52 +894,52 @@
               <span style="font-size:10px; font-weight:700; color:#7B52DE; background:#EAE3FC; padding:1px 6px; border-radius:100px;">Pass: 123456789</span>
             </div>
             <div class="demo-chip-box multi-buyer">
-              <div class="smart-cred-card lavender" onclick="autofillDemo('STUDENT')">
-                <div class="cred-avatar lavender">🎓</div>
+              <div class="smart-cred-card lavender" onclick="autofillDemo('BSC')">
+                <div class="cred-avatar lavender">🧪</div>
                 <div class="cred-details">
-                  <span class="cred-title">University Student</span>
-                  <span class="cred-email">student@eventra.ac.in</span>
-                  <span class="cred-tag">MCA_2026_2650</span>
+                  <span class="cred-title">B.Sc. Student</span>
+                  <span class="cred-email">akash.kamat@ycasc.com</span>
+                  <span class="cred-tag">SCI-26-001 (Science)</span>
                 </div>
               </div>
-              <div class="smart-cred-card mint" onclick="autofillDemo('TEACHER')">
-                <div class="cred-avatar mint">👩‍🏫</div>
+              <div class="smart-cred-card mint" onclick="autofillDemo('BCOM')">
+                <div class="cred-avatar mint">📈</div>
                 <div class="cred-details">
-                  <span class="cred-title">University Faculty</span>
-                  <span class="cred-email">snithi.sharma@eventra.ac.in</span>
-                  <span class="cred-tag">CSC_Snithi</span>
+                  <span class="cred-title">B.Com Student</span>
+                  <span class="cred-email">anil.shah@ycasc.com</span>
+                  <span class="cred-tag">COM-26-001 (Commerce)</span>
                 </div>
               </div>
-              <div class="smart-cred-card lavender" onclick="autofillDemo('HSS_STUDENT')">
-                <div class="cred-avatar lavender">🔬</div>
+              <div class="smart-cred-card lavender" onclick="autofillDemo('BA')">
+                <div class="cred-avatar lavender">🎨</div>
                 <div class="cred-details">
-                  <span class="cred-title">Wakanda HSS Student</span>
-                  <span class="cred-email">aditya.kamat@eventra.ac.in</span>
-                  <span class="cred-tag">SCI_25_001 (Science)</span>
+                  <span class="cred-title">B.A. Student</span>
+                  <span class="cred-email">aditi.sharma@ycasc.com</span>
+                  <span class="cred-tag">ART-26-001 (Arts)</span>
                 </div>
               </div>
-              <div class="smart-cred-card butter" onclick="autofillDemo('HSS_PRINCIPAL')">
+              <div class="smart-cred-card butter" onclick="autofillDemo('PRINCIPAL')">
                 <div class="cred-avatar butter">🏛️</div>
                 <div class="cred-details">
-                  <span class="cred-title">Wakanda HSS Principal</span>
-                  <span class="cred-email">shashikant.mayekar@eventra.ac.in</span>
-                  <span class="cred-tag">HSS_Shashikant</span>
+                  <span class="cred-title">College Principal</span>
+                  <span class="cred-email">principal@ycasc.com</span>
+                  <span class="cred-tag">YCASC_Principal</span>
                 </div>
               </div>
-              <div class="smart-cred-card mint" onclick="autofillDemo('HSS_HOD')">
+              <div class="smart-cred-card mint" onclick="autofillDemo('HOD_SCI')">
                 <div class="cred-avatar mint">👨‍🏫</div>
                 <div class="cred-details">
                   <span class="cred-title">HOD Science Stream</span>
-                  <span class="cred-email">pramod.naik@eventra.ac.in</span>
-                  <span class="cred-tag">HSS_Pramod</span>
+                  <span class="cred-email">pramod.naik@ycasc.com</span>
+                  <span class="cred-tag">HOD_SCI (Science)</span>
                 </div>
               </div>
               <div class="smart-cred-card lavender" onclick="autofillDemo('IDENTICAL_NAME_SURNAME')">
                 <div class="cred-avatar lavender">⚡</div>
                 <div class="cred-details">
                   <span class="cred-title">Same Name Collision Demo</span>
-                  <span class="cred-email">055.kiran@eventra.ac.in</span>
-                  <span class="cred-tag">Roll 055 • SCI_25_055</span>
+                  <span class="cred-email">015.kiran@ycasc.com</span>
+                  <span class="cred-tag">Roll 015 • SCI-26-015</span>
                 </div>
               </div>
             </div>
@@ -977,7 +995,31 @@
             </div>
           </div>
 
-          <!-- Section: Your Task -->
+          <!-- Student Academic Timetable Card -->
+          <div class="meeting-card lavender" style="margin-bottom:18px;">
+            <div class="meeting-header" style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <h4 style="margin:0; font-size:14px; color:#18191E;">📅 My Academic Timetable</h4>
+                <span id="studentTimetableSubtitle" style="font-size:11px; color:#6B6F80;">5 Scheduled Lectures • 1 Recess</span>
+              </div>
+              <button class="join-meet-btn" style="background:#7B52DE; color:#fff;" onclick="toggleStudentTimetableFull()">View Week</button>
+            </div>
+
+            <!-- Day Pills for Student -->
+            <div style="display:flex; gap:5px; margin:10px 0 12px; overflow-x:auto; padding-bottom:4px;">
+              <button class="s-tt-day-chip active" onclick="switchStudentTimetableDay('Monday', this)" style="padding:4px 10px; border-radius:100px; border:none; font-size:11px; font-weight:700; cursor:pointer; background:#7B52DE; color:#fff;">Mon</button>
+              <button class="s-tt-day-chip" onclick="switchStudentTimetableDay('Tuesday', this)" style="padding:4px 10px; border-radius:100px; border:1px solid #DDD; font-size:11px; font-weight:700; cursor:pointer; background:#FFF; color:#555;">Tue</button>
+              <button class="s-tt-day-chip" onclick="switchStudentTimetableDay('Wednesday', this)" style="padding:4px 10px; border-radius:100px; border:1px solid #DDD; font-size:11px; font-weight:700; cursor:pointer; background:#FFF; color:#555;">Wed</button>
+              <button class="s-tt-day-chip" onclick="switchStudentTimetableDay('Thursday', this)" style="padding:4px 10px; border-radius:100px; border:1px solid #DDD; font-size:11px; font-weight:700; cursor:pointer; background:#FFF; color:#555;">Thu</button>
+              <button class="s-tt-day-chip" onclick="switchStudentTimetableDay('Friday', this)" style="padding:4px 10px; border-radius:100px; border:1px solid #DDD; font-size:11px; font-weight:700; cursor:pointer; background:#FFF; color:#555;">Fri</button>
+              <button class="s-tt-day-chip" onclick="switchStudentTimetableDay('Saturday', this)" style="padding:4px 10px; border-radius:100px; border:1px solid #DDD; font-size:11px; font-weight:700; cursor:pointer; background:#FFF; color:#555;">Sat</button>
+            </div>
+
+            <!-- Student Timetable Slots List -->
+            <div id="studentTimetableSlotsList" style="display:flex; flex-direction:column; gap:8px;">
+              <!-- Populated dynamically via JS -->
+            </div>
+          </div>
           <div class="section-header">
             <h3>Your task</h3>
             <a href="javascript:void(0)" class="see-all">See All</a>
@@ -1096,61 +1138,61 @@
           <span style="font-size:11px; font-weight:700; color:#1F8E73; background:#D9F3EC; padding:2px 8px; border-radius:100px;">Moodle-Style Auth</span>
         </div>
         <h2>Academic System Control</h2>
-        <p>Institutions integrate their database, provision schemas, and issue <code>@eventra.ac.in</code> accounts with default pass <code>123456789</code>.</p>
+        <p>Institutions integrate their database, provision schemas, and issue <code>@ycasc.com</code> accounts with default pass <code>123456789</code>.</p>
 
         <!-- Workbench Segmented Control Tabs -->
         <div class="workbench-tabs">
           <button id="wbTabRoster" class="wb-tab active" onclick="switchWorkbenchTab('ROSTER')">🪪 Accounts</button>
-          <button id="wbTabBuyers" class="wb-tab" onclick="switchWorkbenchTab('BUYERS')">🏛️ HSS Streams</button>
+          <button id="wbTabBuyers" class="wb-tab" onclick="switchWorkbenchTab('BUYERS')">🏛️ Degree Streams</button>
           <button id="wbTabSchema" class="wb-tab" onclick="switchWorkbenchTab('SCHEMA')">💾 SQL &amp; API</button>
         </div>
 
         <!-- TAB 1: ACCOUNTS ROSTER -->
         <div id="wbViewRoster" class="wb-view active">
-          <!-- Wakanda HSS Credentials Card -->
+          <!-- Yashoda College Credentials Card -->
           <div class="credentials-card">
             <div style="background:#FFF9E6; border:1px solid #FFE49E; border-radius:10px; padding:9px 12px; margin-bottom:12px; font-size:11.5px; color:#8C4B06; line-height:1.4;">
-              <strong>ℹ️ Moodle-Style Provisioning:</strong> Institution integrates <code>higher_secondary_db</code>. Accounts use <code>@eventra.ac.in</code> with default password <code>123456789</code>.
+              <strong>ℹ️ Portal Provisioning:</strong> Institution integrates <code>yashoda_college_db</code>. Accounts use <code>@ycasc.com</code> with default password <code>123456789</code>.
             </div>
 
-            <h4 style="margin:8px 0; font-size:12px; font-weight:800; color:#18191E;">🔬 Wakanda Higher Secondary School (Wakanda HSS)</h4>
+            <h4 style="margin:8px 0; font-size:12px; font-weight:800; color:#18191E;">🏛️ Yashoda College of Arts, Science and Commerce</h4>
             <div class="wb-user-list">
-              <div class="wb-user-item" onclick="autofillDemo('HSS_STUDENT')">
-                <div class="wb-user-avatar lavender">🔬</div>
+              <div class="wb-user-item" onclick="autofillDemo('BSC')">
+                <div class="wb-user-avatar lavender">🧪</div>
                 <div class="wb-user-info">
-                  <strong>Aditya Kamat (Science Stream)</strong>
-                  <span>aditya.kamat@eventra.ac.in • ID: SCI_25_001</span>
+                  <strong>Akash Kamat (B.Sc. Science)</strong>
+                  <span>akash.kamat@ycasc.com • ID: SCI-26-001</span>
                 </div>
                 <button type="button" class="wb-quick-btn">Sign in</button>
               </div>
-              <div class="wb-user-item" onclick="autofillDemo('HSS_PRINCIPAL')">
+              <div class="wb-user-item" onclick="autofillDemo('PRINCIPAL')">
                 <div class="wb-user-avatar butter">🏛️</div>
                 <div class="wb-user-info">
                   <strong>Dr. S. V. Mayekar (Principal)</strong>
-                  <span>shashikant.mayekar@eventra.ac.in • ID: HSS_Shashikant</span>
+                  <span>principal@ycasc.com • ID: YCASC_Principal</span>
                 </div>
                 <button type="button" class="wb-quick-btn">Sign in</button>
               </div>
-              <div class="wb-user-item" onclick="autofillDemo('HSS_HOD')">
+              <div class="wb-user-item" onclick="autofillDemo('HOD_SCI')">
                 <div class="wb-user-avatar mint">👨‍🏫</div>
                 <div class="wb-user-info">
-                  <strong>Pramod Naik (HOD Science)</strong>
-                  <span>pramod.naik@eventra.ac.in • ID: HSS_Pramod</span>
+                  <strong>Dr. Pramod Naik (HOD Science)</strong>
+                  <span>pramod.naik@ycasc.com • ID: HOD_SCI</span>
                 </div>
                 <button type="button" class="wb-quick-btn">Sign in</button>
               </div>
             </div>
 
-            <h4 style="margin:16px 0 8px; font-size:12px; font-weight:800; color:#18191E;">⚡ Collision Resolution Rule: <code>rollno.name@eventra.ac.in</code></h4>
+            <h4 style="margin:16px 0 8px; font-size:12px; font-weight:800; color:#18191E;">⚡ Collision Resolution Rule: <code>rollno.name@ycasc.com</code></h4>
             <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:10px; padding:8px 11px; margin-bottom:8px; font-size:11px; color:#166534; line-height:1.4;">
-              If a person has the same first name and surname (e.g. <em>Kiran Kiran</em>), Eventra generates their official email as <strong><code>rollno.name@eventra.ac.in</code></strong> to guarantee zero collisions.
+              If a person has the same first name and surname (e.g. <em>Kiran Kiran</em>), Eventra generates their official email as <strong><code>rollno.name@ycasc.com</code></strong> to guarantee zero collisions.
             </div>
             <div class="wb-user-list">
               <div class="wb-user-item" onclick="autofillDemo('IDENTICAL_NAME_SURNAME')">
                 <div class="wb-user-avatar lavender">⚡</div>
                 <div class="wb-user-info">
                   <strong>Kiran Kiran (Same Name &amp; Surname)</strong>
-                  <span>055.kiran@eventra.ac.in • Roll 055 (Kiran Kiran)</span>
+                  <span>015.kiran@ycasc.com • Roll 015 (Kiran Kiran)</span>
                 </div>
                 <button type="button" class="wb-quick-btn">Sign in</button>
               </div>
@@ -1158,7 +1200,7 @@
           </div>
         </div>
 
-        <!-- TAB 2: WAKANDA HSS STREAMS ARCHITECTURE -->
+        <!-- TAB 2: DEGREE STREAMS ARCHITECTURE -->
         <div id="wbViewBuyers" class="wb-view">
           <div class="buyers-matrix-table-card">
             <table class="wb-matrix-table">
@@ -1184,16 +1226,10 @@
                   <td>Sujata Kamat</td>
                 </tr>
                 <tr>
-                  <td><strong>🎨 Arts</strong></td>
-                  <td>35 Students</td>
-                  <td>History, Political Science, Economics</td>
-                  <td>Sanjay Bandodkar</td>
-                </tr>
-                <tr>
-                  <td><strong>🛠️ Vocational</strong></td>
-                  <td>40 Students</td>
-                  <td>Office Mgmt, Electronic Tech, DTP</td>
-                  <td>Francis D'Costa</td>
+                  <td><strong>🎨 Arts (B.A.)</strong></td>
+                  <td>15 Students</td>
+                  <td>History, Political Science, English Literature</td>
+                  <td>Dr. Meenakshi Sundaram</td>
                 </tr>
               </tbody>
             </table>
@@ -1206,7 +1242,7 @@
             <div class="api-endpoint-item">
               <span class="api-method post">POST</span>
               <code>/api/auth/login</code>
-              <p>Moodle authentication matching <code>@eventra.ac.in</code> or ID + password.</p>
+              <p>Moodle authentication matching <code>@ycasc.com</code> or ID + password.</p>
             </div>
             <div class="api-endpoint-item">
               <span class="api-method post">POST</span>
@@ -1216,12 +1252,12 @@
             <div class="api-endpoint-item">
               <span class="api-method get">GET</span>
               <code>/api/admin/provisioned-accounts</code>
-              <p>List all imported Wakanda HSS users with masked passwords.</p>
+              <p>List all imported Yashoda College users with masked passwords.</p>
             </div>
             <div class="api-endpoint-item">
               <span class="api-method get">GET</span>
-              <code>/api/hss/students</code> &amp; <code>/api/students</code>
-              <p>Live cohort queries from <code>higher_secondary_db</code> with stream subject enrollments.</p>
+              <code>/api/students</code> &amp; <code>/api/college/students</code>
+              <p>Live cohort queries from <code>yashoda_college_db</code> with stream subject enrollments.</p>
             </div>
           </div>
         </div>
@@ -1263,7 +1299,7 @@
 
         <!-- Moodle SSO Domain & Barcode Strip -->
         <div class="smart-card-footer-strip">
-          <div class="domain-tag">🔑 SSO: @eventra.ac.in</div>
+          <div class="domain-tag">🔑 SSO: @ycasc.com</div>
           <div class="simulated-barcode">
             <span class="bar b1"></span><span class="bar b2"></span><span class="bar b3"></span>
             <span class="bar b1"></span><span class="bar b4"></span><span class="bar b2"></span>
@@ -1293,14 +1329,14 @@
       </div>
 
       <h2>Reset Default Password</h2>
-      <p class="modal-subtitle">Accounts are provisioned with domain <strong>@eventra.ac.in</strong> and default password <strong>123456789</strong>. Reset your password below:</p>
+      <p class="modal-subtitle">Accounts are provisioned with domain <strong>@ycasc.com</strong> and default password <strong>123456789</strong>. Reset your password below:</p>
 
       <form onsubmit="handlePasswordResetSubmit(event)" style="text-align:left; margin-top:16px;">
         <div class="form-group">
-          <label for="resetIdentifier">Email (@eventra.ac.in) or ID</label>
+          <label for="resetIdentifier">Email (@ycasc.com) or ID</label>
           <div class="input-wrapper">
             <span class="input-icon">✉️</span>
-            <input type="text" id="resetIdentifier" placeholder="ananya.rane@eventra.ac.in" required>
+            <input type="text" id="resetIdentifier" placeholder="akash.kamat@ycasc.com" required>
           </div>
         </div>
 
@@ -1335,6 +1371,85 @@
         <div class="modal-actions" style="margin-top:20px;">
           <button type="submit" class="cta-pill-button">Save &amp; Update Password</button>
           <button type="button" class="outlined-pill-button" onclick="closeResetModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Teacher Lecture Interchange Modal -->
+  <div id="webInterchangeModal" class="modal-overlay">
+    <div class="modal-card" style="max-width:520px; width:92%;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-badge lavender">Faculty Coordination</span>
+          <h3>🔄 Interchange / Swap Lectures</h3>
+          <p>Swap slots across streams and notify students automatically</p>
+        </div>
+        <button class="modal-close-btn" onclick="closeWebInterchangeModal()">&times;</button>
+      </div>
+
+      <form id="formWebInterchange" onsubmit="handleWebInterchangeSubmit(event)">
+        <div class="form-group">
+          <label for="interchangeStreamSelect">Academic Degree Stream</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🏛️</span>
+            <select id="interchangeStreamSelect" onchange="populateInterchangeSlots()">
+              <option value="SCIENCE">Science (B.Sc.)</option>
+              <option value="COMMERCE">Commerce (B.Com)</option>
+              <option value="ARTS">Arts (B.A.)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="interchangeDaySelect">Day of Week</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📅</span>
+            <select id="interchangeDaySelect" onchange="populateInterchangeSlots()">
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="interchangeSlot1Select">First Lecture to Swap</label>
+          <div class="input-wrapper">
+            <span class="input-icon">1️⃣</span>
+            <select id="interchangeSlot1Select"></select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="interchangeSlot2Select">Second Lecture to Swap With</label>
+          <div class="input-wrapper">
+            <span class="input-icon">2️⃣</span>
+            <select id="interchangeSlot2Select"></select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="interchangeReasonInput">Coordination / Swap Reason</label>
+          <div class="input-wrapper">
+            <span class="input-icon">📝</span>
+            <input type="text" id="interchangeReasonInput" placeholder="e.g. Mutual faculty coordination for laboratory setup" required>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px; margin:12px 0 16px;">
+          <input type="checkbox" id="interchangeBroadcastCheckbox" checked style="width:16px; height:16px; accent-color:#7B52DE;">
+          <label for="interchangeBroadcastCheckbox" style="font-size:12px; color:#333; margin:0; cursor:pointer;">
+            📢 Broadcast automated notice to students of this stream
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="cta-pill-button" style="background:#7B52DE; color:#fff;">Confirm &amp; Update Timetable</button>
+          <button type="button" class="outlined-pill-button" onclick="closeWebInterchangeModal()">Cancel</button>
         </div>
       </form>
     </div>

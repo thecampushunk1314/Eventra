@@ -73,8 +73,8 @@
     <string name="date_21_oct">21 Oct</string>
     <string name="remarks_count">Remarks 01</string>
     <!--  Notice  -->
-    <string name="notice_title">Circulation Notice</string>
-    <string name="notice_meta">Inter-college Meet approval · from PD · 2 hrs ago</string>
+    <string name="notice_title">Institutional Notice</string>
+    <string name="notice_meta">Official Notice · Principal\'s Office</string>
     <!--  Bottom navigation  -->
     <string name="nav_home">Home</string>
     <string name="nav_calendar">Calendar</string>

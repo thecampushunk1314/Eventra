@@ -55,9 +55,10 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginTop="14dp"
-        android:maxHeight="420dp"
+        android:fillViewport="true"
         android:scrollbars="vertical">
 
         <LinearLayout
@@ -107,6 +108,32 @@
                 android:inputType="phone"
                 android:paddingStart="14dp"
                 android:paddingEnd="14dp"
+                android:textColor="@color/charcoal_dark"
+                android:textSize="14sp" />
+
+            <!-- Residential Address -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Residential Address"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etEditAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_input_box"
+                android:hint="Enter residential address"
+                android:inputType="textPostalAddress|textMultiLine"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
                 android:textColor="@color/charcoal_dark"
                 android:textSize="14sp" />
 
@@ -230,7 +257,7 @@
                     android:layout_height="48dp"
                     android:layout_marginTop="6dp"
                     android:background="@drawable/bg_input_box"
-                    android:hint="e.g. Master of Computer Applications (MCA)"
+                    android:hint="e.g. Master of Computer Applications"
                     android:inputType="textCapWords"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
@@ -241,7 +268,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="Level of Year / Batch"
+                    android:text="Level of Year / Class"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -252,7 +279,7 @@
                     android:layout_height="48dp"
                     android:layout_marginTop="6dp"
                     android:background="@drawable/bg_input_box"
-                    android:hint="e.g. 2nd Year (Semester 4)"
+                    android:hint="e.g. Second Year"
                     android:inputType="textCapWords"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
@@ -274,7 +301,7 @@
                     android:layout_height="48dp"
                     android:layout_marginTop="6dp"
                     android:background="@drawable/bg_input_box"
-                    android:hint="e.g. Department of Computer Applications"
+                    android:hint="e.g. Department of Science"
                     android:inputType="textCapWords"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
@@ -283,14 +310,36 @@
             </LinearLayout>
 
             <!-- Enrolled Subjects -->
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Enrolled Subjects (comma-separated)"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Enrolled Subjects"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/btnSelectSubjectsList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_chip_lavender"
+                    android:paddingStart="10dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="4dp"
+                    android:text="Select Subjects"
+                    android:textColor="@color/charcoal_dark"
+                    android:textSize="11.5sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/etEditSubjects"

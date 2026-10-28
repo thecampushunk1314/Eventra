@@ -44,12 +44,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Verified @eventra.ac.in Identity"
-                android:textColor="@color/text_muted"
-                android:textSize="11.5sp" />
+
         </LinearLayout>
 
         <ImageButton
@@ -113,7 +108,7 @@
                     android:layout_marginTop="12dp"
                     android:text="Student Name"
                     android:textColor="@color/charcoal_dark"
-                    android:textSize="20sp"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
 
                 <!-- Role Pill & Institution Badge -->
@@ -122,37 +117,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvProfileRoleBadge"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_chip_mint"
-                        android:paddingStart="12dp"
-                        android:paddingTop="5dp"
-                        android:paddingEnd="12dp"
-                        android:paddingBottom="5dp"
-                        android:text="Student"
-                        android:textColor="@color/pastel_mint_text"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvProfileInstitutionBadge"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/bg_chip_white"
-                        android:paddingStart="12dp"
-                        android:paddingTop="5dp"
-                        android:paddingEnd="12dp"
-                        android:paddingBottom="5dp"
-                        android:text="🏫 Higher Secondary"
-                        android:textColor="@color/charcoal_dark"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                    android:orientation="horizontal"/>
 
             </LinearLayout>
 
@@ -165,13 +130,6 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="OFFICIAL EVENTRA CREDENTIALS"
-                    android:textColor="@color/text_muted"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
 
                 <!-- Official Email Row -->
                 <LinearLayout
@@ -197,7 +155,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Institutional Email"
+                            android:text="Email"
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
 
@@ -206,7 +164,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
-                            android:text="name@eventra.ac.in"
+                            android:text="name@ycasc.com"
                             android:textColor="@color/charcoal_dark"
                             android:textSize="14sp"
                             android:textStyle="bold" />
@@ -254,7 +212,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Roll Number / Institutional ID"
+                            android:text="USER ID"
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
 
@@ -269,6 +227,52 @@
                             android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="#F1F5F9" />
+
+                <!-- Residential Address Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_home"
+                        app:tint="@color/pastel_lavender_primary" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Residential Address"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/tvProfileAddress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:text="Address not provided"
+                            android:textColor="@color/charcoal_dark"
+                            android:textSize="13.5sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
 
             <!-- Card 2: Academic Standing & Buyer Information -->
@@ -279,14 +283,6 @@
                 android:background="@drawable/bg_card_white"
                 android:orientation="vertical"
                 android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ACADEMIC STANDING &amp; ENROLLMENT"
-                    android:textColor="@color/text_muted"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
 
                 <!-- Level of Year / Class Row -->
                 <LinearLayout
@@ -313,7 +309,7 @@
                             android:id="@+id/tvProfileYearLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Class / Level of Year"
+                            android:text="Class"
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
 
@@ -322,7 +318,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
-                            android:text="11th Standard"
+                            android:text="Second Year"
                             android:textColor="@color/charcoal_dark"
                             android:textSize="14sp"
                             android:textStyle="bold" />
@@ -360,7 +356,7 @@
                             android:id="@+id/tvProfileDegreeLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Degree / Stream"
+                            android:text="Degree"
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
 
@@ -369,7 +365,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
-                            android:text="Higher Secondary (Science)"
+                            android:text="Bachelor of Science"
                             android:textColor="@color/charcoal_dark"
                             android:textSize="14sp"
                             android:textStyle="bold" />
@@ -406,7 +402,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Department / Division"
+                            android:text="Department"
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
 
@@ -415,7 +411,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
-                            android:text="Science Division"
+                            android:text="Science"
                             android:textColor="@color/charcoal_dark"
                             android:textSize="14sp"
                             android:textStyle="bold" />
@@ -425,6 +421,7 @@
 
             <!-- Card 3: Enrolled Subjects (Particularly for Students) -->
             <LinearLayout
+                android:id="@+id/cardEnrolledSubjects"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
@@ -484,8 +481,296 @@
                     android:visibility="gone" />
             </LinearLayout>
 
+            <!-- Card for Principal: Institutional Directory in Two Separate Distinct Rows -->
+            <LinearLayout
+                android:id="@+id/layoutPrincipalRosterSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- ROW 1: Teaching & Non-Teaching Staff Data Row -->
+                <LinearLayout
+                    android:id="@+id/cardPrincipalTeachersRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/bg_card_white"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Clickable Header Row -->
+                    <LinearLayout
+                        android:id="@+id/rowHeaderPrincipalTeachers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:background="@drawable/bg_chip_lavender"
+                            android:gravity="center"
+                            android:text="👨‍🏫"
+                            android:textSize="18sp" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Teaching &amp; Staff Data"
+                                android:textColor="@color/charcoal_dark"
+                                android:textSize="14.5sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Faculty, HODs, Admin &amp; Subjects"
+                                android:textColor="@color/text_muted"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvFacultyCountBadge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_chip_lavender"
+                            android:paddingStart="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="3dp"
+                            android:text="Faculty"
+                            android:textColor="@color/pastel_lavender_text"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvTeachersChevron"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="▼"
+                            android:textColor="@color/text_muted"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <!-- Expandable Faculty Content Area -->
+                    <LinearLayout
+                        android:id="@+id/layoutTeachersDataContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Format: Name • ID • Subjects Teaching"
+                            android:textColor="@color/text_muted"
+                            android:textSize="10.5sp" />
+
+                        <LinearLayout
+                            android:id="@+id/containerPrincipalFacultyMinimal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="vertical" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- ROW 2: Enrolled Students Directory Data Row -->
+                <LinearLayout
+                    android:id="@+id/cardPrincipalStudentsRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_card_white"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Clickable Header Row -->
+                    <LinearLayout
+                        android:id="@+id/rowHeaderPrincipalStudents"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:background="@drawable/bg_chip_mint"
+                            android:gravity="center"
+                            android:text="🎓"
+                            android:textSize="18sp" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Enrolled Students Data"
+                                android:textColor="@color/charcoal_dark"
+                                android:textSize="14.5sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Roll Numbers, Streams &amp; Records"
+                                android:textColor="@color/text_muted"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvStudentsDirectoryCountBadge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_chip_mint"
+                            android:paddingStart="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="3dp"
+                            android:text="Students"
+                            android:textColor="@color/pastel_mint_text"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvStudentsChevron"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="▼"
+                            android:textColor="@color/text_muted"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <!-- Expandable Students Content Area -->
+                    <LinearLayout
+                        android:id="@+id/layoutStudentsDataContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical">
+
+                        <!-- Stream Filter Chips -->
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:scrollbars="none">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/chipFilterAll"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_chip_selected_charcoal"
+                                    android:paddingStart="12dp"
+                                    android:paddingTop="5dp"
+                                    android:paddingEnd="12dp"
+                                    android:paddingBottom="5dp"
+                                    android:text="All Streams"
+                                    android:textColor="@color/white"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/chipFilterScience"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:background="@drawable/bg_chip_unselected_white"
+                                    android:paddingStart="12dp"
+                                    android:paddingTop="5dp"
+                                    android:paddingEnd="12dp"
+                                    android:paddingBottom="5dp"
+                                    android:text="🔬 Science"
+                                    android:textColor="@color/charcoal_dark"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/chipFilterCommerce"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:background="@drawable/bg_chip_unselected_white"
+                                    android:paddingStart="12dp"
+                                    android:paddingTop="5dp"
+                                    android:paddingEnd="12dp"
+                                    android:paddingBottom="5dp"
+                                    android:text="💼 Commerce"
+                                    android:textColor="@color/charcoal_dark"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/chipFilterArts"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:background="@drawable/bg_chip_unselected_white"
+                                    android:paddingStart="12dp"
+                                    android:paddingTop="5dp"
+                                    android:paddingEnd="12dp"
+                                    android:paddingBottom="5dp"
+                                    android:text="🎨 Arts"
+                                    android:textColor="@color/charcoal_dark"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+                        </HorizontalScrollView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Format: Roll No • Stream • Name"
+                            android:textColor="@color/text_muted"
+                            android:textSize="10.5sp" />
+
+                        <LinearLayout
+                            android:id="@+id/containerPrincipalStudentsMinimal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="vertical" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
             <!-- Card 4: Personal Information (Phone & DOB) -->
             <LinearLayout
+                android:id="@+id/cardPersonalInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"

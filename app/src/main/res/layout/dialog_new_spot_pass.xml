@@ -7,23 +7,16 @@
     android:orientation="vertical"
     android:padding="20dp">
 
-    <!-- Header with Icon & Badge -->
+    <!-- Header with Badge (No Plus Icon, Properly Aligned) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <ImageView
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:src="@drawable/ic_plus"
-            app:tint="@color/charcoal_dark" />
-
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -38,7 +31,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Student Duty Leave Application"
+                android:layout_marginTop="2dp"
+                android:text="Duty Leave Application for Student Absences"
                 android:textColor="@color/text_muted"
                 android:textSize="11.5sp" />
         </LinearLayout>
@@ -51,7 +45,7 @@
             android:paddingTop="4dp"
             android:paddingEnd="10dp"
             android:paddingBottom="4dp"
-            android:text="Student Self-Service"
+            android:text="Faculty"
             android:textColor="@color/pastel_mint_text"
             android:textSize="11sp"
             android:textStyle="bold" />
@@ -61,7 +55,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:maxHeight="480dp"
         android:scrollbars="vertical">
 
         <LinearLayout
@@ -69,7 +62,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Student Identity Chip Bar -->
+            <!-- Student Identity Chip Bar (Automatically Filled) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -100,7 +93,7 @@
                         android:id="@+id/tvSpotPassStudentName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Aditya Kamat"
+                        android:text="Student Name"
                         android:textColor="@color/charcoal_dark"
                         android:textSize="13.5sp"
                         android:textStyle="bold" />
@@ -109,27 +102,30 @@
                         android:id="@+id/tvSpotPassStudentMeta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="SCI-25-001 • 11th Standard (Science)"
+                        android:text="Roll No &amp; Class automatically attached"
                         android:textColor="@color/charcoal_dark"
                         android:textSize="11sp" />
                 </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_chip_white"
+                    android:paddingStart="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="3dp"
+                    android:text="Verified ID"
+                    android:textColor="@color/charcoal_dark"
+                    android:textSize="10.5sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Activity Selection -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Event / Practice Activity"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <!-- Quick Choice Chips Horizontal Scroll -->
+            <!-- Event Category Chips: Sports, Cultural, Technical Event, Volunteering, Other -->
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="12dp"
                 android:scrollbars="none">
 
                 <LinearLayout
@@ -138,14 +134,14 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/chipActFootball"
+                        android:id="@+id/chipActSports"
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
                         android:background="@drawable/bg_role_student_selected"
                         android:gravity="center"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:text="⚽ Football practice"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="⚽ Sports"
                         android:textColor="@color/charcoal_dark"
                         android:textSize="12sp"
                         android:textStyle="bold" />
@@ -157,42 +153,84 @@
                         android:layout_marginStart="8dp"
                         android:background="@drawable/bg_role_student_unselected"
                         android:gravity="center"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:text="🎭 Cultural rehearsal"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="🎭 Cultural"
                         android:textColor="@color/charcoal_dark"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/chipActEventDuty"
+                        android:id="@+id/chipActTechnical"
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
                         android:layout_marginStart="8dp"
                         android:background="@drawable/bg_role_student_unselected"
                         android:gravity="center"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:text="📋 Campus Event Duty"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="💻 Technical Event"
                         android:textColor="@color/charcoal_dark"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/chipActNss"
+                        android:id="@+id/chipActVolunteering"
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
                         android:layout_marginStart="8dp"
                         android:background="@drawable/bg_role_student_unselected"
                         android:gravity="center"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:text="🎖️ NSS Volunteer"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="🤝 Volunteering"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/chipActOther"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_role_student_unselected"
+                        android:gravity="center"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="📝 Other"
                         android:textColor="@color/charcoal_dark"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </HorizontalScrollView>
+
+            <!-- Separate line when Other is selected -->
+            <LinearLayout
+                android:id="@+id/containerOtherEventType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <EditText
+                    android:id="@+id/etOtherEventType"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_input_box"
+                    android:hint="Specify what the other event is exactly..."
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:textColor="@color/charcoal_dark"
+                    android:textSize="13.5sp" />
+            </LinearLayout>
+
+            <!-- Hidden spinner for internal compatibility -->
+            <Spinner
+                android:id="@+id/spinnerEventType"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/etSpotPassActivityTitle"
@@ -200,39 +238,101 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_input_box"
-                android:hint="Activity Title"
+                android:hint="Event Title"
                 android:inputType="textCapWords"
                 android:paddingStart="14dp"
                 android:paddingEnd="14dp"
-                android:text="Football practice"
                 android:textColor="@color/charcoal_dark"
                 android:textSize="14sp" />
 
-            <!-- Time / Period / Lecture Slot of that particular time -->
+            <!-- Timing for Leave Needed (No numbering) -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="Particular Time / Lecture Slot"
+                android:text="Date &amp; Timing for Leave"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <Spinner
-                android:id="@+id/spinnerTimeSlot"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:background="@drawable/bg_input_box"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp" />
+                android:orientation="horizontal">
 
-            <!-- Particular Subject of that Time -->
+                <!-- Date Picker Button (Kept as is) -->
+                <LinearLayout
+                    android:id="@+id/layoutPickPassDate"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1.1"
+                    android:background="@drawable/bg_input_box"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_calendar"
+                        app:tint="@color/charcoal_dark" />
+
+                    <TextView
+                        android:id="@+id/tvPassSelectedDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Select Date"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Timing Duration (Manual typing in the box) -->
+                <EditText
+                    android:id="@+id/etPassTimingNeeded"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1.2"
+                    android:background="@drawable/bg_input_box"
+                    android:hint="e.g. 8:30 AM – 11:30 AM"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:textColor="@color/charcoal_dark"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Clashing Lecture (No numbering, fixed options not manual typing) -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="Subject of That Particular Period"
+                android:text="Lecture That Clashes During Practice / Participation"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etTimeSlot"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_input_box"
+                android:inputType="textCapWords"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/charcoal_dark"
+                android:textSize="13.5sp" />
+
+            <!-- Clashing Subject -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Clashing Subject"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -246,8 +346,33 @@
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp" />
 
-            <!-- Routing Details Card (Shows Class Teacher and Subject Teacher) -->
+            <!-- Reason Comes NEXT (Before Notified Message) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Reason / Duty Leave Justification (Optional)"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etSpotPassReason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="64dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_input_box"
+                android:gravity="top|start"
+                android:hint="Provide any extra details, tournament trials location"
+                android:inputType="textMultiLine|textCapSentences"
+                android:padding="12dp"
+                android:textColor="@color/charcoal_dark"
+                android:textSize="13.5sp" />
+
+            <!-- Notified Message / Teacher Routing Card Comes LATER (After Reason) -->
             <LinearLayout
+                android:id="@+id/cardTeacherRouting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
@@ -255,19 +380,10 @@
                 android:orientation="vertical"
                 android:padding="14dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="APPROVAL &amp; NOTIFICATION DISPATCH"
-                    android:textColor="@color/pastel_lavender_text"
-                    android:textSize="10.5sp"
-                    android:textStyle="bold" />
-
-                <!-- Recipient 1: Class Teacher -->
+                <!-- Recipient 1: Subject Teacher -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -276,7 +392,7 @@
                         android:layout_height="26dp"
                         android:background="@drawable/bg_avatar_circle"
                         android:gravity="center"
-                        android:text="CT"
+                        android:text="F"
                         android:textColor="@color/charcoal_dark"
                         android:textSize="10.5sp"
                         android:textStyle="bold" />
@@ -291,15 +407,15 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Class Teacher (Primary Approval)"
+                            android:text="Faculty of Clashing Period"
                             android:textColor="@color/pastel_lavender_text"
                             android:textSize="10.5sp" />
 
                         <TextView
-                            android:id="@+id/tvClassTeacherName"
+                            android:id="@+id/tvSubjectTeacherName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Pramod Naik (HOD / Class Teacher)"
+                            android:text="Sneha Gaonkar - Chemistry"
                             android:textColor="@color/charcoal_dark"
                             android:textSize="13sp"
                             android:textStyle="bold" />
@@ -326,7 +442,7 @@
                     android:layout_marginBottom="8dp"
                     android:background="#EAE3FC" />
 
-                <!-- Recipient 2: Subject Teacher of that particular time -->
+                <!-- Recipient 2: Stream HOD (Approver if available) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -338,9 +454,9 @@
                         android:layout_height="26dp"
                         android:background="@drawable/bg_avatar_circle"
                         android:gravity="center"
-                        android:text="ST"
+                        android:text="HOD"
                         android:textColor="@color/charcoal_dark"
-                        android:textSize="10.5sp"
+                        android:textSize="9sp"
                         android:textStyle="bold" />
 
                     <LinearLayout
@@ -353,15 +469,15 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Subject Teacher of That Time"
+                            android:text="Head of Department (Available Approver)"
                             android:textColor="@color/pastel_lavender_text"
                             android:textSize="10.5sp" />
 
                         <TextView
-                            android:id="@+id/tvSubjectTeacherName"
+                            android:id="@+id/tvClassTeacherName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Sneha Gaonkar (Subject Teacher)"
+                            android:text="Dr. Pramod Naik (HOD - Science)"
                             android:textColor="@color/charcoal_dark"
                             android:textSize="13sp"
                             android:textStyle="bold" />
@@ -375,85 +491,63 @@
                         android:paddingTop="3dp"
                         android:paddingEnd="8dp"
                         android:paddingBottom="3dp"
-                        android:text="Notified"
+                        android:text="Approver (If Avail.)"
                         android:textColor="@color/charcoal_dark"
                         android:textSize="10.5sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
+              
+
             </LinearLayout>
 
-            <!-- Purpose / Duty Reason -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Reason / Practice Details"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/etSpotPassReason"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="56dp"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/bg_input_box"
-                android:gravity="top|start"
-                android:hint="e.g. Authorized football tournament practice trials on Main Ground."
-                android:inputType="textMultiLine|textCapSentences"
-                android:padding="12dp"
-                android:textColor="@color/charcoal_dark"
-                android:textSize="13.5sp" />
-
-            <!-- Routing Explanation Note -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="ℹ️ When you submit, your Class Teacher will approve the absence and the Subject Teacher will record your period attendance as 'Duty Present'."
+                android:layout_marginTop="8dp"
+                android:text="ℹ️ Submitting spot passes are approved either by faculty or HOD as per availability."
                 android:textColor="@color/text_muted"
                 android:textSize="11sp" />
 
+            <!-- Action Buttons: Cancel and Submit Spot Pass (Always scrollable and visible) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCancelSpotPass"
+                    style="@style/Widget.Eventra.Button.Pill"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#F1F5F9"
+                    android:text="Cancel"
+                    android:textAllCaps="false"
+                    android:textColor="@color/charcoal_dark"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="18dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSubmitSpotPass"
+                    style="@style/Widget.Eventra.Button.Pill"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1.6"
+                    android:backgroundTint="@color/charcoal_dark"
+                    android:text="Submit Spot Pass"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="18dp" />
+            </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <!-- Action Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:orientation="horizontal">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCancelSpotPass"
-            style="@style/Widget.Eventra.Button.Pill"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:backgroundTint="#F1F5F9"
-            android:text="Cancel"
-            android:textAllCaps="false"
-            android:textColor="@color/charcoal_dark"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:cornerRadius="18dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSubmitSpotPass"
-            style="@style/Widget.Eventra.Button.Pill"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1.6"
-            android:backgroundTint="@color/charcoal_dark"
-            android:text="Submit Spot Pass"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:cornerRadius="18dp" />
-    </LinearLayout>
 
 </LinearLayout>

@@ -1,16 +1,19 @@
 package com.example.sams;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
@@ -20,9 +23,12 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -31,15 +37,34 @@ public class HomeActivity extends AppCompatActivity {
     private View headerProfileSection;
     private UserManager userManager;
     private SpotPassManager spotPassManager;
+    private NoticeManager noticeManager;
+    private PermissionRequestManager permissionRequestManager;
+    private TimetableManager timetableManager;
 
-    // Spot Pass Card views on Home screen
-    private View cardSpotPass;
-    private TextView tvSpotPassCardTitle;
-    private TextView tvSpotPassCardStatus;
-    private TextView tvSpotPassCardSlot;
-    private LinearProgressIndicator progressSpotPassCard;
-    private TextView tvSpotPassAvatarCt;
-    private TextView tvSpotPassAvatarSt;
+    // Principal dashboard & records
+    private View layoutPrincipalDashboard;
+    private View layoutStudentHero;
+    private View layoutStudentQuickActions;
+    private View layoutStudentWeek;
+
+    private TextView tabRecordStudents;
+    private TextView tabRecordTeachers;
+    private View layoutStudentFilterSection;
+    private View layoutTeacherFilterSection;
+
+    private Spinner spinnerRecordStream;
+    private Spinner spinnerRecordSubject;
+    private TextView tvStudentsRecordCount;
+    private android.widget.LinearLayout containerStudentsRecords;
+
+    private Spinner spinnerRecordTeacherSubject;
+    private TextView tvTeachersRecordCount;
+    private android.widget.LinearLayout containerTeachersRecords;
+
+    // Notice card
+    private View cardNotice;
+    private TextView tvNoticeCardTitle;
+    private TextView tvNoticeCardMeta;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,22 +81,25 @@ public class HomeActivity extends AppCompatActivity {
 
         userManager = UserManager.getInstance(this);
         spotPassManager = SpotPassManager.getInstance(this);
+        noticeManager = NoticeManager.getInstance(this);
+        permissionRequestManager = PermissionRequestManager.getInstance(this);
+        timetableManager = TimetableManager.getInstance(this);
 
         tvHeaderAvatar = findViewById(R.id.tvHeaderAvatar);
         tvHeaderStudentName = findViewById(R.id.tvHeaderStudentName);
         headerProfileSection = findViewById(R.id.headerProfileSection);
 
-        cardSpotPass = findViewById(R.id.cardSpotPass);
-        tvSpotPassCardTitle = findViewById(R.id.tvSpotPassCardTitle);
-        tvSpotPassCardStatus = findViewById(R.id.tvSpotPassCardStatus);
-        tvSpotPassCardSlot = findViewById(R.id.tvSpotPassCardSlot);
-        progressSpotPassCard = findViewById(R.id.progressSpotPassCard);
-        tvSpotPassAvatarCt = findViewById(R.id.tvSpotPassAvatarCt);
-        tvSpotPassAvatarSt = findViewById(R.id.tvSpotPassAvatarSt);
+        layoutPrincipalDashboard = findViewById(R.id.layoutPrincipalDashboard);
+        layoutStudentHero = findViewById(R.id.layoutStudentHero);
+        layoutStudentQuickActions = findViewById(R.id.layoutStudentQuickActions);
+        layoutStudentWeek = findViewById(R.id.layoutStudentWeek);
 
         // Header Actions
-        click(R.id.btnNotifications, "Notifications");
-        click(R.id.btnSearch, "Search");
+        View btnNotifications = findViewById(R.id.btnNotifications);
+        if (btnNotifications != null) {
+            btnNotifications.setOnClickListener(v -> showNotificationsDialog());
+        }
+        updateNotificationBadge();
 
         // Profile / Account option in Header
         View.OnClickListener openProfileListener = v -> {
@@ -82,50 +110,370 @@ public class HomeActivity extends AppCompatActivity {
             headerProfileSection.setOnClickListener(openProfileListener);
         }
 
-        // Quick action: New Spot Pass (Done by students -> routes to Class Teacher & Subject Teacher)
+        // Student Quick actions
         View btnNewSpotPass = findViewById(R.id.btnNewSpotPass);
         if (btnNewSpotPass != null) {
             btnNewSpotPass.setOnClickListener(v -> showNewSpotPassDialog());
         }
 
-        click(R.id.btnPermission, "Permission Request");
-
-        // Section links and cards
-        click(R.id.linkOpenCalendar, "Calendar");
-        click(R.id.linkSeeAll, "All requests");
-
-        if (cardSpotPass != null) {
-            cardSpotPass.setOnClickListener(v -> {
-                User u = userManager.getCurrentUser();
-                SpotPass latest = spotPassManager.getLatestSpotPassForStudent(u != null ? u.getId() : "");
-                if (latest != null) {
-                    showSpotPassDetailsDialog(latest);
-                } else {
-                    Toast.makeText(this, "No active Spot Pass found.", Toast.LENGTH_SHORT).show();
-                }
-            });
+        View btnPermission = findViewById(R.id.btnPermission);
+        if (btnPermission != null) {
+            btnPermission.setOnClickListener(v -> showNewPermissionDialog());
         }
 
-        click(R.id.cardPermission, "Permission details");
-        click(R.id.cardNotice, "Circulation notice");
+        // Principal Dashboard buttons & Records setup
+        initPrincipalDashboard();
+
+        // Section links and cards
+        View linkOpenCalendar = findViewById(R.id.linkOpenCalendar);
+        if (linkOpenCalendar != null) {
+            linkOpenCalendar.setOnClickListener(v -> showCalendarDialog(null));
+        }
+
+        // Enable interactive week day selection
+        setupWeekDayClicks();
+
+        // Notice card setup
+        cardNotice = findViewById(R.id.cardNotice);
+        tvNoticeCardTitle = findViewById(R.id.tvNoticeCardTitle);
+        tvNoticeCardMeta = findViewById(R.id.tvNoticeCardMeta);
+        if (cardNotice != null) {
+            cardNotice.setOnClickListener(v -> showNoticeDetailsDialog(noticeManager.getLatestNotice()));
+        }
 
         // Bottom navigation
         findViewById(R.id.navHome).setOnClickListener(v -> {
             // Already on Home
         });
-        click(R.id.navCalendar, "Calendar");
-        click(R.id.navRequests, "Requests");
+
+
+        View navRequests = findViewById(R.id.navRequests);
+        if (navRequests != null) {
+            navRequests.setOnClickListener(v -> startActivity(new Intent(this, RequestsActivity.class)));
+        }
 
         // Account / Profile option in Bottom Bar
         View navProfile = findViewById(R.id.navProfile);
         if (navProfile != null) {
             navProfile.setOnClickListener(openProfileListener);
         }
+    }
 
-        // Floating action button also triggers New Spot Pass
-        View navCreate = findViewById(R.id.navCreate);
-        if (navCreate != null) {
-            navCreate.setOnClickListener(v -> showNewSpotPassDialog());
+    private void updateNotificationBadge() {
+        View badgeDot = findViewById(R.id.badgeNotificationDot);
+        if (badgeDot == null) return;
+        User current = userManager.getCurrentUser();
+        String studentId = current != null ? current.getId() : "";
+        List<SpotPass> approvedPasses = spotPassManager.getApprovedPassesForStudent(studentId);
+        List<PermissionRequest> approvedPerms = permissionRequestManager.getApprovedRequestsForStudent(studentId);
+        int total = approvedPasses.size() + approvedPerms.size();
+        badgeDot.setVisibility(total > 0 ? View.VISIBLE : View.GONE);
+    }
+
+    private void initPrincipalDashboard() {
+        View btnAddFaculty = findViewById(R.id.btnPrincipalAddFaculty);
+        if (btnAddFaculty != null) {
+            btnAddFaculty.setOnClickListener(v -> showAddTeacherDialog());
+        }
+
+        View btnEnrollStudent = findViewById(R.id.btnPrincipalEnrollStudent);
+        if (btnEnrollStudent != null) {
+            btnEnrollStudent.setOnClickListener(v -> showAddStudentDialog());
+        }
+
+        View btnUploadNotice = findViewById(R.id.btnPrincipalUploadNotice);
+        if (btnUploadNotice != null) {
+            btnUploadNotice.setOnClickListener(v -> showNewNoticeDialog());
+        }
+
+        tabRecordStudents = findViewById(R.id.tabRecordStudents);
+        tabRecordTeachers = findViewById(R.id.tabRecordTeachers);
+        layoutStudentFilterSection = findViewById(R.id.layoutStudentFilterSection);
+        layoutTeacherFilterSection = findViewById(R.id.layoutTeacherFilterSection);
+
+        spinnerRecordStream = findViewById(R.id.spinnerRecordStream);
+        spinnerRecordSubject = findViewById(R.id.spinnerRecordSubject);
+        tvStudentsRecordCount = findViewById(R.id.tvStudentsRecordCount);
+        containerStudentsRecords = findViewById(R.id.containerStudentsRecords);
+
+        spinnerRecordTeacherSubject = findViewById(R.id.spinnerRecordTeacherSubject);
+        tvTeachersRecordCount = findViewById(R.id.tvTeachersRecordCount);
+        containerTeachersRecords = findViewById(R.id.containerTeachersRecords);
+
+        if (tabRecordStudents != null && tabRecordTeachers != null) {
+            tabRecordStudents.setOnClickListener(v -> {
+                tabRecordStudents.setBackgroundResource(R.drawable.bg_chip_selected_charcoal);
+                tabRecordStudents.setTextColor(getColor(R.color.white));
+                tabRecordTeachers.setBackgroundResource(R.drawable.bg_chip_unselected_white);
+                tabRecordTeachers.setTextColor(getColor(R.color.text_secondary));
+
+                if (layoutStudentFilterSection != null) layoutStudentFilterSection.setVisibility(View.VISIBLE);
+                if (layoutTeacherFilterSection != null) layoutTeacherFilterSection.setVisibility(View.GONE);
+            });
+
+            tabRecordTeachers.setOnClickListener(v -> {
+                tabRecordTeachers.setBackgroundResource(R.drawable.bg_chip_selected_charcoal);
+                tabRecordTeachers.setTextColor(getColor(R.color.white));
+                tabRecordStudents.setBackgroundResource(R.drawable.bg_chip_unselected_white);
+                tabRecordStudents.setTextColor(getColor(R.color.text_secondary));
+
+                if (layoutTeacherFilterSection != null) layoutTeacherFilterSection.setVisibility(View.VISIBLE);
+                if (layoutStudentFilterSection != null) layoutStudentFilterSection.setVisibility(View.GONE);
+            });
+        }
+
+        // Setup Spinners
+        if (spinnerRecordStream != null) {
+            String[] streams = new String[]{"All Streams", "Science (B.Sc.)", "Commerce (B.Com)", "Arts (B.A.)"};
+            ArrayAdapter<String> streamAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, streams);
+            spinnerRecordStream.setAdapter(streamAdapter);
+            spinnerRecordStream.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> p, View v, int pos, long id) { filterAndRenderStudents(); }
+                @Override
+                public void onNothingSelected(AdapterView<?> p) {}
+            });
+        }
+
+        if (spinnerRecordSubject != null) {
+            String[] subjects = new String[]{"All Subjects", "Physics", "Chemistry", "Mathematics", "Computer Science", "Accounting", "Corporate Law", "Financial Markets", "History", "English Literature", "Political Science"};
+            ArrayAdapter<String> subjectAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, subjects);
+            spinnerRecordSubject.setAdapter(subjectAdapter);
+            spinnerRecordSubject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> p, View v, int pos, long id) { filterAndRenderStudents(); }
+                @Override
+                public void onNothingSelected(AdapterView<?> p) {}
+            });
+        }
+
+        if (spinnerRecordTeacherSubject != null) {
+            String[] teacherSubs = new String[]{"All Teaching Subjects", "Physics", "Chemistry", "Mathematics", "Accounting", "Corporate Accounts", "Business Management", "History", "English Literature", "Political Science"};
+            ArrayAdapter<String> teacherSubAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, teacherSubs);
+            spinnerRecordTeacherSubject.setAdapter(teacherSubAdapter);
+            spinnerRecordTeacherSubject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> p, View v, int pos, long id) { filterAndRenderTeachers(); }
+                @Override
+                public void onNothingSelected(AdapterView<?> p) {}
+            });
+        }
+    }
+
+    private void filterAndRenderStudents() {
+        if (containerStudentsRecords == null || spinnerRecordStream == null || spinnerRecordSubject == null) return;
+        String selStream = spinnerRecordStream.getSelectedItem() != null ? spinnerRecordStream.getSelectedItem().toString() : "All Streams";
+        String selSubject = spinnerRecordSubject.getSelectedItem() != null ? spinnerRecordSubject.getSelectedItem().toString() : "All Subjects";
+
+        List<User> filtered = userManager.filterStudents(selStream, selSubject);
+        
+        // Calculate cohort attendance statistics for counting total attendance feature
+        double avg = userManager.calculateAverageAttendance(filtered);
+        int below70 = userManager.getStudentsBelowAttendanceThreshold(filtered, 70.0);
+        int safe = userManager.getStudentsAboveAttendanceThreshold(filtered, 70.0);
+
+        TextView tvRecordAvgAttendance = findViewById(R.id.tvRecordAvgAttendance);
+        TextView tvRecordBelow70Count = findViewById(R.id.tvRecordBelow70Count);
+        TextView tvRecordSafeCount = findViewById(R.id.tvRecordSafeCount);
+
+        if (tvRecordAvgAttendance != null) {
+            tvRecordAvgAttendance.setText(String.format(java.util.Locale.US, "%.1f%%", avg));
+        }
+        if (tvRecordBelow70Count != null) {
+            tvRecordBelow70Count.setText("⚠️ " + below70 + " Below 70%");
+        }
+        if (tvRecordSafeCount != null) {
+            tvRecordSafeCount.setText("✅ " + safe + " Safe (≥70%)");
+        }
+
+        if (tvStudentsRecordCount != null) {
+            tvStudentsRecordCount.setText("Enrolled Students (" + filtered.size() + ") • Average Attendance: " + String.format(java.util.Locale.US, "%.1f%%", avg));
+        }
+        containerStudentsRecords.removeAllViews();
+
+        if (filtered.isEmpty()) {
+            TextView emptyTv = new TextView(this);
+            emptyTv.setText("No students match the selected stream and subject.");
+            emptyTv.setTextColor(getColor(R.color.text_muted));
+            emptyTv.setTextSize(12f);
+            emptyTv.setPadding(16, 20, 16, 20);
+            containerStudentsRecords.addView(emptyTv);
+            return;
+        }
+
+        for (int i = 0; i < filtered.size(); i++) {
+            User s = filtered.get(i);
+            android.widget.LinearLayout card = new android.widget.LinearLayout(this);
+            card.setOrientation(android.widget.LinearLayout.VERTICAL);
+            card.setBackgroundResource(R.drawable.bg_input_box);
+            card.setPadding(22, 16, 22, 16);
+
+            android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(
+                    android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+            if (i > 0) lp.topMargin = 12;
+            card.setLayoutParams(lp);
+
+            // Row 1: Roll No & Stream badge
+            android.widget.LinearLayout r1 = new android.widget.LinearLayout(this);
+            r1.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+            r1.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+            TextView tvRoll = new TextView(this);
+            android.widget.LinearLayout.LayoutParams rollLp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+            tvRoll.setLayoutParams(rollLp);
+            tvRoll.setText("🆔 " + s.getId() + " • " + s.getFullName());
+            tvRoll.setTextColor(getColor(R.color.charcoal_dark));
+            tvRoll.setTextSize(13.5f);
+            tvRoll.setTypeface(null, android.graphics.Typeface.BOLD);
+            r1.addView(tvRoll);
+
+            TextView tvBadge = new TextView(this);
+            tvBadge.setBackgroundResource(R.drawable.bg_chip_mint);
+            tvBadge.setText(s.getDepartment().isEmpty() ? "Science Stream" : s.getDepartment());
+            tvBadge.setTextColor(getColor(R.color.pastel_mint_text));
+            tvBadge.setTextSize(10.5f);
+            tvBadge.setTypeface(null, android.graphics.Typeface.BOLD);
+            tvBadge.setPadding(14, 5, 14, 5);
+            r1.addView(tvBadge);
+            card.addView(r1);
+
+            // Row 2: Class & Subjects
+            TextView tvMeta = new TextView(this);
+            tvMeta.setText("Class: " + (s.getYearOrClass().isEmpty() ? "11th Standard" : s.getYearOrClass()) + " • Subjects: " + s.getSubjects());
+            tvMeta.setTextColor(getColor(R.color.text_secondary));
+            tvMeta.setTextSize(11.5f);
+            tvMeta.setPadding(0, 6, 0, 0);
+            card.addView(tvMeta);
+
+            // Row 3: Institutional Email
+            TextView tvEmail = new TextView(this);
+            tvEmail.setText("📧 " + s.getEmail());
+            tvEmail.setTextColor(getColor(R.color.pastel_lavender_text));
+            tvEmail.setTextSize(11f);
+            tvEmail.setPadding(0, 4, 0, 0);
+            card.addView(tvEmail);
+
+            // Row 4: Academic Attendance Metric Badge & Lecture Counts
+            android.widget.LinearLayout r4 = new android.widget.LinearLayout(this);
+            r4.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+            r4.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            r4.setPadding(0, 8, 0, 0);
+
+            TextView tvAttBadge = new TextView(this);
+            tvAttBadge.setTextSize(10.5f);
+            tvAttBadge.setTypeface(null, android.graphics.Typeface.BOLD);
+            tvAttBadge.setPadding(12, 4, 12, 4);
+
+            double attPct = s.getAttendancePercentage();
+            if (attPct < 70.0) {
+                tvAttBadge.setBackgroundResource(R.drawable.bg_chip_red);
+                tvAttBadge.setText("⚠️ " + String.format(java.util.Locale.US, "%.1f%% Low (Defaulter)", attPct));
+                tvAttBadge.setTextColor(getColor(R.color.chip_red_text));
+            } else if (attPct < 75.0) {
+                tvAttBadge.setBackgroundResource(R.drawable.bg_chip_yellow);
+                tvAttBadge.setText("⚡ " + String.format(java.util.Locale.US, "%.1f%% Borderline", attPct));
+                tvAttBadge.setTextColor(getColor(R.color.chip_yellow_text));
+            } else {
+                tvAttBadge.setBackgroundResource(R.drawable.bg_chip_green);
+                tvAttBadge.setText("✅ " + String.format(java.util.Locale.US, "%.1f%% Safe", attPct));
+                tvAttBadge.setTextColor(getColor(R.color.chip_green_text));
+            }
+            r4.addView(tvAttBadge);
+
+            TextView tvAttDetail = new TextView(this);
+            tvAttDetail.setText("  •  " + s.getAttendedClasses() + "/" + s.getTotalClasses() + " lectures (" + s.getDutyLeaveApprovedCount() + " duty leaves)");
+            tvAttDetail.setTextColor(getColor(R.color.text_muted));
+            tvAttDetail.setTextSize(11f);
+            r4.addView(tvAttDetail);
+
+            card.addView(r4);
+
+            containerStudentsRecords.addView(card);
+        }
+    }
+
+    private void filterAndRenderTeachers() {
+        if (containerTeachersRecords == null || spinnerRecordTeacherSubject == null) return;
+        String selSubject = spinnerRecordTeacherSubject.getSelectedItem() != null ? spinnerRecordTeacherSubject.getSelectedItem().toString() : "All Teaching Subjects";
+
+        List<User> filtered = userManager.filterTeachers(selSubject);
+        if (tvTeachersRecordCount != null) {
+            tvTeachersRecordCount.setText("Faculty & Staff (" + filtered.size() + ")");
+        }
+        containerTeachersRecords.removeAllViews();
+
+        if (filtered.isEmpty()) {
+            TextView emptyTv = new TextView(this);
+            emptyTv.setText("No faculty members found for this subject.");
+            emptyTv.setTextColor(getColor(R.color.text_muted));
+            emptyTv.setTextSize(12f);
+            emptyTv.setPadding(16, 20, 16, 20);
+            containerTeachersRecords.addView(emptyTv);
+            return;
+        }
+
+        for (int i = 0; i < filtered.size(); i++) {
+            User t = filtered.get(i);
+            android.widget.LinearLayout card = new android.widget.LinearLayout(this);
+            card.setOrientation(android.widget.LinearLayout.VERTICAL);
+            card.setBackgroundResource(R.drawable.bg_input_box);
+            card.setPadding(22, 16, 22, 16);
+
+            android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(
+                    android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+            if (i > 0) lp.topMargin = 12;
+            card.setLayoutParams(lp);
+
+            // Row 1: Name and ID badge
+            android.widget.LinearLayout r1 = new android.widget.LinearLayout(this);
+            r1.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+            r1.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+            TextView tvName = new TextView(this);
+            android.widget.LinearLayout.LayoutParams nameLp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+            tvName.setLayoutParams(nameLp);
+            tvName.setText("👩‍🏫 " + t.getFullName());
+            tvName.setTextColor(getColor(R.color.charcoal_dark));
+            tvName.setTextSize(13.5f);
+            tvName.setTypeface(null, android.graphics.Typeface.BOLD);
+            r1.addView(tvName);
+
+            TextView tvId = new TextView(this);
+            tvId.setBackgroundResource(R.drawable.bg_chip_lavender);
+            tvId.setText(t.getId());
+            tvId.setTextColor(getColor(R.color.pastel_lavender_text));
+            tvId.setTextSize(10.5f);
+            tvId.setTypeface(null, android.graphics.Typeface.BOLD);
+            tvId.setPadding(14, 5, 14, 5);
+            r1.addView(tvId);
+            card.addView(r1);
+
+            // Row 2: Designation & Dept
+            TextView tvDesig = new TextView(this);
+            tvDesig.setText(t.getAdditionalInfo() + " (" + t.getDepartment() + ")");
+            tvDesig.setTextColor(getColor(R.color.text_secondary));
+            tvDesig.setTextSize(11.5f);
+            tvDesig.setPadding(0, 6, 0, 0);
+            card.addView(tvDesig);
+
+            // Row 3: Teaching Subjects
+            TextView tvSubs = new TextView(this);
+            tvSubs.setText("📚 Subjects: " + t.getSubjects());
+            tvSubs.setTextColor(getColor(R.color.charcoal_dark));
+            tvSubs.setTextSize(11.5f);
+            tvSubs.setTypeface(null, android.graphics.Typeface.BOLD);
+            tvSubs.setPadding(0, 4, 0, 0);
+            card.addView(tvSubs);
+
+            // Row 4: Email & Phone
+            TextView tvContact = new TextView(this);
+            tvContact.setText("📧 " + t.getEmail() + " • 📞 " + (t.getPhoneNumber().isEmpty() ? "+91 9823000000" : t.getPhoneNumber()));
+            tvContact.setTextColor(getColor(R.color.text_muted));
+            tvContact.setTextSize(11f);
+            tvContact.setPadding(0, 4, 0, 0);
+            card.addView(tvContact);
+
+            containerTeachersRecords.addView(card);
         }
     }
 
@@ -133,11 +481,32 @@ public class HomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadCurrentUserData();
-        loadSpotPassCardData();
+        updateNotificationBadge();
+        checkMandatoryProfileCompletion();
+    }
+
+    private boolean profilePromptShown = false;
+
+    private void checkMandatoryProfileCompletion() {
+        User user = userManager.getCurrentUser();
+        if (user != null && !user.isPrincipal() && !user.isProfileComplete() && !profilePromptShown) {
+            profilePromptShown = true;
+            new AlertDialog.Builder(this)
+                    .setMessage("You have access to the app.")
+                    .setCancelable(true)
+                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                    .show();
+        }
     }
 
     private void loadCurrentUserData() {
         User user = userManager.getCurrentUser();
+        if (user == null) {
+            user = userManager.getPrincipalUser();
+            if (user != null) {
+                userManager.setCurrentUser(user);
+            }
+        }
         if (user != null) {
             if (tvHeaderStudentName != null && user.getFullName() != null) {
                 tvHeaderStudentName.setText(user.getFullName());
@@ -145,37 +514,1297 @@ public class HomeActivity extends AppCompatActivity {
             if (tvHeaderAvatar != null) {
                 tvHeaderAvatar.setText(user.getInitials());
             }
+
+            TextView tvGreeting = findViewById(R.id.tvGreeting);
+
+            // Update latest notice on Home page card
+            Notice latest = noticeManager.getLatestNotice();
+            if (latest != null) {
+                if (tvNoticeCardTitle != null) {
+                    tvNoticeCardTitle.setText(latest.getTitle());
+                }
+                if (tvNoticeCardMeta != null) {
+                    String meta = latest.getCategory() + " • " + latest.getAuthor() + " • " + latest.getDate();
+                    if (latest.getEventTime() != null && !latest.getEventTime().trim().isEmpty()) {
+                        meta += " • " + latest.getEventTime();
+                    }
+                    tvNoticeCardMeta.setText(meta);
+                }
+            } else {
+                if (tvNoticeCardTitle != null) {
+                    tvNoticeCardTitle.setText("No Official Notices Yet");
+                }
+                if (tvNoticeCardMeta != null) {
+                    if (user.isTeacherOrDirector() || user.isPrincipal()) {
+                        tvNoticeCardMeta.setText("Tap here or 'Post Notice' to publish for students");
+                    } else {
+                        tvNoticeCardMeta.setText("Teachers will publish official announcements here");
+                    }
+                }
+            }
+
+            if (user.isPrincipal()) {
+                if (tvGreeting != null) {
+                    tvGreeting.setText("Principal & Administrator");
+                }
+                // Show Principal Dashboard, hide student widgets
+                if (layoutPrincipalDashboard != null) layoutPrincipalDashboard.setVisibility(View.VISIBLE);
+                if (layoutStudentHero != null) layoutStudentHero.setVisibility(View.GONE);
+                if (layoutStudentQuickActions != null) layoutStudentQuickActions.setVisibility(View.GONE);
+                if (layoutStudentWeek != null) layoutStudentWeek.setVisibility(View.GONE);
+
+                filterAndRenderStudents();
+                filterAndRenderTeachers();
+
+            } else if (user.isTeacherOrDirector()) {
+                if (tvGreeting != null) {
+                    tvGreeting.setText("Faculty / Class Teacher");
+                }
+                if (layoutPrincipalDashboard != null) layoutPrincipalDashboard.setVisibility(View.GONE);
+                if (layoutStudentHero != null) layoutStudentHero.setVisibility(View.GONE);
+                if (layoutStudentQuickActions != null) layoutStudentQuickActions.setVisibility(View.VISIBLE);
+                if (layoutStudentWeek != null) layoutStudentWeek.setVisibility(View.VISIBLE);
+
+                MaterialButton btnNewSpotPass = findViewById(R.id.btnNewSpotPass);
+                MaterialButton btnPermission = findViewById(R.id.btnPermission);
+                MaterialButton btnTeacherNoticeAction = findViewById(R.id.btnTeacherNoticeAction);
+                if (btnNewSpotPass != null) {
+                    btnNewSpotPass.setText("Add Student");
+                    btnNewSpotPass.setIconResource(0);
+                    btnNewSpotPass.setOnClickListener(v -> showAddStudentDialog());
+                }
+                if (btnPermission != null) {
+                    btnPermission.setText("Requests & Passes");
+                    btnPermission.setIconResource(R.drawable.ic_file);
+                    btnPermission.setOnClickListener(v -> startActivity(new Intent(this, RequestsActivity.class)));
+                }
+                if (btnTeacherNoticeAction != null) {
+                    btnTeacherNoticeAction.setVisibility(View.VISIBLE);
+                    btnTeacherNoticeAction.setOnClickListener(v -> showNewNoticeDialog());
+                }
+                MaterialButton btnInterchangeLectures = findViewById(R.id.btnInterchangeLectures);
+                if (btnInterchangeLectures != null) {
+                    btnInterchangeLectures.setVisibility(View.VISIBLE);
+                    btnInterchangeLectures.setOnClickListener(v -> showInterchangeLectureDialog(null, null));
+                }
+            } else {
+                // Student Account
+                if (tvGreeting != null) {
+                    tvGreeting.setText("Student Account");
+                }
+                if (layoutPrincipalDashboard != null) layoutPrincipalDashboard.setVisibility(View.GONE);
+                if (layoutStudentHero != null) layoutStudentHero.setVisibility(View.VISIBLE);
+                if (layoutStudentQuickActions != null) layoutStudentQuickActions.setVisibility(View.VISIBLE);
+                if (layoutStudentWeek != null) layoutStudentWeek.setVisibility(View.VISIBLE);
+
+                MaterialButton btnNewSpotPass = findViewById(R.id.btnNewSpotPass);
+                MaterialButton btnPermission = findViewById(R.id.btnPermission);
+                MaterialButton btnTeacherNoticeAction = findViewById(R.id.btnTeacherNoticeAction);
+                MaterialButton btnInterchangeLectures = findViewById(R.id.btnInterchangeLectures);
+                if (btnNewSpotPass != null) {
+                    btnNewSpotPass.setText(R.string.new_spot_pass);
+                    btnNewSpotPass.setIconResource(0);
+                    btnNewSpotPass.setOnClickListener(v -> showNewSpotPassDialog());
+                }
+                if (btnPermission != null) {
+                    btnPermission.setText(R.string.permission);
+                    btnPermission.setIconResource(R.drawable.ic_file);
+                    btnPermission.setOnClickListener(v -> showNewPermissionDialog());
+                }
+                if (btnTeacherNoticeAction != null) {
+                    btnTeacherNoticeAction.setVisibility(View.GONE);
+                }
+                if (btnInterchangeLectures != null) {
+                    btnInterchangeLectures.setVisibility(View.GONE);
+                }
+
+                // Dynamic Academic Attendance Card for Student
+                TextView tvAttendanceValue = findViewById(R.id.tvAttendanceValue);
+                TextView tvAttendanceBreakdown = findViewById(R.id.tvAttendanceBreakdown);
+                TextView tvAttendanceStatus = findViewById(R.id.tvAttendanceStatus);
+                com.google.android.material.progressindicator.CircularProgressIndicator ringAttendance = findViewById(R.id.ringAttendance);
+
+                double pct = user.getAttendancePercentage();
+                int total = user.getTotalClasses() > 0 ? user.getTotalClasses() : 120;
+                int attended = user.getAttendedClasses() > 0 ? user.getAttendedClasses() : (int) Math.round(total * (pct / 100.0));
+                int duty = user.getDutyLeaveApprovedCount();
+
+                if (tvAttendanceValue != null) {
+                    tvAttendanceValue.setText(String.format(java.util.Locale.US, "%.0f%%", pct));
+                }
+                if (ringAttendance != null) {
+                    ringAttendance.setProgress((int) Math.round(pct));
+                    if (pct < 70.0) {
+                        ringAttendance.setIndicatorColor(getColor(R.color.coral));
+                    } else if (pct < 75.0) {
+                        ringAttendance.setIndicatorColor(getColor(R.color.pastel_butter_primary));
+                    } else {
+                        ringAttendance.setIndicatorColor(getColor(R.color.accent_ring));
+                    }
+                }
+                if (tvAttendanceStatus != null) {
+                    if (pct < 70.0) {
+                        tvAttendanceStatus.setText("Alert");
+                        tvAttendanceStatus.setTextColor(getColor(R.color.coral));
+                    } else if (pct < 75.0) {
+                        tvAttendanceStatus.setText("Warning");
+                        tvAttendanceStatus.setTextColor(getColor(R.color.pastel_butter_primary));
+                    } else {
+                        tvAttendanceStatus.setText(R.string.attendance_safe);
+                        tvAttendanceStatus.setTextColor(getColor(R.color.white));
+                    }
+                }
+                if (tvAttendanceBreakdown != null) {
+                    if (pct < 70.0) {
+                        tvAttendanceBreakdown.setText("Attended " + attended + "/" + total + " classes • ⚠️ Low Attendance (Below 70%)");
+                    } else {
+                        tvAttendanceBreakdown.setText("Attended " + attended + "/" + total + " classes • " + duty + " duty leaves counted");
+                    }
+                }
+            }
         }
     }
 
-    private void loadSpotPassCardData() {
-        User user = userManager.getCurrentUser();
-        String studentId = user != null ? user.getId() : "";
-        SpotPass latest = spotPassManager.getLatestSpotPassForStudent(studentId);
 
-        if (latest != null) {
-            if (tvSpotPassCardTitle != null) {
-                tvSpotPassCardTitle.setText("Spot Pass · " + latest.getActivityTitle());
-            }
-            if (tvSpotPassCardSlot != null) {
-                tvSpotPassCardSlot.setText(latest.getTimeSlot());
-            }
-            if (tvSpotPassCardStatus != null) {
-                tvSpotPassCardStatus.setText(latest.getStatus());
-            }
-            if (progressSpotPassCard != null) {
-                progressSpotPassCard.setProgress(latest.getProgress());
+
+    /**
+     * Connects week day cards (Mon - Sat) in the "This week" horizontal bar
+     * to open the interactive Academic Calendar for that specific date.
+     */
+    private void setupWeekDayClicks() {
+        int[] dayIds = new int[]{R.id.dayMon, R.id.dayTue, R.id.dayWed, R.id.dayThu, R.id.dayFri, R.id.daySat};
+        String[] dayDates = new String[]{
+                "Mon, 19 Oct 2026",
+                "Tue, 20 Oct 2026",
+                "Wed, 21 Oct 2026",
+                "Thu, 22 Oct 2026",
+                "Fri, 23 Oct 2026",
+                "Sat, 24 Oct 2026"
+        };
+        for (int i = 0; i < dayIds.length; i++) {
+            View dayView = findViewById(dayIds[i]);
+            if (dayView != null) {
+                final String d = dayDates[i];
+                dayView.setOnClickListener(v -> showCalendarDialog(d));
             }
         }
     }
 
     /**
-     * Modal dialog allowing students to create a New Spot Pass.
-     * Routes automatically to:
-     * 1. Class Teacher (Primary absence & duty approval)
-     * 2. Subject Teacher of that particular lecture/time period (Period attendance duty credit)
+     * Interactive Academic & Spot Pass Calendar Dialog.
+     * Scrollable calendar view.
+     * For Principal: Displays all permissions and spot passes the Principal/Institution has allowed to students.
+     * For Students: Displays lecture timetable, clashing periods, and student spot passes on selected date.
      */
-    private void showNewSpotPassDialog() {
+    private void showCalendarDialog(String initialDate) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_calendar_view, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        CalendarView calendarView = dialogView.findViewById(R.id.calendarViewMain);
+        TextView tvSelectedDate = dialogView.findViewById(R.id.tvSelectedDateTitle);
+        TextView tvDateStatus = dialogView.findViewById(R.id.tvSelectedDateStatus);
+        TextView tvDayDutyBadge = dialogView.findViewById(R.id.tvDayDutyBadge);
+        TextView tvCalendarSubtitle = dialogView.findViewById(R.id.tvCalendarSubtitle);
+
+        View layoutTimetableSection = dialogView.findViewById(R.id.layoutTimetableSection);
+        android.widget.LinearLayout containerTimetableEntries = dialogView.findViewById(R.id.containerTimetableEntries);
+        TextView btnTeacherInterchangeAction = dialogView.findViewById(R.id.btnTeacherInterchangeAction);
+        View layoutStudentPassesSection = dialogView.findViewById(R.id.layoutStudentPassesSection);
+        View layoutPrincipalAllowedSection = dialogView.findViewById(R.id.layoutPrincipalAllowedSection);
+        TextView tvPrincipalNoAllowedRequests = dialogView.findViewById(R.id.tvPrincipalNoAllowedRequests);
+        android.widget.LinearLayout containerPrincipalAllowedList = dialogView.findViewById(R.id.containerPrincipalAllowedList);
+
+        TextView tvCalendarNoPasses = dialogView.findViewById(R.id.tvCalendarNoPasses);
+        View cardPassPreview = dialogView.findViewById(R.id.cardCalendarPassPreview);
+        TextView tvCalPassTitle = dialogView.findViewById(R.id.tvCalPassTitle);
+        TextView tvCalPassStatusBadge = dialogView.findViewById(R.id.tvCalPassStatusBadge);
+        TextView tvCalPassDetails = dialogView.findViewById(R.id.tvCalPassDetails);
+        MaterialButton btnClose = dialogView.findViewById(R.id.btnCloseCalendar);
+        MaterialButton btnCreatePass = dialogView.findViewById(R.id.btnCreatePassForDate);
+
+        User currentUser = userManager.getCurrentUser();
+        boolean isPrincipal = currentUser != null && currentUser.isPrincipal();
+
+        if (isPrincipal) {
+            if (tvCalendarSubtitle != null) {
+                tvCalendarSubtitle.setText("Institutional Approvals & Granted Student Passes");
+            }
+            if (layoutTimetableSection != null) layoutTimetableSection.setVisibility(View.GONE);
+            if (layoutStudentPassesSection != null) layoutStudentPassesSection.setVisibility(View.GONE);
+            if (layoutPrincipalAllowedSection != null) layoutPrincipalAllowedSection.setVisibility(View.VISIBLE);
+            if (btnCreatePass != null) {
+                btnCreatePass.setText("Review All Requests");
+                btnCreatePass.setIconResource(R.drawable.ic_file);
+                btnCreatePass.setOnClickListener(v -> {
+                    dialog.dismiss();
+                    startActivity(new Intent(this, RequestsActivity.class));
+                });
+            }
+        } else {
+            if (layoutTimetableSection != null) layoutTimetableSection.setVisibility(View.VISIBLE);
+            if (layoutStudentPassesSection != null) layoutStudentPassesSection.setVisibility(View.VISIBLE);
+            if (layoutPrincipalAllowedSection != null) layoutPrincipalAllowedSection.setVisibility(View.GONE);
+            if (tvCalendarSubtitle != null && currentUser != null) {
+                tvCalendarSubtitle.setText(currentUser.getDepartment() + " • Timetable & Routine");
+            }
+        }
+
+        final String[] currentDateHolder = new String[]{
+                initialDate != null && !initialDate.isEmpty() ? initialDate : "Wed, 21 Oct 2026"
+        };
+
+        boolean isTeacherOrAdmin = currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal());
+        if (btnTeacherInterchangeAction != null) {
+            btnTeacherInterchangeAction.setVisibility(isTeacherOrAdmin ? View.VISIBLE : View.GONE);
+        }
+
+        final Runnable[] updateDateDisplay = new Runnable[1];
+        updateDateDisplay[0] = () -> {
+            tvSelectedDate.setText(currentDateHolder[0]);
+
+            if (isPrincipal) {
+                // Principal View: Allowed student passes and permissions
+                if (containerPrincipalAllowedList != null) {
+                    containerPrincipalAllowedList.removeAllViews();
+                }
+
+                List<SpotPass> allPasses = spotPassManager.getAllSpotPasses();
+                List<PermissionRequest> allPerms = permissionRequestManager.getAllRequests();
+                int allowedCount = 0;
+
+                // 1. Allowed Spot Passes
+                for (SpotPass p : allPasses) {
+                    if (p.isApproved()) {
+                        allowedCount++;
+                        android.widget.LinearLayout card = new android.widget.LinearLayout(this);
+                        card.setOrientation(android.widget.LinearLayout.VERTICAL);
+                        card.setBackgroundResource(R.drawable.bg_input_box);
+                        card.setPadding(22, 16, 22, 16);
+
+                        android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(
+                                android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+                        lp.topMargin = 10;
+                        card.setLayoutParams(lp);
+
+                        // Row 1
+                        android.widget.LinearLayout r1 = new android.widget.LinearLayout(this);
+                        r1.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                        r1.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+                        TextView titleTv = new TextView(this);
+                        android.widget.LinearLayout.LayoutParams titleLp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                        titleTv.setLayoutParams(titleLp);
+                        titleTv.setText("⚡ [Spot Pass] " + p.getActivityTitle());
+                        titleTv.setTextColor(getColor(R.color.charcoal_dark));
+                        titleTv.setTextSize(13f);
+                        titleTv.setTypeface(null, android.graphics.Typeface.BOLD);
+                        r1.addView(titleTv);
+
+                        TextView badgeTv = new TextView(this);
+                        badgeTv.setBackgroundResource(R.drawable.bg_chip_mint);
+                        badgeTv.setText("Allowed");
+                        badgeTv.setTextColor(getColor(R.color.pastel_mint_text));
+                        badgeTv.setTextSize(10.5f);
+                        badgeTv.setTypeface(null, android.graphics.Typeface.BOLD);
+                        badgeTv.setPadding(14, 4, 14, 4);
+                        r1.addView(badgeTv);
+                        card.addView(r1);
+
+                        // Row 2: Student info
+                        TextView metaTv = new TextView(this);
+                        metaTv.setText("Student: " + p.getStudentName() + " (" + p.getStudentRoll() + ") • " + p.getTimeSlot());
+                        metaTv.setTextColor(getColor(R.color.text_secondary));
+                        metaTv.setTextSize(11.5f);
+                        metaTv.setPadding(0, 4, 0, 0);
+                        card.addView(metaTv);
+
+                        card.setOnClickListener(v -> {
+                            dialog.dismiss();
+                            showSpotPassDetailsDialog(p);
+                        });
+
+                        if (containerPrincipalAllowedList != null) {
+                            containerPrincipalAllowedList.addView(card);
+                        }
+                    }
+                }
+
+                // 2. Allowed Permissions
+                for (PermissionRequest r : allPerms) {
+                    if (r.isApproved()) {
+                        allowedCount++;
+                        android.widget.LinearLayout card = new android.widget.LinearLayout(this);
+                        card.setOrientation(android.widget.LinearLayout.VERTICAL);
+                        card.setBackgroundResource(R.drawable.bg_input_box);
+                        card.setPadding(22, 16, 22, 16);
+
+                        android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(
+                                android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+                        lp.topMargin = 10;
+                        card.setLayoutParams(lp);
+
+                        // Row 1
+                        android.widget.LinearLayout r1 = new android.widget.LinearLayout(this);
+                        r1.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                        r1.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+                        TextView titleTv = new TextView(this);
+                        android.widget.LinearLayout.LayoutParams titleLp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                        titleTv.setLayoutParams(titleLp);
+                        titleTv.setText("📋 [Permission] " + r.getTitle());
+                        titleTv.setTextColor(getColor(R.color.charcoal_dark));
+                        titleTv.setTextSize(13f);
+                        titleTv.setTypeface(null, android.graphics.Typeface.BOLD);
+                        r1.addView(titleTv);
+
+                        TextView badgeTv = new TextView(this);
+                        badgeTv.setBackgroundResource(R.drawable.bg_chip_mint);
+                        badgeTv.setText("Approved");
+                        badgeTv.setTextColor(getColor(R.color.pastel_mint_text));
+                        badgeTv.setTextSize(10.5f);
+                        badgeTv.setTypeface(null, android.graphics.Typeface.BOLD);
+                        badgeTv.setPadding(14, 4, 14, 4);
+                        r1.addView(badgeTv);
+                        card.addView(r1);
+
+                        // Row 2: Student info
+                        TextView metaTv = new TextView(this);
+                        metaTv.setText("Applicant: " + r.getApplicantName() + " (" + r.getApplicantRoll() + ") • " + r.getFormattedDateRange());
+                        metaTv.setTextColor(getColor(R.color.text_secondary));
+                        metaTv.setTextSize(11.5f);
+                        metaTv.setPadding(0, 4, 0, 0);
+                        card.addView(metaTv);
+
+                        if (containerPrincipalAllowedList != null) {
+                            containerPrincipalAllowedList.addView(card);
+                        }
+                    }
+                }
+
+                if (allowedCount == 0) {
+                    if (tvPrincipalNoAllowedRequests != null) {
+                        tvPrincipalNoAllowedRequests.setVisibility(View.VISIBLE);
+                        tvPrincipalNoAllowedRequests.setText("No student passes or permissions allowed for " + currentDateHolder[0]);
+                    }
+                } else {
+                    if (tvPrincipalNoAllowedRequests != null) {
+                        tvPrincipalNoAllowedRequests.setVisibility(View.GONE);
+                    }
+                }
+
+                if (tvDateStatus != null) {
+                    tvDateStatus.setText(allowedCount + " Student Duty Passes & Permissions Allowed by Institution");
+                }
+                if (tvDayDutyBadge != null) {
+                    tvDayDutyBadge.setText(allowedCount + " Allowed");
+                }
+
+            } else {
+                // Student & Teacher Dynamic Timetable & Spot Passes View
+                renderTimetableForDate(containerTimetableEntries, currentDateHolder[0], currentUser, dialog, updateDateDisplay[0]);
+
+                if (btnTeacherInterchangeAction != null) {
+                    btnTeacherInterchangeAction.setOnClickListener(v -> showInterchangeLectureDialog(dialog, updateDateDisplay[0]));
+                }
+
+                User u = userManager.getCurrentUser();
+                List<SpotPass> studentPasses = spotPassManager.getSpotPassesForStudent(u != null ? u.getId() : "");
+
+                SpotPass matchingPass = null;
+                for (SpotPass p : studentPasses) {
+                    if (p.getDate() != null && !p.getDate().trim().isEmpty()) {
+                        String passDate = p.getDate().trim().toLowerCase();
+                        String curDate = currentDateHolder[0].trim().toLowerCase();
+                        if (curDate.contains(passDate) || passDate.contains(curDate)) {
+                            matchingPass = p;
+                            break;
+                        }
+                    }
+                }
+
+                if (matchingPass != null) {
+                    if (tvCalendarNoPasses != null) tvCalendarNoPasses.setVisibility(View.GONE);
+                    if (cardPassPreview != null) cardPassPreview.setVisibility(View.VISIBLE);
+                    if (tvCalPassTitle != null) tvCalPassTitle.setText(matchingPass.getActivityTitle());
+                    if (tvCalPassStatusBadge != null) tvCalPassStatusBadge.setText(matchingPass.getStatus());
+                    if (tvCalPassDetails != null) {
+                        tvCalPassDetails.setText(matchingPass.getTimeSlot() + " • " + matchingPass.getSubject() + " (" + matchingPass.getSubjectTeacher() + ")");
+                    }
+                    if (tvDateStatus != null) {
+                        tvDateStatus.setText("5 Scheduled Lectures • 1 Duty Pass Active (" + matchingPass.getStatus() + ")");
+                    }
+                    if (tvDayDutyBadge != null) tvDayDutyBadge.setText("Duty Leave Active");
+
+                    final SpotPass passToOpen = matchingPass;
+                    if (cardPassPreview != null) {
+                        cardPassPreview.setOnClickListener(v -> {
+                            dialog.dismiss();
+                            showSpotPassDetailsDialog(passToOpen);
+                        });
+                    }
+                } else {
+                    if (tvCalendarNoPasses != null) tvCalendarNoPasses.setVisibility(View.VISIBLE);
+                    if (cardPassPreview != null) cardPassPreview.setVisibility(View.GONE);
+                    if (tvDateStatus != null) {
+                        tvDateStatus.setText("Regular Academic Routine • 5 Lectures Scheduled");
+                    }
+                    if (tvDayDutyBadge != null) tvDayDutyBadge.setText("Regular Day");
+                }
+            }
+        };
+
+        updateDateDisplay[0].run();
+
+        if (calendarView != null) {
+            calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+                Calendar c = Calendar.getInstance();
+                c.set(year, month, dayOfMonth);
+                SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy", Locale.US);
+                currentDateHolder[0] = sdf.format(c.getTime());
+                updateDateDisplay[0].run();
+            });
+        }
+
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        if (!isPrincipal && btnCreatePass != null) {
+            btnCreatePass.setOnClickListener(v -> {
+                dialog.dismiss();
+                showNewSpotPassDialog(currentDateHolder[0]);
+            });
+        }
+
+        dialog.show();
+
+        // Ensure comfortable height and scrollability
+        if (dialog.getWindow() != null) {
+            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            int h = (int) (dm.heightPixels * 0.88);
+            int w = (int) (dm.widthPixels * 0.94);
+            dialog.getWindow().setLayout(w, h);
+        }
+    }
+
+    private int dp(int value) {
+        return (int) (value * getResources().getDisplayMetrics().density);
+    }
+
+    private String parseDayOfWeekFromDate(String dateStr) {
+        if (dateStr == null || dateStr.trim().isEmpty()) return "Monday";
+        String lower = dateStr.toLowerCase();
+        if (lower.contains("mon")) return "Monday";
+        if (lower.contains("tue")) return "Tuesday";
+        if (lower.contains("wed")) return "Wednesday";
+        if (lower.contains("thu")) return "Thursday";
+        if (lower.contains("fri")) return "Friday";
+        if (lower.contains("sat")) return "Saturday";
+        if (lower.contains("sun")) return "Sunday";
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy", Locale.US);
+            java.util.Date d = sdf.parse(dateStr);
+            if (d != null) {
+                SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
+                return dayFormat.format(d);
+            }
+        } catch (Exception ignored) {}
+        return "Monday";
+    }
+
+    /**
+     * Dynamically renders the weekly timetable for the student's enrolled subjects or teacher's stream.
+     * Includes all 5 daily lecture slots + 11:00 AM - 11:30 AM Recess/Break.
+     * Displays Pass Clashed or Swapped badges.
+     */
+    private void renderTimetableForDate(android.widget.LinearLayout container, String dateStr,
+                                       User user, @Nullable AlertDialog parentDialog,
+                                       @Nullable Runnable onRefreshCallback) {
+        if (container == null) return;
+        container.removeAllViews();
+
+        String dayOfWeek = parseDayOfWeekFromDate(dateStr);
+        if ("Sunday".equalsIgnoreCase(dayOfWeek)) {
+            TextView tvSun = new TextView(this);
+            tvSun.setText("🎉 Sunday • Institutional Holiday & Self-Study Day\nNo academic lectures scheduled.");
+            tvSun.setTextColor(getColor(R.color.charcoal_dark));
+            tvSun.setTextSize(13f);
+            tvSun.setPadding(dp(16), dp(24), dp(16), dp(24));
+            tvSun.setGravity(android.view.Gravity.CENTER);
+            container.addView(tvSun);
+            return;
+        }
+
+        List<TimetableSlot> slots = timetableManager.getTimetableForUser(user, dayOfWeek);
+        List<SpotPass> studentPasses = user != null ? spotPassManager.getSpotPassesForStudent(user.getId()) : new ArrayList<>();
+        boolean isTeacherOrAdmin = user != null && (user.isTeacherOrDirector() || user.isPrincipal());
+
+        for (int i = 0; i < slots.size(); i++) {
+            TimetableSlot slot = slots.get(i);
+
+            // Check if slot clashes with student's approved or pending spot pass
+            boolean hasPassClash = false;
+            for (SpotPass p : studentPasses) {
+                if (p.getDate() != null && !p.getDate().trim().isEmpty()) {
+                    String pDate = p.getDate().trim().toLowerCase();
+                    String cDate = dateStr.trim().toLowerCase();
+                    if (cDate.contains(pDate) || pDate.contains(cDate)) {
+                        if (p.getTimeSlot() != null && (p.getTimeSlot().contains(slot.getStartTime()) || slot.getTimeDisplay().contains(p.getTimeSlot()))) {
+                            hasPassClash = true;
+                            break;
+                        }
+                        if (p.getSubject() != null && slot.getSubject() != null && p.getSubject().equalsIgnoreCase(slot.getSubject())) {
+                            hasPassClash = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            android.widget.LinearLayout row = new android.widget.LinearLayout(this);
+            row.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            row.setPadding(0, dp(4), 0, dp(4));
+
+            // Time Column
+            TextView tvTime = new TextView(this);
+            android.widget.LinearLayout.LayoutParams timeLp = new android.widget.LinearLayout.LayoutParams(dp(74), android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+            tvTime.setLayoutParams(timeLp);
+            tvTime.setText(slot.getStartTime());
+            tvTime.setTextColor(getColor(R.color.pastel_lavender_text));
+            tvTime.setTextSize(11f);
+            tvTime.setTypeface(null, android.graphics.Typeface.BOLD);
+            row.addView(tvTime);
+
+            // Subject & Teacher Details Column
+            android.widget.LinearLayout midCol = new android.widget.LinearLayout(this);
+            midCol.setOrientation(android.widget.LinearLayout.VERTICAL);
+            android.widget.LinearLayout.LayoutParams midLp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+            midCol.setLayoutParams(midLp);
+
+            TextView tvTitle = new TextView(this);
+            tvTitle.setText(slot.getLectureTitle());
+            tvTitle.setTextColor(getColor(R.color.charcoal_dark));
+            tvTitle.setTextSize(12.5f);
+            tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+            midCol.addView(tvTitle);
+
+            TextView tvMeta = new TextView(this);
+            tvMeta.setText(slot.getTeacherName() + " • " + slot.getRoom());
+            tvMeta.setTextColor(getColor(R.color.pastel_lavender_text));
+            tvMeta.setTextSize(11f);
+            midCol.addView(tvMeta);
+
+            if (slot.isInterchanged()) {
+                TextView tvSwapNote = new TextView(this);
+                tvSwapNote.setText("🔄 " + (slot.getInterchangeNote().isEmpty() ? "Swapped with " + slot.getInterchangedWith() : slot.getInterchangeNote()));
+                tvSwapNote.setTextColor(getColor(R.color.amber));
+                tvSwapNote.setTextSize(10.5f);
+                tvSwapNote.setTypeface(null, android.graphics.Typeface.ITALIC);
+                midCol.addView(tvSwapNote);
+            }
+            row.addView(midCol);
+
+            // Status Badge
+            TextView badge = new TextView(this);
+            badge.setTextSize(9.5f);
+            badge.setTypeface(null, android.graphics.Typeface.BOLD);
+            badge.setPadding(dp(7), dp(3), dp(7), dp(3));
+
+            if (hasPassClash) {
+                badge.setBackgroundResource(R.drawable.bg_chip_butter);
+                badge.setText("Pass Clashed");
+                badge.setTextColor(getColor(R.color.charcoal_dark));
+            } else if (slot.isInterchanged()) {
+                badge.setBackgroundResource(R.drawable.bg_chip_butter);
+                badge.setText("🔄 Swapped");
+                badge.setTextColor(getColor(R.color.pastel_butter_text));
+            } else {
+                badge.setBackgroundResource(R.drawable.bg_chip_white);
+                badge.setText("Regular");
+                badge.setTextColor(getColor(R.color.charcoal_dark));
+            }
+            row.addView(badge);
+
+            // If teacher, allow clicking slot to directly interchange it!
+            if (isTeacherOrAdmin) {
+                row.setBackgroundResource(R.drawable.bg_chip_white);
+                row.setPadding(dp(8), dp(8), dp(8), dp(8));
+                row.setClickable(true);
+                row.setFocusable(true);
+                final TimetableSlot currentSlot = slot;
+                row.setOnClickListener(v -> showInterchangeLectureDialog(parentDialog, onRefreshCallback, currentSlot));
+            }
+
+            container.addView(row);
+
+            // Insert Recess / Break (11:00 AM - 11:30 AM) right after Lecture Slot 3!
+            if (slot.getSlotNumber() == 3) {
+                View sep1 = new View(this);
+                android.widget.LinearLayout.LayoutParams sepLp1 = new android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, dp(1));
+                sepLp1.setMargins(0, dp(8), 0, dp(8));
+                sep1.setLayoutParams(sepLp1);
+                sep1.setBackgroundColor(0xFFEAE3FC);
+                container.addView(sep1);
+
+                android.widget.LinearLayout breakRow = new android.widget.LinearLayout(this);
+                breakRow.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                breakRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                breakRow.setBackgroundResource(R.drawable.bg_chip_mint);
+                breakRow.setPadding(dp(10), dp(7), dp(10), dp(7));
+
+                TextView tvBreakTime = new TextView(this);
+                android.widget.LinearLayout.LayoutParams bTimeLp = new android.widget.LinearLayout.LayoutParams(dp(74), android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+                tvBreakTime.setLayoutParams(bTimeLp);
+                tvBreakTime.setText("11:00 AM");
+                tvBreakTime.setTextColor(getColor(R.color.pastel_mint_text));
+                tvBreakTime.setTextSize(11f);
+                tvBreakTime.setTypeface(null, android.graphics.Typeface.BOLD);
+                breakRow.addView(tvBreakTime);
+
+                TextView tvBreakLabel = new TextView(this);
+                android.widget.LinearLayout.LayoutParams bLblLp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                tvBreakLabel.setLayoutParams(bLblLp);
+                tvBreakLabel.setText("🥪 Recess / Break (11:00 AM - 11:30 AM)");
+                tvBreakLabel.setTextColor(getColor(R.color.pastel_mint_text));
+                tvBreakLabel.setTextSize(12f);
+                tvBreakLabel.setTypeface(null, android.graphics.Typeface.BOLD);
+                breakRow.addView(tvBreakLabel);
+
+                TextView tvBreakBadge = new TextView(this);
+                tvBreakBadge.setText("Recess");
+                tvBreakBadge.setBackgroundResource(R.drawable.bg_chip_white);
+                tvBreakBadge.setTextColor(getColor(R.color.pastel_mint_text));
+                tvBreakBadge.setTextSize(9.5f);
+                tvBreakBadge.setTypeface(null, android.graphics.Typeface.BOLD);
+                tvBreakBadge.setPadding(dp(8), dp(3), dp(8), dp(3));
+                breakRow.addView(tvBreakBadge);
+
+                container.addView(breakRow);
+            }
+
+            if (i < slots.size() - 1) {
+                View sep = new View(this);
+                android.widget.LinearLayout.LayoutParams sepLp = new android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, dp(1));
+                sepLp.setMargins(0, dp(8), 0, dp(8));
+                sep.setLayoutParams(sepLp);
+                sep.setBackgroundColor(0xFFEAE3FC);
+                container.addView(sep);
+            }
+        }
+    }
+
+    /**
+     * Interchange Dialog allowing teachers to coordinate and swap lecture slots across streams and days.
+     * Updates the persistent schedule and posts an institutional notice.
+     */
+    private void showInterchangeLectureDialog(@Nullable AlertDialog parentDialog, @Nullable Runnable onRefreshCallback) {
+        showInterchangeLectureDialog(parentDialog, onRefreshCallback, null);
+    }
+
+    private void showInterchangeLectureDialog(@Nullable AlertDialog parentDialog, @Nullable Runnable onRefreshCallback, @Nullable TimetableSlot preselectedSlot) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_interchange_lecture, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        User currentUser = userManager.getCurrentUser();
+        Spinner spinnerStream = dialogView.findViewById(R.id.spinnerInterchangeStream);
+        Spinner spinnerDay = dialogView.findViewById(R.id.spinnerInterchangeDay);
+        Spinner spinnerSlot1 = dialogView.findViewById(R.id.spinnerInterchangeSlot1);
+        Spinner spinnerSlot2 = dialogView.findViewById(R.id.spinnerInterchangeSlot2);
+        EditText etReason = dialogView.findViewById(R.id.etInterchangeReason);
+        android.widget.CheckBox cbBroadcast = dialogView.findViewById(R.id.cbBroadcastNotice);
+
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelInterchange);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btnConfirmInterchange);
+
+        // Populate Streams: Science Stream, Commerce Stream, Arts Stream
+        String[] streams = new String[]{
+                TimetableManager.STREAM_SCIENCE + " (B.Sc.)",
+                TimetableManager.STREAM_COMMERCE + " (B.Com)",
+                TimetableManager.STREAM_ARTS + " (B.A.)"
+        };
+        ArrayAdapter<String> streamAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, streams);
+        spinnerStream.setAdapter(streamAdapter);
+
+        // Pre-select stream
+        if (preselectedSlot != null) {
+            String s = preselectedSlot.getStream();
+            if (s.contains("Com")) spinnerStream.setSelection(1);
+            else if (s.contains("Art")) spinnerStream.setSelection(2);
+            else spinnerStream.setSelection(0);
+        } else if (currentUser != null) {
+            String dept = currentUser.getDepartment();
+            if (dept.contains("Commerce")) spinnerStream.setSelection(1);
+            else if (dept.contains("Arts")) spinnerStream.setSelection(2);
+            else spinnerStream.setSelection(0);
+        }
+
+        // Populate Days: Monday through Saturday
+        ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, TimetableManager.DAYS_OF_WEEK);
+        spinnerDay.setAdapter(dayAdapter);
+
+        if (preselectedSlot != null && preselectedSlot.getDayOfWeek() != null) {
+            for (int d = 0; d < TimetableManager.DAYS_OF_WEEK.length; d++) {
+                if (TimetableManager.DAYS_OF_WEEK[d].equalsIgnoreCase(preselectedSlot.getDayOfWeek())) {
+                    spinnerDay.setSelection(d);
+                    break;
+                }
+            }
+        }
+
+        final List<TimetableSlot> currentDaySlots = new ArrayList<>();
+
+        Runnable updateSlotSpinners = () -> {
+            int streamPos = spinnerStream.getSelectedItemPosition();
+            String chosenStream = streamPos == 1 ? TimetableManager.STREAM_COMMERCE : (streamPos == 2 ? TimetableManager.STREAM_ARTS : TimetableManager.STREAM_SCIENCE);
+            String chosenDay = spinnerDay.getSelectedItem() != null ? spinnerDay.getSelectedItem().toString() : "Monday";
+
+            currentDaySlots.clear();
+            currentDaySlots.addAll(timetableManager.getTimetableForStreamAndDay(chosenStream, chosenDay));
+
+            List<String> slotDescriptions = new ArrayList<>();
+            for (TimetableSlot slot : currentDaySlots) {
+                slotDescriptions.add("Slot " + slot.getSlotNumber() + ": " + slot.getTimeDisplay() + " • " + slot.getSubject() + " (" + slot.getTeacherName() + ")");
+            }
+
+            ArrayAdapter<String> slotAdapter1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, slotDescriptions);
+            spinnerSlot1.setAdapter(slotAdapter1);
+
+            ArrayAdapter<String> slotAdapter2 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, slotDescriptions);
+            spinnerSlot2.setAdapter(slotAdapter2);
+
+            if (preselectedSlot != null) {
+                int targetIndex = Math.max(0, preselectedSlot.getSlotNumber() - 1);
+                if (targetIndex < slotDescriptions.size()) {
+                    spinnerSlot1.setSelection(targetIndex);
+                }
+                int defaultSwapIndex = (targetIndex + 1) % slotDescriptions.size();
+                spinnerSlot2.setSelection(defaultSwapIndex);
+            } else if (slotDescriptions.size() > 1) {
+                spinnerSlot1.setSelection(0);
+                spinnerSlot2.setSelection(1);
+            }
+        };
+
+        spinnerStream.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> p, View v, int pos, long id) { updateSlotSpinners.run(); }
+            @Override
+            public void onNothingSelected(AdapterView<?> p) {}
+        });
+
+        spinnerDay.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> p, View v, int pos, long id) { updateSlotSpinners.run(); }
+            @Override
+            public void onNothingSelected(AdapterView<?> p) {}
+        });
+
+        updateSlotSpinners.run();
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnConfirm.setOnClickListener(v -> {
+            int pos1 = spinnerSlot1.getSelectedItemPosition();
+            int pos2 = spinnerSlot2.getSelectedItemPosition();
+
+            if (pos1 == pos2) {
+                Toast.makeText(this, "Please choose two different lecture slots to interchange.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (pos1 < 0 || pos1 >= currentDaySlots.size() || pos2 < 0 || pos2 >= currentDaySlots.size()) {
+                Toast.makeText(this, "Invalid slots selected.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            TimetableSlot slotA = currentDaySlots.get(pos1);
+            TimetableSlot slotB = currentDaySlots.get(pos2);
+            String note = etReason.getText() != null ? etReason.getText().toString().trim() : "";
+            if (note.isEmpty()) {
+                note = "Mutual faculty coordination between " + slotA.getTeacherName() + " and " + slotB.getTeacherName() + ".";
+            }
+
+            String teacherName = currentUser != null ? currentUser.getFullName() : "Faculty";
+            boolean success = timetableManager.interchangeLectures(slotA.getId(), slotB.getId(), note, teacherName);
+
+            if (success) {
+                if (cbBroadcast != null && cbBroadcast.isChecked()) {
+                    String noticeTitle = "📢 Timetable Update: " + slotA.getDayOfWeek() + " Lectures Swapped";
+                    String noticeContent = "Faculty coordination update for " + slotA.getStream() + ": " +
+                            slotA.getTimeDisplay() + " (" + slotA.getSubject() + ") has been interchanged with " +
+                            slotB.getTimeDisplay() + " (" + slotB.getSubject() + ").\nReason: " + note;
+
+                    Notice n = new Notice(
+                            "NOT-SWAP-" + System.currentTimeMillis(),
+                            noticeTitle,
+                            "Academic Timetable",
+                            teacherName + " (Faculty)",
+                            slotA.getStream(),
+                            noticeContent,
+                            "Today",
+                            System.currentTimeMillis(),
+                            slotA.getTimeDisplay()
+                    );
+                    noticeManager.addNotice(n);
+                }
+
+                Toast.makeText(this, "🎉 Lectures interchanged successfully! Students' schedule updated.", Toast.LENGTH_LONG).show();
+                dialog.dismiss();
+
+                if (onRefreshCallback != null) {
+                    onRefreshCallback.run();
+                }
+            } else {
+                Toast.makeText(this, "Failed to interchange slots. Please try again.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dialog.show();
+    }
+
+    /**
+     * Dialog for Principal to upload/publish an official notice.
+     */
+    private void showNewNoticeDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_new_notice, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        EditText etTitle = dialogView.findViewById(R.id.etNoticeTitle);
+        Spinner spCategory = dialogView.findViewById(R.id.spinnerNoticeCategory);
+        TextView tvDate = dialogView.findViewById(R.id.tvNoticeDateDisplay);
+        EditText etEventTime = dialogView.findViewById(R.id.etNoticeEventTime);
+        EditText etContent = dialogView.findViewById(R.id.etNoticeContent);
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelNotice);
+        MaterialButton btnPublish = dialogView.findViewById(R.id.btnPublishNotice);
+
+        String[] categories = new String[]{
+                "Sports & Athletics",
+                "Academic Council",
+                "Examination Notice",
+                "Duty Leave & Passes",
+                "Cultural & Annual Day",
+                "General Administration"
+        };
+        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categories);
+        if (spCategory != null) spCategory.setAdapter(catAdapter);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault());
+        String todayDate = sdf.format(new java.util.Date());
+        if (tvDate != null) tvDate.setText(todayDate);
+
+        if (btnCancel != null) btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        if (btnPublish != null) {
+            btnPublish.setOnClickListener(v -> {
+                String title = etTitle != null ? etTitle.getText().toString().trim() : "";
+                if (title.isEmpty()) {
+                    if (etTitle != null) etTitle.setError("Please enter notice title");
+                    return;
+                }
+
+                String category = spCategory != null ? spCategory.getSelectedItem().toString() : "General";
+                String content = etContent != null ? etContent.getText().toString().trim() : "";
+                if (content.isEmpty()) {
+                    if (etContent != null) etContent.setError("Please enter notice content");
+                    return;
+                }
+
+                String eventTime = etEventTime != null ? etEventTime.getText().toString().trim() : "";
+                User current = userManager.getCurrentUser();
+                String authorRole = (current != null && current.isPrincipal()) ? " (Principal)" :
+                        ((current != null && current.isTeacherOrDirector()) ? " (Faculty / Class Teacher)" : "");
+                String author = (current != null && current.getFullName() != null) ?
+                        current.getFullName() + authorRole : "Principal / Academic Office";
+
+                String notId = "NOT-2026-" + (int)(100 + Math.random() * 900);
+                Notice newNotice = new Notice(
+                        notId,
+                        title,
+                        category,
+                        author,
+                        "All Students & Faculty",
+                        content,
+                        todayDate,
+                        System.currentTimeMillis(),
+                        eventTime
+                );
+
+                noticeManager.addNotice(newNotice);
+                dialog.dismiss();
+
+                // Immediately update home page card
+                if (tvNoticeCardTitle != null) tvNoticeCardTitle.setText(newNotice.getTitle());
+                if (tvNoticeCardMeta != null) {
+                    String meta = newNotice.getCategory() + " • " + newNotice.getAuthor() + " • " + newNotice.getDate();
+                    if (!newNotice.getEventTime().isEmpty()) {
+                        meta += " • " + newNotice.getEventTime();
+                    }
+                    tvNoticeCardMeta.setText(meta);
+                }
+
+                Toast.makeText(this, "📢 Official Notice Published!", Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * Dialog to view full notice details.
+     */
+    private void showNoticeDetailsDialog(Notice notice) {
+        User currentUser = userManager.getCurrentUser();
+        boolean isStaff = currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal());
+
+        if (notice == null) {
+            if (isStaff) {
+                new AlertDialog.Builder(this)
+                        .setTitle("📢 Official Notices")
+                        .setMessage("No official notices published yet.\n\nWould you like to publish an official notice for students and faculty?")
+                        .setPositiveButton("Publish Notice", (d, w) -> showNewNoticeDialog())
+                        .setNegativeButton("Dismiss", null)
+                        .show();
+            } else {
+                new AlertDialog.Builder(this)
+                        .setTitle("📢 Notice Board")
+                        .setMessage("There are no official notices published yet.\n\nOfficial circulars and notices from teachers will appear here once posted.")
+                        .setPositiveButton("OK", null)
+                        .show();
+            }
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_notice_details, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        TextView tvTitle = dialogView.findViewById(R.id.tvNoticeDetailTitle);
+        TextView tvAuthor = dialogView.findViewById(R.id.tvNoticeDetailAuthor);
+        TextView tvCategory = dialogView.findViewById(R.id.tvNoticeDetailCategoryBadge);
+        TextView tvDate = dialogView.findViewById(R.id.tvNoticeDetailDate);
+        TextView tvContent = dialogView.findViewById(R.id.tvNoticeDetailContent);
+        View btnClose = dialogView.findViewById(R.id.btnCloseNoticeDetail);
+
+        if (tvTitle != null) tvTitle.setText(notice.getTitle());
+        if (tvAuthor != null) tvAuthor.setText(notice.getAuthor());
+        if (tvCategory != null) tvCategory.setText(notice.getCategory());
+        if (tvDate != null) {
+            String dateText = "Issued: " + notice.getDate() + " • Target: " + notice.getTargetAudience();
+            if (notice.getEventTime() != null && !notice.getEventTime().trim().isEmpty()) {
+                dateText += "\n⏰ Event Timing: " + notice.getEventTime();
+            }
+            tvDate.setText(dateText);
+        }
+        if (tvContent != null) tvContent.setText(notice.getContent());
+
+        if (currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal()) && btnClose instanceof MaterialButton) {
+            ((MaterialButton) btnClose).setText("Close (Or Tap to Upload Notice)");
+            btnClose.setOnClickListener(v -> {
+                dialog.dismiss();
+                new AlertDialog.Builder(this)
+                        .setTitle("📢 Notice Board")
+                        .setMessage("Would you like to publish a new notice or announcement?")
+                        .setPositiveButton("Upload Notice", (d, w) -> showNewNoticeDialog())
+                        .setNegativeButton("Dismiss", null)
+                        .show();
+            });
+        } else if (btnClose != null) {
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * Dialog showing student's official alerts and notifications,
+     * including all passes and permissions approved by Principal or Class Teacher.
+     */
+    private void showNotificationsDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_notifications, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        TextView tvSubtitle = dialogView.findViewById(R.id.tvNotificationsSubtitle);
+        TextView tvCountBadge = dialogView.findViewById(R.id.tvNotificationsCountBadge);
+        TextView tvNoNotifs = dialogView.findViewById(R.id.tvNoNotifications);
+        android.widget.LinearLayout container = dialogView.findViewById(R.id.containerNotificationsList);
+        MaterialButton btnClose = dialogView.findViewById(R.id.btnCloseNotifications);
+        MaterialButton btnViewAll = dialogView.findViewById(R.id.btnViewAllRequests);
+
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        if (btnViewAll != null) {
+            btnViewAll.setOnClickListener(v -> {
+                dialog.dismiss();
+                startActivity(new Intent(this, RequestsActivity.class));
+            });
+        }
+
+        User current = userManager.getCurrentUser();
+        String studentId = current != null ? current.getId() : "";
+        List<SpotPass> approvedPasses = spotPassManager.getApprovedPassesForStudent(studentId);
+        List<PermissionRequest> approvedPerms = permissionRequestManager.getApprovedRequestsForStudent(studentId);
+
+        int totalCount = approvedPasses.size() + approvedPerms.size();
+        if (tvCountBadge != null) {
+            tvCountBadge.setText(totalCount + (totalCount == 1 ? " Approved Alert" : " Approved Alerts"));
+        }
+
+        if (container != null) {
+            container.removeAllViews();
+        }
+
+        if (totalCount == 0) {
+            if (tvNoNotifs != null) tvNoNotifs.setVisibility(View.VISIBLE);
+        } else {
+            if (tvNoNotifs != null) tvNoNotifs.setVisibility(View.GONE);
+
+            // 1. Render Approved Spot Passes (Approved by Class Teacher / Subject Teacher)
+            for (SpotPass p : approvedPasses) {
+                android.widget.LinearLayout card = new android.widget.LinearLayout(this);
+                card.setOrientation(android.widget.LinearLayout.VERTICAL);
+                card.setBackgroundResource(R.drawable.bg_input_box);
+                card.setPadding(24, 18, 24, 18);
+
+                android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(
+                        android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+                lp.topMargin = 12;
+                card.setLayoutParams(lp);
+
+                // Row 1: Header Badge & Status
+                android.widget.LinearLayout headerRow = new android.widget.LinearLayout(this);
+                headerRow.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                headerRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+                TextView tvApproverBadge = new TextView(this);
+                android.widget.LinearLayout.LayoutParams badgeLp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                tvApproverBadge.setLayoutParams(badgeLp);
+                tvApproverBadge.setText("👩‍🏫 Approved by Class Teacher (" + p.getClassTeacher() + ")");
+                tvApproverBadge.setTextColor(getColor(R.color.pastel_mint_text));
+                tvApproverBadge.setTextSize(11f);
+                tvApproverBadge.setTypeface(null, android.graphics.Typeface.BOLD);
+                headerRow.addView(tvApproverBadge);
+
+                TextView tvStatusBadge = new TextView(this);
+                tvStatusBadge.setBackgroundResource(R.drawable.bg_chip_mint);
+                tvStatusBadge.setText(p.getStatus() != null && !p.getStatus().isEmpty() ? p.getStatus() : "Approved");
+                tvStatusBadge.setTextColor(getColor(R.color.pastel_mint_text));
+                tvStatusBadge.setTextSize(10.5f);
+                tvStatusBadge.setTypeface(null, android.graphics.Typeface.BOLD);
+                tvStatusBadge.setPadding(14, 4, 14, 4);
+                headerRow.addView(tvStatusBadge);
+
+                card.addView(headerRow);
+
+                // Row 2: Title
+                TextView tvTitle = new TextView(this);
+                tvTitle.setText("⚡ " + p.getActivityTitle());
+                tvTitle.setTextColor(getColor(R.color.charcoal_dark));
+                tvTitle.setTextSize(14f);
+                tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+                tvTitle.setPadding(0, 8, 0, 0);
+                card.addView(tvTitle);
+
+                // Row 3: Details & Timings
+                TextView tvDetails = new TextView(this);
+                tvDetails.setText("Date: " + p.getDate() + " • Slot: " + p.getTimeSlot() + " • Subject: " + p.getSubject());
+                tvDetails.setTextColor(getColor(R.color.text_secondary));
+                tvDetails.setTextSize(11.5f);
+                tvDetails.setPadding(0, 4, 0, 0);
+                card.addView(tvDetails);
+
+                if (p.getReason() != null && !p.getReason().trim().isEmpty()) {
+                    TextView tvReason = new TextView(this);
+                    tvReason.setText("Reason: " + p.getReason());
+                    tvReason.setTextColor(getColor(R.color.text_muted));
+                    tvReason.setTextSize(11f);
+                    tvReason.setPadding(0, 4, 0, 0);
+                    card.addView(tvReason);
+                }
+
+                // Tap to view full pass details
+                card.setOnClickListener(v -> {
+                    dialog.dismiss();
+                    showSpotPassDetailsDialog(p);
+                });
+
+                if (container != null) {
+                    container.addView(card);
+                }
+            }
+
+            // 2. Render Approved Permissions (Approved by Principal / Programme Director)
+            for (PermissionRequest r : approvedPerms) {
+                android.widget.LinearLayout card = new android.widget.LinearLayout(this);
+                card.setOrientation(android.widget.LinearLayout.VERTICAL);
+                card.setBackgroundResource(R.drawable.bg_input_box);
+                card.setPadding(24, 18, 24, 18);
+
+                android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(
+                        android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+                lp.topMargin = 12;
+                card.setLayoutParams(lp);
+
+                // Row 1: Header Badge & Status
+                android.widget.LinearLayout headerRow = new android.widget.LinearLayout(this);
+                headerRow.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                headerRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+                TextView tvApproverBadge = new TextView(this);
+                android.widget.LinearLayout.LayoutParams badgeLp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                tvApproverBadge.setLayoutParams(badgeLp);
+                String supervisor = r.getSupervisor() != null && !r.getSupervisor().isEmpty() ? r.getSupervisor() : "Principal";
+                tvApproverBadge.setText("🎓 Approved by " + supervisor);
+                tvApproverBadge.setTextColor(getColor(R.color.pastel_lavender_text));
+                tvApproverBadge.setTextSize(11f);
+                tvApproverBadge.setTypeface(null, android.graphics.Typeface.BOLD);
+                headerRow.addView(tvApproverBadge);
+
+                TextView tvStatusBadge = new TextView(this);
+                tvStatusBadge.setBackgroundResource(R.drawable.bg_chip_mint);
+                tvStatusBadge.setText(r.getStatus() != null && !r.getStatus().isEmpty() ? r.getStatus() : "Approved");
+                tvStatusBadge.setTextColor(getColor(R.color.pastel_mint_text));
+                tvStatusBadge.setTextSize(10.5f);
+                tvStatusBadge.setTypeface(null, android.graphics.Typeface.BOLD);
+                tvStatusBadge.setPadding(14, 4, 14, 4);
+                headerRow.addView(tvStatusBadge);
+
+                card.addView(headerRow);
+
+                // Row 2: Title
+                TextView tvTitle = new TextView(this);
+                tvTitle.setText("📋 " + r.getEventTitle());
+                tvTitle.setTextColor(getColor(R.color.charcoal_dark));
+                tvTitle.setTextSize(14f);
+                tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+                tvTitle.setPadding(0, 8, 0, 0);
+                card.addView(tvTitle);
+
+                // Row 3: Event Dates & Dept
+                TextView tvDetails = new TextView(this);
+                tvDetails.setText("Dates: " + r.getEventDates() + " • Dept: " + r.getScopeOrDept());
+                tvDetails.setTextColor(getColor(R.color.text_secondary));
+                tvDetails.setTextSize(11.5f);
+                tvDetails.setPadding(0, 4, 0, 0);
+                card.addView(tvDetails);
+
+                if (r.getRemarks() != null && !r.getRemarks().trim().isEmpty()) {
+                    TextView tvRemarks = new TextView(this);
+                    tvRemarks.setText("Sanction Remarks: " + r.getRemarks());
+                    tvRemarks.setTextColor(getColor(R.color.text_muted));
+                    tvRemarks.setTextSize(11f);
+                    tvRemarks.setPadding(0, 4, 0, 0);
+                    card.addView(tvRemarks);
+                }
+
+                // Tap to view full permission details
+                card.setOnClickListener(v -> {
+                    dialog.dismiss();
+                    showPermissionDetailsDialog(r);
+                });
+
+                if (container != null) {
+                    container.addView(card);
+                }
+            }
+        }
+
+        dialog.show();
+
+        if (dialog.getWindow() != null) {
+            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            int h = (int) (dm.heightPixels * 0.85);
+            int w = (int) (dm.widthPixels * 0.94);
+            dialog.getWindow().setLayout(w, h);
+        }
+    }
+
+    /**
+     * Dialog to view full permission request details.
+     */
+    private void showPermissionDetailsDialog(PermissionRequest perm) {
+        if (perm == null) return;
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_permission_details, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        TextView tvId = dialogView.findViewById(R.id.tvPermDetailId);
+        TextView tvStatus = dialogView.findViewById(R.id.tvPermDetailStatusBadge);
+        TextView tvTitle = dialogView.findViewById(R.id.tvPermDetailTitle);
+        TextView tvStudentMeta = dialogView.findViewById(R.id.tvPermDetailStudentMeta);
+        TextView tvDates = dialogView.findViewById(R.id.tvPermDetailDates);
+        TextView tvScope = dialogView.findViewById(R.id.tvPermDetailScope);
+        TextView tvSupervisor = dialogView.findViewById(R.id.tvPermDetailSupervisor);
+        TextView tvRemarks = dialogView.findViewById(R.id.tvPermDetailRemarks);
+        TextView tvReason = dialogView.findViewById(R.id.tvPermDetailReason);
+        MaterialButton btnClose = dialogView.findViewById(R.id.btnClosePermDetails);
+
+        if (tvId != null) tvId.setText(perm.getId());
+        if (tvStatus != null) tvStatus.setText(perm.getStatus());
+        if (tvTitle != null) tvTitle.setText("Permission · " + perm.getEventTitle());
+        if (tvStudentMeta != null) tvStudentMeta.setText(perm.getStudentName() + " • " + perm.getStudentId() + " • " + perm.getStudentClass());
+        if (tvDates != null) tvDates.setText(perm.getEventDates());
+        if (tvScope != null) tvScope.setText(perm.getScopeOrDept());
+        if (tvSupervisor != null) tvSupervisor.setText(perm.getSupervisor());
+        if (tvRemarks != null) tvRemarks.setText(perm.getRemarks());
+        if (tvReason != null) tvReason.setText(perm.getReason());
+
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
+    }
+
+    public void showNewSpotPassDialog() {
+        showNewSpotPassDialog(null);
+    }
+
+    /**
+     * Modal dialog allowing students to apply for a New Spot Pass.
+     * All student personal info (Name & Roll number) is auto-attached.
+     * Student enters event type, timing needed, clashing lecture/period, clashing subject,
+     * and optional duty leave reason.
+     * Teacher teaching the clashing subject is dynamically resolved and populated.
+     */
+    public void showNewSpotPassDialog(String preSelectedDate) {
         User user = userManager.getCurrentUser();
         if (user == null) {
             Toast.makeText(this, "Please log in as a student to apply for a Spot Pass", Toast.LENGTH_SHORT).show();
@@ -191,136 +1820,178 @@ public class HomeActivity extends AppCompatActivity {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
+        // Student Info (Auto-attached, read-only)
         TextView tvAvatar = dialogView.findViewById(R.id.tvSpotPassStudentAvatar);
         TextView tvName = dialogView.findViewById(R.id.tvSpotPassStudentName);
         TextView tvMeta = dialogView.findViewById(R.id.tvSpotPassStudentMeta);
 
+        // Event Type & Title
+        Spinner spinnerEventType = dialogView.findViewById(R.id.spinnerEventType);
         EditText etActivityTitle = dialogView.findViewById(R.id.etSpotPassActivityTitle);
-        Spinner spinnerTimeSlot = dialogView.findViewById(R.id.spinnerTimeSlot);
+
+        // Category Options: Sports, Cultural, Technical Event, Volunteering, Other
+        TextView chipSports = dialogView.findViewById(R.id.chipActSports);
+        TextView chipCultural = dialogView.findViewById(R.id.chipActCultural);
+        TextView chipTechnical = dialogView.findViewById(R.id.chipActTechnical);
+        TextView chipVolunteering = dialogView.findViewById(R.id.chipActVolunteering);
+        TextView chipOther = dialogView.findViewById(R.id.chipActOther);
+        View containerOther = dialogView.findViewById(R.id.containerOtherEventType);
+        EditText etOther = dialogView.findViewById(R.id.etOtherEventType);
+
+        // Date & Timing
+        View layoutPickPassDate = dialogView.findViewById(R.id.layoutPickPassDate);
+        TextView tvPassSelectedDate = dialogView.findViewById(R.id.tvPassSelectedDate);
+        EditText etPassTimingNeeded = dialogView.findViewById(R.id.etPassTimingNeeded);
+
+        // Clashing Lecture & Subject
+        EditText etTimeSlot = dialogView.findViewById(R.id.etTimeSlot);
         Spinner spinnerSubject = dialogView.findViewById(R.id.spinnerSubject);
         TextView tvClassTeacher = dialogView.findViewById(R.id.tvClassTeacherName);
         TextView tvSubjectTeacher = dialogView.findViewById(R.id.tvSubjectTeacherName);
         EditText etReason = dialogView.findViewById(R.id.etSpotPassReason);
 
-        TextView chipFootball = dialogView.findViewById(R.id.chipActFootball);
-        TextView chipCultural = dialogView.findViewById(R.id.chipActCultural);
-        TextView chipEventDuty = dialogView.findViewById(R.id.chipActEventDuty);
-        TextView chipNss = dialogView.findViewById(R.id.chipActNss);
-
         MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelSpotPass);
         MaterialButton btnSubmit = dialogView.findViewById(R.id.btnSubmitSpotPass);
 
-        // Populate Student Header
+        // 1. Populate Student Header (Auto-filled from user profile)
         tvAvatar.setText(user.getInitials());
         tvName.setText(user.getFullName());
-        String metaText = user.getId() + " • " + (user.getYearOrClass().isEmpty() ? "11th Standard" : user.getYearOrClass())
+        String metaText = user.getId() + " • " + (user.getYearOrClass().isEmpty() ? "First Year (Batch 2026)" : user.getYearOrClass())
                 + " (" + (user.getDepartment().isEmpty() ? "Science" : user.getDepartment()) + ")";
         tvMeta.setText(metaText);
 
-        // Pre-determine Class Teacher based on student stream / division
-        final String assignedClassTeacher;
-        if (user.getDepartment().toLowerCase().contains("commerce")) {
-            assignedClassTeacher = "Sujata Kamat (Commerce HOD / Class Teacher)";
-        } else if (user.getDepartment().toLowerCase().contains("arts")) {
-            assignedClassTeacher = "Sanjay Bandodkar (Arts HOD / Class Teacher)";
-        } else if (user.isCollegeOrUniversity()) {
-            assignedClassTeacher = "Dr. Robert Vance (Programme Director / Mentor)";
+        // Determine Stream HOD (format: "Dr. Pramod Naik (HOD - Science)")
+        final String assignedHod;
+        String dept = user.getDepartment() != null ? user.getDepartment().toLowerCase() : "";
+        if (dept.contains("commerce")) {
+            assignedHod = "Dr. Anand Vernekar (HOD - Commerce)";
+        } else if (dept.contains("arts")) {
+            assignedHod = "Dr. Meenakshi Sundaram (HOD - Arts)";
         } else {
-            assignedClassTeacher = "Pramod Naik (Science HOD / Class Teacher)";
+            assignedHod = "Dr. Pramod Naik (HOD - Science)";
         }
-        tvClassTeacher.setText(assignedClassTeacher);
+        tvClassTeacher.setText(assignedHod);
 
-        // Populate Time Slots
-        List<String> timeSlots = Arrays.asList(
-                "Lecture slot 1 (8:00 – 9:00 AM)",
-                "Lecture slot 2 (9:00 – 10:00 AM)",
-                "Lecture slot 1–2 (8:00 – 10:00 AM)",
-                "Lecture slot 3 (10:15 – 11:15 AM)",
-                "Lecture slot 4 (11:15 AM – 12:15 PM)",
-                "Afternoon Lab (1:00 – 3:30 PM)"
-        );
-        ArrayAdapter<String> timeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, timeSlots);
-        spinnerTimeSlot.setAdapter(timeAdapter);
+        final String[] selectedCategory = new String[]{"Sports"};
 
-        // Populate Subjects (from user's enrolled subjects or stream defaults)
+        // 3. Date Selection & DatePicker (Kept as is)
+        final String[] selectedDateHolder = new String[]{
+                preSelectedDate != null && !preSelectedDate.isEmpty() ? preSelectedDate : ""
+        };
+        tvPassSelectedDate.setText(!selectedDateHolder[0].isEmpty() ? selectedDateHolder[0] : "Select Date");
+
+        if (layoutPickPassDate != null) {
+            layoutPickPassDate.setOnClickListener(v -> {
+                Calendar c = Calendar.getInstance();
+                DatePickerDialog dpd = new DatePickerDialog(this, (dp, y, m, d) -> {
+                    Calendar sel = Calendar.getInstance();
+                    sel.set(y, m, d);
+                    SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy", Locale.US);
+                    selectedDateHolder[0] = sdf.format(sel.getTime());
+                    tvPassSelectedDate.setText(selectedDateHolder[0]);
+                }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+                dpd.show();
+            });
+        }
+
+        // 5. Populate Clashing Subjects from student's stream
         List<String> subjects = user.getSubjectsList();
         if (subjects.isEmpty()) {
-            subjects = Arrays.asList("Chemistry", "Physics", "Mathematics", "Biology", "English", "Computer Science");
+            subjects = Arrays.asList("Chemistry", "Physics", "Mathematics", "Biology", "English", "Computer Applications");
         }
         ArrayAdapter<String> subAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, subjects);
         spinnerSubject.setAdapter(subAdapter);
 
-        // Dynamically update Subject Teacher when the particular subject/time is picked
+        // Dynamically update Subject Teacher when clashing subject is selected
         spinnerSubject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String sub = parent.getItemAtPosition(position).toString().toLowerCase();
-                String teacher;
-                if (sub.contains("chem")) {
-                    teacher = "Sneha Gaonkar (Chemistry Subject Teacher)";
-                } else if (sub.contains("phys")) {
-                    teacher = "Pramod Naik (Physics Subject Teacher)";
-                } else if (sub.contains("math")) {
-                    teacher = "Dr. Shashikant Mayekar (Mathematics Teacher)";
-                } else if (sub.contains("bio") || sub.contains("computer")) {
-                    teacher = "Vikram Dessai (Biology / CS Teacher)";
-                } else if (sub.contains("account") || sub.contains("business")) {
-                    teacher = "Aarti Faldesai (Commerce Subject Teacher)";
-                } else {
-                    teacher = "Maria Rodrigues (Subject Teacher)";
-                }
-                tvSubjectTeacher.setText(teacher);
+                String sub = parent.getItemAtPosition(position).toString();
+                String resolvedTeacher = userManager.getTeacherForSubject(sub);
+                tvSubjectTeacher.setText(resolvedTeacher);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        // Quick Activity Chip Click Listeners
+        // 6. Category Chip Listeners (Categories select type without prefilling dummy demo values)
         View.OnClickListener chipListener = v -> {
-            chipFootball.setBackgroundResource(R.drawable.bg_role_student_unselected);
-            chipCultural.setBackgroundResource(R.drawable.bg_role_student_unselected);
-            chipEventDuty.setBackgroundResource(R.drawable.bg_role_student_unselected);
-            chipNss.setBackgroundResource(R.drawable.bg_role_student_unselected);
+            if (chipSports != null) chipSports.setBackgroundResource(R.drawable.bg_role_student_unselected);
+            if (chipCultural != null) chipCultural.setBackgroundResource(R.drawable.bg_role_student_unselected);
+            if (chipTechnical != null) chipTechnical.setBackgroundResource(R.drawable.bg_role_student_unselected);
+            if (chipVolunteering != null) chipVolunteering.setBackgroundResource(R.drawable.bg_role_student_unselected);
+            if (chipOther != null) chipOther.setBackgroundResource(R.drawable.bg_role_student_unselected);
 
             v.setBackgroundResource(R.drawable.bg_role_student_selected);
 
-            if (v == chipFootball) {
-                etActivityTitle.setText("Football practice");
-                etReason.setText("Annual inter-college athletic practice trials on Main Ground.");
+            if (v == chipSports) {
+                selectedCategory[0] = "Sports";
+                if (containerOther != null) containerOther.setVisibility(View.GONE);
             } else if (v == chipCultural) {
-                etActivityTitle.setText("Cultural rehearsal");
-                etReason.setText("Annual Day choir & drama rehearsal in Main Auditorium.");
-            } else if (v == chipEventDuty) {
-                etActivityTitle.setText("Campus Event Duty");
-                etReason.setText("Official volunteer duty for science exhibition and registration desk.");
-            } else if (v == chipNss) {
-                etActivityTitle.setText("NSS Volunteer Camp");
-                etReason.setText("NSS Unit coordination and blood donation camp assistance.");
+                selectedCategory[0] = "Cultural";
+                if (containerOther != null) containerOther.setVisibility(View.GONE);
+            } else if (v == chipTechnical) {
+                selectedCategory[0] = "Technical Event";
+                if (containerOther != null) containerOther.setVisibility(View.GONE);
+            } else if (v == chipVolunteering) {
+                selectedCategory[0] = "Volunteering";
+                if (containerOther != null) containerOther.setVisibility(View.GONE);
+            } else if (v == chipOther) {
+                selectedCategory[0] = "Other";
+                if (containerOther != null) {
+                    containerOther.setVisibility(View.VISIBLE);
+                    if (etOther != null) etOther.requestFocus();
+                }
             }
         };
 
-        chipFootball.setOnClickListener(chipListener);
-        chipCultural.setOnClickListener(chipListener);
-        chipEventDuty.setOnClickListener(chipListener);
-        chipNss.setOnClickListener(chipListener);
+        if (chipSports != null) chipSports.setOnClickListener(chipListener);
+        if (chipCultural != null) chipCultural.setOnClickListener(chipListener);
+        if (chipTechnical != null) chipTechnical.setOnClickListener(chipListener);
+        if (chipVolunteering != null) chipVolunteering.setOnClickListener(chipListener);
+        if (chipOther != null) chipOther.setOnClickListener(chipListener);
 
         btnCancel.setOnClickListener(v -> dialog.dismiss());
 
+        // 7. Submit Action
         btnSubmit.setOnClickListener(v -> {
             String actTitle = etActivityTitle.getText().toString().trim();
             if (actTitle.isEmpty()) {
-                etActivityTitle.setError("Please enter activity title");
+                etActivityTitle.setError("Please enter activity / event title");
                 return;
             }
 
-            String selectedSlot = spinnerTimeSlot.getSelectedItem().toString();
+            String selectedEventType = selectedCategory[0];
+            if ("Other".equalsIgnoreCase(selectedEventType) && etOther != null) {
+                String otherVal = etOther.getText().toString().trim();
+                if (!otherVal.isEmpty()) {
+                    selectedEventType = "Other (" + otherVal + ")";
+                }
+            }
+
+            String passDate = selectedDateHolder[0];
+            if (passDate.isEmpty() || "Select Date".equals(passDate)) {
+                Toast.makeText(this, "Please select the date for the Spot Pass", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String selectedSlot = etTimeSlot.getText().toString().trim();
+            if (selectedSlot.isEmpty()) {
+                etTimeSlot.setError("Please enter clashing lecture / period");
+                return;
+            }
             String selectedSub = spinnerSubject.getSelectedItem().toString();
             String subTeacher = tvSubjectTeacher.getText().toString();
             String ctTeacher = tvClassTeacher.getText().toString();
+            String passTiming = etPassTimingNeeded.getText().toString().trim();
+            if (passTiming.isEmpty()) {
+                passTiming = selectedSlot;
+            }
+
             String reason = etReason.getText().toString().trim();
             if (reason.isEmpty()) {
-                reason = "Event duty during " + selectedSlot + ". Attendance duty credit applied.";
+                reason = selectedEventType + " during " + selectedSlot + ". Attendance duty credit applied.";
             }
 
             String newId = "SP-2026-" + (int)(100 + Math.random() * 900);
@@ -331,8 +2002,8 @@ public class HomeActivity extends AppCompatActivity {
                     user.getFullName(),
                     user.getYearOrClass(),
                     actTitle,
-                    "Today",
-                    selectedSlot,
+                    passDate,
+                    selectedSlot + " (" + passTiming + ")",
                     selectedSub,
                     subTeacher,
                     ctTeacher,
@@ -341,17 +2012,20 @@ public class HomeActivity extends AppCompatActivity {
                     65,
                     "Pending Review",
                     "Notified for " + selectedSub,
-                    System.currentTimeMillis()
+                    System.currentTimeMillis(),
+                    selectedEventType
             );
 
             spotPassManager.addSpotPass(newPass);
-            loadSpotPassCardData();
             dialog.dismiss();
 
-            // Celebratory confirmation showing explicit dispatch to Class Teacher and Subject Teacher
+            // Celebratory confirmation showing explicit dispatch
             new AlertDialog.Builder(this)
                     .setTitle("🎉 Spot Pass Dispatched!")
-                    .setMessage("Your Spot Pass for \"" + actTitle + "\" (" + selectedSlot + ") has been created and routed to:\n\n"
+                    .setMessage("Your Spot Pass for \"" + actTitle + "\" (" + selectedEventType + ")\n"
+                            + "📅 Date: " + passDate + "\n"
+                            + "⏰ Time: " + passTiming + "\n\n"
+                            + "Routed to:\n"
                             + "1. Class Teacher:\n   " + ctTeacher + " (Approval Required)\n\n"
                             + "2. Subject Teacher:\n   " + subTeacher + " (" + selectedSub + " period attendance credit)\n\n"
                             + "Once approved, your absence is recorded as 'Duty Present'.")
@@ -361,6 +2035,249 @@ public class HomeActivity extends AppCompatActivity {
                     .setNegativeButton("OK", null)
                     .show();
         });
+
+        dialog.show();
+    }
+
+    /**
+     * Modal dialog allowing students to apply for Prior Permission for specific upcoming days.
+     * Directed straight to their Department HOD.
+     * Advance absence notice is logged and attendance is credited upon confirmation of the designated organiser/coach.
+     */
+    public void showNewPermissionDialog() {
+        User user = userManager.getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "Please log in as a student to apply for Prior Permission", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_new_permission, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        // Student Info (Auto-attached, read-only)
+        TextView tvAvatar = dialogView.findViewById(R.id.tvPermStudentAvatar);
+        TextView tvName = dialogView.findViewById(R.id.tvPermStudentName);
+        TextView tvMeta = dialogView.findViewById(R.id.tvPermStudentMeta);
+        TextView tvHod = dialogView.findViewById(R.id.tvPermHodName);
+
+        // Category Chips
+        TextView chipSports = dialogView.findViewById(R.id.chipPermSports);
+        TextView chipCultural = dialogView.findViewById(R.id.chipPermCultural);
+        TextView chipTechnical = dialogView.findViewById(R.id.chipPermTechnical);
+        TextView chipVolunteering = dialogView.findViewById(R.id.chipPermVolunteering);
+        TextView chipOther = dialogView.findViewById(R.id.chipPermOther);
+        View containerOther = dialogView.findViewById(R.id.containerPermOtherEventType);
+        EditText etOther = dialogView.findViewById(R.id.etPermOtherEventType);
+
+        // Input Fields
+        EditText etTitle = dialogView.findViewById(R.id.etNewPermTitle);
+        View layoutStartDate = dialogView.findViewById(R.id.layoutPermStartDate);
+        View layoutEndDate = dialogView.findViewById(R.id.layoutPermEndDate);
+        TextView tvStartDate = dialogView.findViewById(R.id.tvPermStartDate);
+        TextView tvEndDate = dialogView.findViewById(R.id.tvPermEndDate);
+        EditText etDates = dialogView.findViewById(R.id.etNewPermDates);
+        EditText etTiming = dialogView.findViewById(R.id.etPermDailyTiming);
+        EditText etOrganiser = dialogView.findViewById(R.id.etNewPermScope);
+        EditText etReason = dialogView.findViewById(R.id.etNewPermReason);
+
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelNewPerm);
+        MaterialButton btnSubmit = dialogView.findViewById(R.id.btnSubmitNewPerm);
+
+        // Populate student info
+        if (tvAvatar != null) tvAvatar.setText(user.getInitials());
+        if (tvName != null) tvName.setText(user.getFullName());
+        String metaText = user.getId() + " • " + (user.getYearOrClass().isEmpty() ? "First Year (Batch 2026)" : user.getYearOrClass())
+                + " (" + (user.getDepartment().isEmpty() ? "Science" : user.getDepartment()) + ")";
+        if (tvMeta != null) tvMeta.setText(metaText);
+
+        // Determine Stream HOD
+        final String assignedHod;
+        String dept = user.getDepartment() != null ? user.getDepartment().toLowerCase() : "";
+        if (dept.contains("commerce")) {
+            assignedHod = "Dr. Anand Vernekar (HOD - Commerce)";
+        } else if (dept.contains("arts")) {
+            assignedHod = "Dr. Meenakshi Sundaram (HOD - Arts)";
+        } else {
+            assignedHod = "Dr. Pramod Naik (HOD - Science)";
+        }
+        if (tvHod != null) tvHod.setText(assignedHod);
+
+        // Default category
+        final String[] selectedCategory = new String[]{"Sports"};
+        final String[] startDateHolder = new String[]{""};
+        final String[] endDateHolder = new String[]{""};
+
+        // Interactive Date Pickers for Start Date & End Date
+        if (layoutStartDate != null) {
+            layoutStartDate.setOnClickListener(v -> {
+                Calendar c = Calendar.getInstance();
+                DatePickerDialog dpd = new DatePickerDialog(this, (dp, y, m, d) -> {
+                    Calendar sel = Calendar.getInstance();
+                    sel.set(y, m, d);
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.US);
+                    startDateHolder[0] = sdf.format(sel.getTime());
+                    if (tvStartDate != null) tvStartDate.setText(startDateHolder[0]);
+                    if (!endDateHolder[0].isEmpty() && etDates != null) {
+                        etDates.setText(startDateHolder[0] + " – " + endDateHolder[0]);
+                    } else if (etDates != null) {
+                        etDates.setText(startDateHolder[0]);
+                    }
+                }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+                dpd.show();
+            });
+        }
+
+        if (layoutEndDate != null) {
+            layoutEndDate.setOnClickListener(v -> {
+                Calendar c = Calendar.getInstance();
+                DatePickerDialog dpd = new DatePickerDialog(this, (dp, y, m, d) -> {
+                    Calendar sel = Calendar.getInstance();
+                    sel.set(y, m, d);
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.US);
+                    endDateHolder[0] = sdf.format(sel.getTime());
+                    if (tvEndDate != null) tvEndDate.setText(endDateHolder[0]);
+                    if (!startDateHolder[0].isEmpty() && etDates != null) {
+                        etDates.setText(startDateHolder[0] + " – " + endDateHolder[0]);
+                    } else if (etDates != null) {
+                        etDates.setText(endDateHolder[0]);
+                    }
+                }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+                dpd.show();
+            });
+        }
+
+        // Category selection listeners (Switch category without prefilling demo texts)
+        View.OnClickListener catListener = v -> {
+            if (chipSports != null) chipSports.setBackgroundResource(R.drawable.bg_role_student_unselected);
+            if (chipCultural != null) chipCultural.setBackgroundResource(R.drawable.bg_role_student_unselected);
+            if (chipTechnical != null) chipTechnical.setBackgroundResource(R.drawable.bg_role_student_unselected);
+            if (chipVolunteering != null) chipVolunteering.setBackgroundResource(R.drawable.bg_role_student_unselected);
+            if (chipOther != null) chipOther.setBackgroundResource(R.drawable.bg_role_student_unselected);
+
+            if (chipSports != null) chipSports.setTextColor(getColor(R.color.text_muted));
+            if (chipCultural != null) chipCultural.setTextColor(getColor(R.color.text_muted));
+            if (chipTechnical != null) chipTechnical.setTextColor(getColor(R.color.text_muted));
+            if (chipVolunteering != null) chipVolunteering.setTextColor(getColor(R.color.text_muted));
+            if (chipOther != null) chipOther.setTextColor(getColor(R.color.text_muted));
+
+            v.setBackgroundResource(R.drawable.bg_role_student_selected);
+            ((TextView) v).setTextColor(getColor(R.color.charcoal_dark));
+
+            if (v == chipSports) {
+                selectedCategory[0] = "Sports";
+                if (containerOther != null) containerOther.setVisibility(View.GONE);
+            } else if (v == chipCultural) {
+                selectedCategory[0] = "Cultural";
+                if (containerOther != null) containerOther.setVisibility(View.GONE);
+            } else if (v == chipTechnical) {
+                selectedCategory[0] = "Technical Event";
+                if (containerOther != null) containerOther.setVisibility(View.GONE);
+            } else if (v == chipVolunteering) {
+                selectedCategory[0] = "Volunteering";
+                if (containerOther != null) containerOther.setVisibility(View.GONE);
+            } else if (v == chipOther) {
+                selectedCategory[0] = "Other";
+                if (containerOther != null) {
+                    containerOther.setVisibility(View.VISIBLE);
+                    if (etOther != null) etOther.requestFocus();
+                }
+            }
+        };
+
+        if (chipSports != null) chipSports.setOnClickListener(catListener);
+        if (chipCultural != null) chipCultural.setOnClickListener(catListener);
+        if (chipTechnical != null) chipTechnical.setOnClickListener(catListener);
+        if (chipVolunteering != null) chipVolunteering.setOnClickListener(catListener);
+        if (chipOther != null) chipOther.setOnClickListener(catListener);
+
+        if (btnCancel != null) btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        if (btnSubmit != null) {
+            btnSubmit.setOnClickListener(v -> {
+                String title = etTitle != null ? etTitle.getText().toString().trim() : "";
+                if (title.isEmpty()) {
+                    if (etTitle != null) etTitle.setError("Please enter event / purpose title");
+                    return;
+                }
+
+                String cat = selectedCategory[0];
+                if ("Other".equalsIgnoreCase(cat) && etOther != null) {
+                    String otherVal = etOther.getText().toString().trim();
+                    if (otherVal.isEmpty()) {
+                        etOther.setError("Please specify other category");
+                        return;
+                    }
+                    cat = "Other (" + otherVal + ")";
+                }
+
+                String dates = etDates != null ? etDates.getText().toString().trim() : "";
+                if (dates.isEmpty()) {
+                    if (!startDateHolder[0].isEmpty() && !endDateHolder[0].isEmpty()) {
+                        dates = startDateHolder[0] + " – " + endDateHolder[0];
+                    } else if (!startDateHolder[0].isEmpty()) {
+                        dates = startDateHolder[0];
+                    } else {
+                        if (etDates != null) etDates.setError("Please specify event dates / duration");
+                        return;
+                    }
+                }
+
+                String timing = etTiming != null ? etTiming.getText().toString().trim() : "";
+                if (timing.isEmpty()) {
+                    if (etTiming != null) etTiming.setError("Please enter daily timing / hours");
+                    return;
+                }
+
+                String organiser = etOrganiser != null ? etOrganiser.getText().toString().trim() : "";
+                if (organiser.isEmpty()) {
+                    if (etOrganiser != null) etOrganiser.setError("Please enter event organiser / coach name");
+                    return;
+                }
+
+                String reason = etReason != null ? etReason.getText().toString().trim() : "";
+                if (reason.isEmpty()) {
+                    reason = "Prior duty leave for " + title + " (" + timing + ") directed to " + assignedHod + ".";
+                }
+
+                String newId = "PR-2026-" + (int)(100 + Math.random() * 900);
+                String datesWithTiming = dates + " (" + timing + ")";
+
+                PermissionRequest newReq = new PermissionRequest(
+                        newId,
+                        user.getId(),
+                        user.getFullName(),
+                        user.getYearOrClass(),
+                        title,
+                        datesWithTiming,
+                        user.getDepartment() + " • Organiser: " + organiser,
+                        reason,
+                        "Pending Organiser Confirmation",
+                        35,
+                        assignedHod,
+                        "Directed to HOD. Awaiting confirmation from " + organiser + " for attendance credit.",
+                        System.currentTimeMillis()
+                );
+
+                permissionRequestManager.addPermission(newReq);
+                dialog.dismiss();
+
+                new AlertDialog.Builder(this)
+                        .setTitle("🎉 Prior Permission Dispatched!")
+                        .setMessage("Your Prior Permission Request for \"" + title + "\" (" + cat + ")\n\n"
+                                + "📅 Dates & Timing:\n   " + datesWithTiming + "\n\n"
+                                + "🏛️ Directed To:\n   " + assignedHod + "\n\n"
+                                + "👤 Attendance Confirmation By:\n   " + organiser + "\n\n"
+                                + "The department has logged prior info of your absence. Full attendance credit will be issued upon organiser verification.")
+                        .setPositiveButton("OK", null)
+                        .show();
+            });
+        }
 
         dialog.show();
     }
@@ -409,9 +2326,455 @@ public class HomeActivity extends AppCompatActivity {
 
         tvReason.setText(pass.getReason());
 
-        btnClose.setOnClickListener(v -> dialog.dismiss());
+        MaterialButton btnDelete = dialogView.findViewById(R.id.btnDeleteSpotPass);
+        if (btnDelete != null) {
+            btnDelete.setOnClickListener(v -> {
+                new AlertDialog.Builder(this)
+                        .setTitle("Cancel Spot Pass")
+                        .setMessage("Do you want to cancel and remove Spot Pass " + pass.getId() + "? You can create a new pass with updated timings.")
+                        .setPositiveButton("Yes, Cancel Pass", (d, which) -> {
+                            spotPassManager.deleteSpotPass(pass.getId());
+                            dialog.dismiss();
+                            updateNotificationBadge();
+                            Toast.makeText(this, "Spot Pass cancelled and removed.", Toast.LENGTH_SHORT).show();
+                        })
+                        .setNegativeButton("Keep Pass", null)
+                        .show();
+            });
+        }
+
+        User currentUser = userManager.getCurrentUser();
+        if (currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal())) {
+            btnClose.setText("Review & Take Action");
+            btnClose.setOnClickListener(v -> {
+                dialog.dismiss();
+                String[] reviewActions = new String[]{
+                        "✅ Approve as Faculty (Clashing Lecture)",
+                        "✅ Approve as HOD (Department Head)",
+                        "🏆 Fully Approve & Verify (Both Faculty & HOD)",
+                        "❌ Reject Spot Pass Request"
+                };
+                new AlertDialog.Builder(this)
+                        .setTitle("Spot Pass Review: " + pass.getId())
+                        .setItems(reviewActions, (d, which) -> {
+                            if (which == 0) {
+                                // Faculty approved -> HOD status is "Approved & Verified"
+                                pass.setSubjectTeacherStatus("Approved by " + currentUser.getFullName());
+                                pass.setClassTeacherStatus("Approved & Verified");
+                                pass.setStatus("Approved & Verified");
+                                pass.setProgress(100);
+                            } else if (which == 1) {
+                                // HOD approved -> Faculty status is "Approved & Verified"
+                                pass.setClassTeacherStatus("Approved by " + currentUser.getFullName());
+                                pass.setSubjectTeacherStatus("Approved & Verified");
+                                pass.setStatus("Approved & Verified");
+                                pass.setProgress(100);
+                            } else if (which == 2) {
+                                pass.setClassTeacherStatus("Approved & Verified");
+                                pass.setSubjectTeacherStatus("Approved & Verified");
+                                pass.setStatus("Approved & Verified");
+                                pass.setProgress(100);
+                            } else {
+                                pass.setStatus("Rejected");
+                                pass.setProgress(100);
+                            }
+                            spotPassManager.updateSpotPass(pass);
+                            Toast.makeText(this, "Spot Pass " + pass.getId() + " status updated: " + pass.getStatus(), Toast.LENGTH_SHORT).show();
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            });
+        } else {
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
 
         dialog.show();
+    }
+
+    /**
+     * Dialog for Teachers and Principal to enroll a student.
+     * The enrolled student immediately gets access to the app for the student interface.
+     */
+    private void showAddStudentDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_student, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        EditText etName = dialogView.findViewById(R.id.etAddStudentName);
+        EditText etRoll = dialogView.findViewById(R.id.etAddStudentRollNo);
+        Spinner spClass = dialogView.findViewById(R.id.spinnerAddStudentClass);
+        Spinner spStream = dialogView.findViewById(R.id.spinnerAddStudentStream);
+        EditText etSubjects = dialogView.findViewById(R.id.etAddStudentSubjects);
+        EditText etEmail = dialogView.findViewById(R.id.etAddStudentEmail);
+        EditText etPassword = dialogView.findViewById(R.id.etAddStudentPassword);
+        TextView btnAutoEmail = dialogView.findViewById(R.id.btnAutoGenerateEmail);
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelAddStudent);
+        MaterialButton btnSubmit = dialogView.findViewById(R.id.btnSubmitAddStudent);
+
+        // Spinners setup
+        String[] classOptions = new String[]{"First Year (FY)", "Second Year (SY)", "Third Year (TY)"};
+        ArrayAdapter<String> classAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, classOptions);
+        if (spClass != null) spClass.setAdapter(classAdapter);
+
+        String[] streamOptions = new String[]{"Science Stream (B.Sc.)", "Commerce Stream (B.Com)", "Arts Stream (B.A.)"};
+        ArrayAdapter<String> streamAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, streamOptions);
+        if (spStream != null) spStream.setAdapter(streamAdapter);
+
+
+        // Auto email generation action
+        if (btnAutoEmail != null) {
+            btnAutoEmail.setOnClickListener(v -> {
+                String name = etName != null ? etName.getText().toString().trim() : "";
+                String roll = etRoll != null ? etRoll.getText().toString().trim() : "";
+                if (name.isEmpty()) {
+                    Toast.makeText(this, "Please enter student's full name first", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String genEmail = userManager.generateInstitutionalEmail(name, roll);
+                if (etEmail != null) etEmail.setText(genEmail);
+            });
+        }
+
+        if (btnCancel != null) {
+            btnCancel.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        if (btnSubmit != null) {
+            btnSubmit.setOnClickListener(v -> {
+                String name = etName != null ? etName.getText().toString().trim() : "";
+                if (name.isEmpty()) {
+                    if (etName != null) etName.setError("Student name is required");
+                    return;
+                }
+
+                String roll = etRoll != null ? etRoll.getText().toString().trim() : "";
+                if (roll.isEmpty()) {
+                    roll = "STU-" + (int)(1000 + Math.random() * 9000);
+                }
+
+                String selectedClass = spClass != null ? spClass.getSelectedItem().toString() : "11th Standard";
+                String selectedStream = spStream != null ? spStream.getSelectedItem().toString() : "Science Stream";
+                String subjects = etSubjects != null ? etSubjects.getText().toString().trim() : "General Academics";
+                if (subjects.isEmpty()) subjects = "Physics, Chemistry, Mathematics, English";
+
+                String email = etEmail != null ? etEmail.getText().toString().trim() : "";
+                if (email.isEmpty()) {
+                    email = userManager.generateInstitutionalEmail(name, roll);
+                }
+                if (!email.endsWith("@ycasc")) {
+                    email = email.split("@")[0] + "@ycasc";
+                }
+
+                String password = etPassword != null ? etPassword.getText().toString().trim() : "";
+                if (password.isEmpty()) {
+                    password = "123456789";
+                }
+
+                String phone = "";
+
+                User newStudent = userManager.enrollStudent(name, roll, selectedClass, selectedStream, subjects, email, password, phone);
+                if (newStudent == null) {
+                    Toast.makeText(this, "An account with this email or roll already exists!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                dialog.dismiss();
+
+                final String finalEmail = email;
+                final String finalPass = password;
+
+                new AlertDialog.Builder(this)
+                        .setTitle("🎓 Student Successfully Enrolled!")
+                        .setMessage("Student details have been added to the institutional database.\n\n"
+                                + "👤 Name: " + name + "\n"
+                                + "🆔 Roll No: " + roll + "\n"
+                                + "🏫 Class: " + selectedClass + " (" + selectedStream + ")\n"
+                                + "📚 Subjects: " + subjects + "\n\n"
+                                + "Official Login Credentials:\n"
+                                + "📧 Email ID: " + finalEmail + "\n"
+                                + "🔑 Default Password: " + finalPass + "\n\n"
+                                + "The student now has immediate access to log into the Eventra Student Interface. They can update their password under their profile after login.")
+                        .setPositiveButton("OK", null)
+                        .setNeutralButton("Copy Credentials", (d, w) -> {
+                            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                            android.content.ClipData clip = android.content.ClipData.newPlainText("Student Credentials",
+                                    "Eventra Student Login:\nEmail: " + finalEmail + "\nPassword: " + finalPass);
+                            if (clipboard != null) clipboard.setPrimaryClip(clip);
+                            Toast.makeText(this, "Login credentials copied to clipboard!", Toast.LENGTH_SHORT).show();
+                        })
+                        .show();
+            });
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * Dialog for Principal to provision faculty members / teachers.
+     * Callable by Principal.
+     */
+    private void showAddTeacherDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_teacher, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        EditText etName = dialogView.findViewById(R.id.etAddTeacherName);
+        EditText etId = dialogView.findViewById(R.id.etAddTeacherId);
+        EditText etDesig = dialogView.findViewById(R.id.etAddTeacherDesignation);
+        Spinner spDept = dialogView.findViewById(R.id.spinnerAddTeacherDept);
+        EditText etSubjects = dialogView.findViewById(R.id.etAddTeacherSubjects);
+        EditText etEmail = dialogView.findViewById(R.id.etAddTeacherEmail);
+        EditText etPassword = dialogView.findViewById(R.id.etAddTeacherPassword);
+        TextView btnAutoEmail = dialogView.findViewById(R.id.btnAutoGenerateTeacherEmail);
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelAddTeacher);
+        MaterialButton btnSubmit = dialogView.findViewById(R.id.btnSubmitAddTeacher);
+
+        // Spinners setup
+        String[] deptOptions = new String[]{"Science Stream", "Commerce Stream", "Arts Stream", "Computer Science", "Mathematics", "Physical Education"};
+        ArrayAdapter<String> deptAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, deptOptions);
+        if (spDept != null) spDept.setAdapter(deptAdapter);
+
+        // Auto email generation action
+        if (btnAutoEmail != null) {
+            btnAutoEmail.setOnClickListener(v -> {
+                String name = etName != null ? etName.getText().toString().trim() : "";
+                String staffId = etId != null ? etId.getText().toString().trim() : "";
+                if (name.isEmpty()) {
+                    Toast.makeText(this, "Please enter faculty full name first", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String genEmail = userManager.generateInstitutionalEmail(name, staffId);
+                if (etEmail != null) etEmail.setText(genEmail);
+            });
+        }
+
+        if (btnCancel != null) {
+            btnCancel.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        if (btnSubmit != null) {
+            btnSubmit.setOnClickListener(v -> {
+                String name = etName != null ? etName.getText().toString().trim() : "";
+                if (name.isEmpty()) {
+                    if (etName != null) etName.setError("Faculty name is required");
+                    return;
+                }
+
+                String staffId = etId != null ? etId.getText().toString().trim() : "";
+                String selectedDept = spDept != null ? spDept.getSelectedItem().toString() : "Science Stream";
+                if (staffId.isEmpty()) {
+                    staffId = userManager.generateTeacherId(selectedDept, name);
+                }
+
+                String desig = etDesig != null ? etDesig.getText().toString().trim() : "Class Teacher & Lecturer";
+                if (desig.isEmpty()) desig = "Class Teacher & Lecturer";
+
+                String subjects = etSubjects != null ? etSubjects.getText().toString().trim() : "Physics";
+                if (subjects.isEmpty()) subjects = "General";
+
+                String email = etEmail != null ? etEmail.getText().toString().trim() : "";
+                if (email.isEmpty()) {
+                    email = userManager.generateInstitutionalEmail(name, staffId);
+                }
+                if (!email.endsWith("@ycasc")) {
+                    email = email.split("@")[0] + "@ycasc";
+                }
+
+                String password = etPassword != null ? etPassword.getText().toString().trim() : "";
+                if (password.isEmpty()) {
+                    password = "123456789";
+                }
+
+                String phone = "";
+
+                User newTeacher = userManager.provisionTeacher(name, staffId, desig, selectedDept, subjects, email, password, phone);
+                if (newTeacher == null) {
+                    Toast.makeText(this, "An account with this email already exists!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                dialog.dismiss();
+
+                final String finalEmail = email;
+                final String finalPass = password;
+
+                new AlertDialog.Builder(this)
+                        .setTitle("👩‍🏫 Faculty Member Provisioned!")
+                        .setMessage("Faculty account has been registered in the database.\n\n"
+                                + "👤 Name: " + name + "\n"
+                                + "🆔 Staff ID: " + staffId + "\n"
+                                + "🏢 Department: " + selectedDept + "\n"
+                                + "💼 Designation: " + desig + "\n"
+                                + "📚 Subjects Taught: " + subjects + "\n\n"
+                                + "Official Login Credentials:\n"
+                                + "📧 Email ID: " + finalEmail + "\n"
+                                + "🔑 Default Password: " + finalPass + "\n\n"
+                                + "This teacher can now log in to review and approve Spot Passes, manage attendance, and enroll students.")
+                        .setPositiveButton("OK", null)
+                        .setNeutralButton("Copy Credentials", (d, w) -> {
+                            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                            android.content.ClipData clip = android.content.ClipData.newPlainText("Faculty Credentials",
+                                    "Eventra Faculty Login:\nEmail: " + finalEmail + "\nPassword: " + finalPass);
+                            if (clipboard != null) clipboard.setPrimaryClip(clip);
+                            Toast.makeText(this, "Faculty login credentials copied to clipboard!", Toast.LENGTH_SHORT).show();
+                        })
+                        .show();
+            });
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * Principal Admin Quick Action Menu
+     */
+    private void showPrincipalActionMenu() {
+        String[] options = new String[]{
+                "➕ Provision New Faculty / Teacher",
+                "🎓 Enroll New Student",
+                "👥 Institutional Directory & Roster",
+                "🔄 Reset Database to Principal-Only"
+        };
+
+        new AlertDialog.Builder(this)
+                .setTitle("🏛️ Principal Administration")
+                .setItems(options, (dialog, which) -> {
+                    switch (which) {
+                        case 0:
+                            showAddTeacherDialog();
+                            break;
+                        case 1:
+                            showAddStudentDialog();
+                            break;
+                        case 2:
+                            showInstitutionalRosterDialog();
+                            break;
+                        case 3:
+                            new AlertDialog.Builder(this)
+                                    .setTitle("Reset to Principal-Only?")
+                                    .setMessage("This will remove all added teachers and students, restoring the database to contain only Dr. Shashikant V. Mayekar (Principal).")
+                                    .setPositiveButton("Reset", (d, w) -> {
+                                        userManager.resetToPrincipalOnly();
+                                        Toast.makeText(this, "Database reset to Principal-Only.", Toast.LENGTH_SHORT).show();
+                                        loadCurrentUserData();
+                                    })
+                                    .setNegativeButton("Cancel", null)
+                                    .show();
+                            break;
+                    }
+                })
+                .setNegativeButton("Close", null)
+                .show();
+    }
+
+    /**
+     * Teacher / Faculty Quick Action Menu (FAB / Navigation action)
+     */
+    private void showTeacherActionMenu() {
+        String[] options = new String[]{
+                "📢 Upload Institutional Notice / Announcement",
+                "🎓 Enroll New Student",
+                "📝 Review Pending Spot Passes",
+                "📁 Institutional Requests & Permissions"
+        };
+
+        new AlertDialog.Builder(this)
+                .setTitle("👩‍🏫 Faculty Administration")
+                .setItems(options, (dialog, which) -> {
+                    switch (which) {
+                        case 0:
+                            showNewNoticeDialog();
+                            break;
+                        case 1:
+                            showAddStudentDialog();
+                            break;
+                        case 2:
+                            showTeacherPendingPassesDialog();
+                            break;
+                        case 3:
+                            startActivity(new Intent(this, RequestsActivity.class));
+                            break;
+                    }
+                })
+                .setNegativeButton("Close", null)
+                .show();
+    }
+
+    /**
+     * Institutional Roster displaying all provisioned users (Principal, Teachers, Students)
+     */
+    private void showInstitutionalRosterDialog() {
+        List<User> users = userManager.getAllUsers();
+        if (users.isEmpty()) {
+            Toast.makeText(this, "No registered users found.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        int teachersCount = 0;
+        int studentsCount = 0;
+
+        for (User u : users) {
+            String roleTag;
+            if (u.isPrincipal()) {
+                roleTag = "🏛️ [PRINCIPAL]";
+            } else if (u.isTeacherOrDirector()) {
+                roleTag = "👩‍🏫 [FACULTY]";
+                teachersCount++;
+            } else {
+                roleTag = "🎓 [STUDENT]";
+                studentsCount++;
+            }
+
+            sb.append(roleTag).append(" ").append(u.getFullName()).append("\n");
+            sb.append("   ID: ").append(u.getId()).append(" • Email: ").append(u.getEmail()).append("\n");
+            if (u.getSubjects() != null && !u.getSubjects().isEmpty()) {
+                sb.append("   Subjects: ").append(u.getSubjects()).append("\n");
+            }
+            sb.append("\n");
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("📋 Institutional Roster (" + (teachersCount + studentsCount + 1) + " Total)")
+                .setMessage("Faculty: " + teachersCount + " | Students: " + studentsCount + " | Principal: 1\n\n" + sb.toString().trim())
+                .setPositiveButton("Close", null)
+                .show();
+    }
+
+    /**
+     * Lists Spot Passes for teachers to review and approve/reject.
+     */
+    private void showTeacherPendingPassesDialog() {
+        List<SpotPass> passes = spotPassManager.getAllSpotPasses();
+        if (passes.isEmpty()) {
+            Toast.makeText(this, "No Spot Passes currently pending review.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String[] passItems = new String[passes.size()];
+        for (int i = 0; i < passes.size(); i++) {
+            SpotPass p = passes.get(i);
+            passItems[i] = p.getId() + " · " + p.getStudentName() + " (" + p.getActivityTitle() + ") [" + p.getStatus() + "]";
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("📝 Duty Leave & Spot Passes")
+                .setItems(passItems, (dialog, which) -> {
+                    SpotPass selectedPass = passes.get(which);
+                    showSpotPassDetailsDialog(selectedPass);
+                })
+                .setNegativeButton("Close", null)
+                .show();
     }
 
     /** Placeholder click handler: shows a toast. Replace with startActivity(...) or fragment navigation. */

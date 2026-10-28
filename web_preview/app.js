@@ -1,148 +1,98 @@
 // Eventra State Management
 let currentRole = 'STUDENT'; // 'STUDENT' | 'TEACHER'
-let currentMode = 'REGISTER'; // 'REGISTER' | 'LOGIN'
+let currentMode = 'LOGIN'; // 'LOGIN' (Registration handled centrally by Principal)
 let teacherSubRole = 'DIRECTOR'; // 'DIRECTOR' | 'FACULTY'
-let selectedStudentInst = 'UNIVERSITY'; // 'UNIVERSITY' | 'COLLEGE' | 'HIGHER_SEC' | 'SCHOOL'
-let selectedTeacherInst = 'UNIVERSITY';
+let selectedStudentInst = 'COLLEGE'; // 'COLLEGE' | 'UNIVERSITY'
+let selectedTeacherInst = 'COLLEGE';
 let lastRegisteredUser = null;
 
 // Mock Local User Database with unified multi-buyer format
 let usersDatabase = [
-  // DEFAULT / UNIVERSITY BUYER
+  // YASHODA COLLEGE OF ARTS, SCIENCE AND COMMERCE (YCASC)
+  // Provisioned @ycasc.com accounts with default password 123456789
   {
-    id: "MCA_2026_2650",
-    fullName: "Esther Howard",
-    email: "student@eventra.ac.in",
-    phoneNumber: "9876543210",
-    password: "123456789",
-    role: "STUDENT",
-    roleDisplayName: "Student",
-    department: "Department of Computer Applications",
-    institutionType: "UNIVERSITY",
-    dob: "19/08/2002",
-    yearOrClass: "2nd Year (Semester 4)",
-    degree: "Master of Computer Applications (MCA)",
-    subjects: "Cloud Computing, Distributed Databases, Advanced Java, Mobile Application Development, Web Frameworks",
-    extra: "MCA (Batch 2026 | Roll: 2650)"
-  },
-  {
-    id: "CSC_Snithi",
-    fullName: "Snithi Sharma",
-    email: "snithi.sharma@eventra.ac.in",
-    phoneNumber: "9876512345",
-    password: "123456789",
-    role: "FACULTY",
-    roleDisplayName: "Faculty Lecturer",
-    department: "Computer Science (CSC)",
-    institutionType: "UNIVERSITY",
-    dob: "12/03/1990",
-    yearOrClass: "Assistant Professor",
-    degree: "M.Tech, Ph.D (Computer Science)",
-    subjects: "Website Design & Systems, UX Architecture, Front-end Systems",
-    extra: "Website Design & Systems (CSC_Snithi)"
-  },
-  {
-    id: "CSC_Robert",
-    fullName: "Dr. Robert Vance",
-    email: "robert.vance@eventra.ac.in",
-    phoneNumber: "9876523456",
-    password: "123456789",
-    role: "DIRECTOR",
-    roleDisplayName: "Programme Director",
-    department: "Computer Science (CSC)",
-    institutionType: "UNIVERSITY",
-    dob: "24/11/1982",
-    yearOrClass: "Programme Director",
-    degree: "Ph.D in Software Systems",
-    subjects: "Project Leadership, Software Engineering & Research",
-    extra: "Mastering Projects & Leadership"
-  },
-  {
-    id: "ORG_2026_01",
-    fullName: "Kavita Rao",
-    email: "organizer@eventra.ac.in",
-    phoneNumber: "9823000099",
-    password: "123456789",
-    role: "ORGANIZER",
-    roleDisplayName: "Event Organizer",
-    department: "Event Management",
-    institutionType: "UNIVERSITY",
-    dob: "14/04/2001",
-    yearOrClass: "Lead Coordinator",
-    degree: "Master of Business Administration (MBA)",
-    subjects: "Campus Event Operations, Duty Leave Verification, Spot Pass Governance",
-    extra: "Chief Event Coordinator"
-  },
-
-  // WAKANDA HIGHER SECONDARY SCHOOL (Wakanda HSS)
-  // Admin-provisioned @eventra.ac.in accounts with default password 123456789
-  {
-    id: "SCI_25_001",
-    fullName: "Aditya Kamat",
-    email: "aditya.kamat@eventra.ac.in",
+    id: "SCI-26-001",
+    fullName: "Akash Kamat",
+    email: "akash.kamat@ycasc.com",
     phoneNumber: "9823000001",
     password: "123456789",
     role: "STUDENT",
-    roleDisplayName: "Student (Science Stream)",
+    roleDisplayName: "Student (B.Sc. Science)",
     department: "Science Division",
-    institutionType: "HIGHER_SEC",
-    dob: "05/01/2008",
-    yearOrClass: "11th Standard (Class XI)",
-    degree: "Higher Secondary Certificate (HSC)",
-    subjects: "Physics, Chemistry, Mathematics, English, NSS Unit",
-    extra: "Roll: SCI-25-001 | NSS Unit | Physics, Chem, Maths"
+    institutionType: "COLLEGE",
+    dob: "05/01/2006",
+    yearOrClass: "First Year (Batch 2026)",
+    degree: "Bachelor of Science (B.Sc.)",
+    subjects: "Physics, Chemistry, Mathematics",
+    extra: "Roll: SCI-26-001 | NSS Unit | Physics, Chemistry, Maths"
   },
   {
-    id: "HSS_Shashikant",
+    id: "YCASC_Principal",
     fullName: "Dr. Shashikant V. Mayekar",
-    email: "shashikant.mayekar@eventra.ac.in",
+    email: "principal@ycasc.com",
     phoneNumber: "9823000001",
     password: "123456789",
     role: "DIRECTOR",
-    roleDisplayName: "Principal (Higher Sec)",
+    roleDisplayName: "Principal",
     department: "Executive Administration",
-    institutionType: "HIGHER_SEC",
+    institutionType: "COLLEGE",
     dob: "15/06/1972",
     yearOrClass: "Principal",
-    degree: "Ph.D in Applied Mathematics",
-    subjects: "Mathematics, Institutional Governance",
-    extra: "Principal (Wakanda Higher Secondary School)"
+    degree: "Ph.D in Business Administration",
+    subjects: "Business, Management",
+    extra: "Principal(YCASC)"
   },
   {
-    id: "HSS_Pramod",
-    fullName: "Pramod Naik",
-    email: "pramod.naik@eventra.ac.in",
+    id: "YCASC_VP",
+    fullName: "Dr. Ramakant Deshmukh",
+    email: "ramakant.deshmukh@ycasc.com",
+    phoneNumber: "9823000002",
+    password: "123456789",
+    role: "DIRECTOR",
+    roleDisplayName: "Vice Principal",
+    department: "Executive Administration",
+    institutionType: "COLLEGE",
+    dob: "20/08/1975",
+    yearOrClass: "Vice Principal",
+    degree: "Ph.D in Organic Chemistry",
+    subjects: "Chemistry",
+    extra: "Vice Principal(YCASC)"
+  },
+  {
+    id: "HOD_SCI",
+    fullName: "Dr. Pramod Naik",
+    email: "pramod.naik@ycasc.com",
     phoneNumber: "9823000003",
     password: "123456789",
     role: "DIRECTOR",
     roleDisplayName: "HOD Science",
     department: "Department of Science",
-    institutionType: "HIGHER_SEC",
+    institutionType: "COLLEGE",
     dob: "08/09/1978",
     yearOrClass: "HOD Science",
-    degree: "M.Sc Physics, B.Ed",
-    subjects: "Physics, Science Laboratory",
-    extra: "Head of Science Stream & Physics Lead"
+    degree: "Ph.D in Physics",
+    subjects: "Physics, Mathematics",
+    extra: "Head of Department - Science Stream"
   },
 
   // COLLISION RESOLUTION DEMOS:
   // Rule: If a person has the same name and surname (or duplicate collision),
-  // emails are formatted as: rollno.name@eventra.ac.in
+  // emails are formatted as: rollno.name@ycasc.com
   {
-    id: "SCI_25_055",
-    fullName: "Kiran Kiran",
-    email: "055.kiran@eventra.ac.in",
-    phoneNumber: "9823000055",
+    id: "SCI-26-015",
+    fullName: "Kiran M Nair",
+    email: "kiran.m.nair@ycasc.com",
+    phoneNumber: "9823000015",
     password: "123456789",
     role: "STUDENT",
-    roleDisplayName: "Student (Identical Name & Surname)",
+    roleDisplayName: "Student",
     department: "Science Division",
-    institutionType: "HIGHER_SEC",
-    dob: "22/07/2008",
-    yearOrClass: "11th Standard (Class XI)",
-    degree: "Higher Secondary Certificate (HSC)",
-    subjects: "Physics, Chemistry, Biology, English",
-    extra: "Collision Rule: 055.kiran@eventra.ac.in (First name & surname are identical 'Kiran Kiran')"
+    institutionType: "COLLEGE",
+    dob: "14/03/2006",
+    yearOrClass: "First Year",
+    degree: "Bachelor of Science (B.Sc.)",
+    subjects: "Physics, Chemistry, Computer Science, English",
+    extra: "Collision if name and surname already exists."
   }
 ];
 
@@ -150,7 +100,7 @@ let usersDatabase = [
 function generateInstitutionalEmail(fullName, rollOrId) {
   if (!fullName || !fullName.trim()) {
     const r = (rollOrId || '').toLowerCase().replace(/[^a-z0-9]/g, '') || '101';
-    return `${r}.student@eventra.ac.in`;
+    return `${r}.student@ycasc.com`;
   }
 
   const parts = fullName.trim().toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(Boolean);
@@ -160,15 +110,15 @@ function generateInstitutionalEmail(fullName, rollOrId) {
 
   // Condition 1: Same name and surname (e.g. "Kiran Kiran" or single name)
   if (!last || first === last) {
-    return `${cleanRoll}.${first}@eventra.ac.in`;
+    return `${cleanRoll}.${first}@ycasc.com`;
   }
 
-  const standard = `${first}.${last}@eventra.ac.in`;
+  const standard = `${first}.${last}@ycasc.com`;
 
-  // Condition 2: If another user already has this firstname.lastname@eventra.ac.in (collision)
+  // Condition 2: If another user already has this firstname.lastname@ycasc.com (collision)
   const hasCollision = usersDatabase.some(u => u.email && u.email.toLowerCase() === standard);
   if (hasCollision) {
-    return `${cleanRoll}.${first}@eventra.ac.in`;
+    return `${cleanRoll}.${first}@ycasc.com`;
   }
 
   return standard;
@@ -181,8 +131,8 @@ function sanitizeCourse(c) {
   if (match && match[1]) return match[1].replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
   const words = str.replace(/[^a-zA-Z0-9\s]/g, '').trim().split(/\s+/);
   if (words.length === 1) return words[0].toUpperCase();
-  if (words[0].length <= 5 && !['BACHELOR','MASTER'].includes(words[0].toUpperCase())) return words[0].toUpperCase();
-  const acronym = words.filter(w => !['of','and','in','the'].includes(w.toLowerCase())).map(w => w[0].toUpperCase()).join('');
+  if (words[0].length <= 5 && !['BACHELOR', 'MASTER'].includes(words[0].toUpperCase())) return words[0].toUpperCase();
+  const acronym = words.filter(w => !['of', 'and', 'in', 'the'].includes(w.toLowerCase())).map(w => w[0].toUpperCase()).join('');
   return acronym || "MCA";
 }
 
@@ -192,7 +142,6 @@ function sanitizeStream(s) {
   if (str.includes("sci")) return "SCIENCE";
   if (str.includes("comm")) return "COMMERCE";
   if (str.includes("art")) return "ARTS";
-  if (str.includes("voc")) return "VOCATIONAL";
   const clean = s.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
   return clean || "SCIENCE";
 }
@@ -256,7 +205,7 @@ function sanitizeTeacherDept(dept) {
   if (lower.includes("commerce")) return "COMM";
   const words = trimmed.replace(/[^a-zA-Z0-9\s]/g, '').trim().split(/\s+/);
   if (words.length === 1) return words[0].toUpperCase();
-  const acronym = words.filter(w => !['of','and','in','department','school'].includes(w.toLowerCase())).map(w => w[0].toUpperCase()).join('');
+  const acronym = words.filter(w => !['of', 'and', 'in', 'department', 'school'].includes(w.toLowerCase())).map(w => w[0].toUpperCase()).join('');
   return acronym || "CSC";
 }
 
@@ -353,10 +302,14 @@ function switchRole(role) {
 // Switch Mode
 function switchMode(mode) {
   currentMode = mode;
-  document.getElementById('btnModeRegister').classList.toggle('active', mode === 'REGISTER');
-  document.getElementById('btnModeLogIn').classList.toggle('active', mode === 'LOGIN');
-  document.getElementById('appTabRegister').classList.toggle('active', mode === 'REGISTER');
-  document.getElementById('appTabLogIn').classList.toggle('active', mode === 'LOGIN');
+  const btnReg = document.getElementById('btnModeRegister');
+  if (btnReg) btnReg.classList.toggle('active', mode === 'REGISTER');
+  const btnLog = document.getElementById('btnModeLogIn');
+  if (btnLog) btnLog.classList.toggle('active', mode === 'LOGIN');
+  const tabReg = document.getElementById('appTabRegister');
+  if (tabReg) tabReg.classList.toggle('active', mode === 'REGISTER');
+  const tabLog = document.getElementById('appTabLogIn');
+  if (tabLog) tabLog.classList.toggle('active', mode === 'LOGIN');
   updateFormVisibility();
 }
 
@@ -492,6 +445,7 @@ function handleUnifiedSignIn(event) {
   });
 
   if (found) {
+    currentLoggedInUser = found;
     showToast(`Welcome to Eventra, ${found.fullName}!`);
     if (found.role === 'DIRECTOR' || found.role === 'FACULTY') {
       switchMainPortalView('TEACHER_PORTAL');
@@ -500,7 +454,8 @@ function handleUnifiedSignIn(event) {
       const role = document.getElementById('tTopRole');
       if (avatar) avatar.textContent = found.fullName.split(' ').map(p => p[0]).slice(0, 2).join('');
       if (name) name.textContent = found.fullName;
-      if (role) role.textContent = `${found.roleDisplayName} • @eventra.ac.in`;
+      if (role) role.textContent = `${found.roleDisplayName} • @ycasc.com`;
+      renderTeacherTimetable();
     } else {
       switchMainPortalView('MOBILE_APP');
       renderDashboard(found);
@@ -515,24 +470,27 @@ function autofillDemo(type) {
   const inputPass = document.getElementById('loginUnifiedPassword');
   inputPass.value = "123456789";
 
-  if (type === 'HSS_STUDENT' || type === 'SCI') {
-    inputId.value = "aditya.kamat@eventra.ac.in";
-    showToast("🔬 Wakanda HSS Student: aditya.kamat@eventra.ac.in (Default pass: 123456789)");
-  } else if (type === 'HSS_PRINCIPAL') {
-    inputId.value = "shashikant.mayekar@eventra.ac.in";
-    showToast("🏛️ Wakanda HSS Principal: shashikant.mayekar@eventra.ac.in (Default pass: 123456789)");
-  } else if (type === 'HSS_HOD') {
-    inputId.value = "pramod.naik@eventra.ac.in";
-    showToast("🔬 HOD Science: pramod.naik@eventra.ac.in (Default pass: 123456789)");
-  } else if (type === 'STUDENT' || type === 'UNIVERSITY_STUDENT') {
-    inputId.value = "student@eventra.ac.in";
-    showToast("🎓 University Demo: student@eventra.ac.in (Default pass: 123456789)");
+  if (type === 'BSC' || type === 'HSS_STUDENT' || type === 'SCI' || type === 'STUDENT' || type === 'UNIVERSITY_STUDENT') {
+    inputId.value = "akash.kamat@ycasc.com";
+    showToast("🧪 B.Sc. Student: akash.kamat@ycasc.com (Default pass: 123456789)");
+  } else if (type === 'BCOM') {
+    inputId.value = "anil.shah@ycasc.com";
+    showToast("📈 B.Com Student: anil.shah@ycasc.com (Default pass: 123456789)");
+  } else if (type === 'BA') {
+    inputId.value = "aditi.sharma@ycasc.com";
+    showToast("🎨 B.A. Student: aditi.sharma@ycasc.com (Default pass: 123456789)");
+  } else if (type === 'PRINCIPAL' || type === 'HSS_PRINCIPAL') {
+    inputId.value = "principal@ycasc.com";
+    showToast("🏛️ College Principal: principal@ycasc.com (Default pass: 123456789)");
+  } else if (type === 'HOD_SCI' || type === 'HSS_HOD' || type === 'TEACHER') {
+    inputId.value = "pramod.naik@ycasc.com";
+    showToast("👨‍🏫 HOD Science: pramod.naik@ycasc.com (Default pass: 123456789)");
   } else if (type === 'SAME_NAME_COLLISION') {
-    inputId.value = "42.ananya@eventra.ac.in";
-    showToast("⚡ Collision Demo (Duplicate Name): 42.ananya@eventra.ac.in (Pass: 123456789)");
+    inputId.value = "015.ananya@ycasc.com";
+    showToast("⚡ Collision Demo (Duplicate Name): 015.ananya@ycasc.com (Pass: 123456789)");
   } else if (type === 'IDENTICAL_NAME_SURNAME') {
-    inputId.value = "055.kiran@eventra.ac.in";
-    showToast("⚡ Collision Demo (Same Name & Surname): 055.kiran@eventra.ac.in (Pass: 123456789)");
+    inputId.value = "015.kiran@ycasc.com";
+    showToast("⚡ Collision Demo (Same Name & Surname): 015.kiran@ycasc.com (Pass: 123456789)");
   }
 }
 
@@ -558,13 +516,13 @@ function handlePasswordResetSubmit(event) {
   const currentPass = document.getElementById('resetCurrentPassword').value;
   const newPass = document.getElementById('resetNewPassword').value;
 
-  const found = usersDatabase.find(u => 
+  const found = usersDatabase.find(u =>
     (u.email && u.email.toLowerCase() === identifier) ||
     (u.id && u.id.toLowerCase() === identifier)
   );
 
   if (!found) {
-    showToast("❌ User not found with this email (@eventra.ac.in) or ID.");
+    showToast("❌ User not found with this email (@ycasc) or ID.");
     return;
   }
 
@@ -591,14 +549,16 @@ function selectBuyerPersona(buyer) {
   const pills = document.querySelectorAll('.buyer-pill');
   pills.forEach(p => p.classList.remove('active'));
 
-  setStudentInstitution('HIGHER_SEC');
-  setTeacherInstitution('HIGHER_SEC');
-  if (regCourse) regCourse.value = "Science";
-  if (regRoll) regRoll.value = "001";
-  if (regName) regName.value = "Aditya Kamat";
-  if (regDept) regDept.value = "Department of Science";
-  if (phoneLabel) phoneLabel.innerHTML = "🔬 <strong>Wakanda Higher Secondary</strong>";
-  showToast("🔬 Activated: Wakanda Higher Secondary School (Wakanda HSS)");
+  if (buyer === 'COLLEGE' || buyer === 'HIGHER_SEC') {
+    setStudentInstitution('COLLEGE');
+    setTeacherInstitution('COLLEGE');
+    if (regCourse) regCourse.value = "Science";
+    if (regRoll) regRoll.value = "001";
+    if (regName) regName.value = "Aditya Kamat";
+    if (regDept) regDept.value = "Department of Science";
+    if (phoneLabel) phoneLabel.innerHTML = "🏛️ <strong>Yashoda College (YCASC)</strong>";
+    if (pills[0]) pills[0].classList.add('active');
+    showToast("🏛️ Activated: Yashoda College of Arts, Science and Commerce");
   } else {
     setStudentInstitution('UNIVERSITY');
     setTeacherInstitution('UNIVERSITY');
@@ -606,8 +566,8 @@ function selectBuyerPersona(buyer) {
     if (regRoll) regRoll.value = "2650";
     if (regName) regName.value = "Esther Howard";
     if (regDept) regDept.value = "Department of Computer Applications";
-    if (phoneLabel) phoneLabel.innerHTML = "🏛️ <strong>University Campus</strong>";
-    if (pills[0]) pills[0].classList.add('active');
+    if (phoneLabel) phoneLabel.innerHTML = "🎓 <strong>University Campus</strong>";
+    if (pills[1]) pills[1].classList.add('active');
     showToast("🎓 Activated University / Engineering College");
   }
 }
@@ -686,7 +646,7 @@ async function checkBackendStatus() {
     const res = await fetch('http://localhost:3000/api/health');
     if (res.ok) {
       const data = await res.json();
-      statusBadge.innerHTML = '🟢 <strong>Node.js Backend Online</strong> (Port 3000: higher_secondary_db connected - Wakanda HSS)';
+      statusBadge.innerHTML = '🟢 <strong>Node.js Backend Online</strong> (Port 3000: yashoda_college_db connected - Yashoda College)';
       statusBadge.className = 'backend-badge online';
     } else {
       statusBadge.innerHTML = '🟡 <strong>Backend Standby</strong> (Running in offline preview mode)';
@@ -778,128 +738,117 @@ let currentTeacherPersonaIndex = 0; // 0 = Pramod Naik (HOD), 1 = Dr. Shashikant
 
 const teacherPersonas = [
   {
-    name: "Pramod Naik",
-    role: "HOD Science Stream • @eventra.ac.in",
+    name: "Dr. Pramod Naik",
+    role: "HOD Science Stream • @ycasc",
     avatar: "PN"
   },
   {
     name: "Dr. Shashikant V. Mayekar",
-    role: "Principal (Executive Head) • @eventra.ac.in",
+    role: "Principal (Executive Head) • @ycasc",
     avatar: "SM"
   }
 ];
 
-// Authentic Wakanda HSS Faculty Data for 11th & 12th standards
-const hssFacultyData = {
+// Authentic Yashoda College Faculty Data (3 teachers per stream with 1 HOD, plus Principal and VP)
+const collegeFacultyData = {
   Arts: {
-    '11th': [
-      { sr: 1, name: "Geeta Mehta", subjects: "Marathi", phone: "9370178529" },
-      { sr: 2, name: "Anita Verlekar", subjects: "English", phone: "9822587410" },
-      { sr: 3, name: "Ramesh Naik", subjects: "History", phone: "9012345678" },
-      { sr: 4, name: "Shruti Kamat", subjects: "Economics", phone: "7887465123" },
-      { sr: 5, name: "Pradnya Sawant", subjects: "Political Science", phone: "9156784320" },
-      { sr: 6, name: "Sanjay Bandodkar", subjects: "HOD Arts / Geography", phone: "9823000005" }
+    FY: [
+      { sr: 1, name: "Dr. Meenakshi Sundaram", subjects: "HOD Arts / History & World Civilization", phone: "9823000007" },
+      { sr: 2, name: "Prof. Anthony D'Souza", subjects: "Associate Professor / English Literature & Linguistics", phone: "9823000008" },
+      { sr: 3, name: "Prof. Geeta Sawant", subjects: "Assistant Professor / Political Science & Governance", phone: "9823000009" }
     ],
-    '12th': [
-      { sr: 1, name: "Geeta Mehta", subjects: "Advanced Marathi Literature", phone: "9370178529" },
-      { sr: 2, name: "Anita Verlekar", subjects: "English Special & Composition", phone: "9822587410" },
-      { sr: 3, name: "Ramesh Naik", subjects: "Modern World & Indian History", phone: "9012345678" },
-      { sr: 4, name: "Shruti Kamat", subjects: "Macro Economics & Development", phone: "7887465123" },
-      { sr: 5, name: "Pradnya Sawant", subjects: "Political Science & Constitution", phone: "9156784320" },
-      { sr: 6, name: "Maria Rodrigues", subjects: "Vice Principal / Functional English", phone: "9823000002" }
+    SY: [
+      { sr: 1, name: "Dr. Meenakshi Sundaram", subjects: "HOD Arts / Modern Indian Historiography", phone: "9823000007" },
+      { sr: 2, name: "Prof. Anthony D'Souza", subjects: "Associate Professor / Contemporary World Literature", phone: "9823000008" },
+      { sr: 3, name: "Prof. Geeta Sawant", subjects: "Assistant Professor / Public Policy & International Relations", phone: "9823000009" }
     ]
   },
   Commerce: {
-    '11th': [
-      { sr: 1, name: "Sujata Kamat", subjects: "HOD / Book Keeping & Accountancy", phone: "9823000004" },
-      { sr: 2, name: "Aarti Faldesai", subjects: "Business Studies & Organization", phone: "9823000009" },
-      { sr: 3, name: "Nitin Shenvi", subjects: "Economics & Banking Principles", phone: "9823000010" },
-      { sr: 4, name: "Dr. Shashikant V. Mayekar", subjects: "Principal / Commercial Mathematics", phone: "9823000001" },
-      { sr: 5, name: "Maria Rodrigues", subjects: "English & Secretarial Practice", phone: "9823000002" },
-      { sr: 6, name: "Vinayak Borkar", subjects: "Physical Education & NSS", phone: "9823000014" }
+    FY: [
+      { sr: 1, name: "Dr. Anand Vernekar", subjects: "HOD Commerce / Advanced Financial Accounting", phone: "9823000004" },
+      { sr: 2, name: "Prof. Kavita Shenvi", subjects: "Associate Professor / Corporate Accounting & Auditing", phone: "9823000005" },
+      { sr: 3, name: "Prof. Suresh Lotlikar", subjects: "Assistant Professor / Principles of Business Management", phone: "9823000006" }
     ],
-    '12th': [
-      { sr: 1, name: "Sujata Kamat", subjects: "HOD / Corporate Accounting & Partnerships", phone: "9823000004" },
-      { sr: 2, name: "Aarti Faldesai", subjects: "Business Finance & Marketing", phone: "9823000009" },
-      { sr: 3, name: "Nitin Shenvi", subjects: "Applied Economics & Auditing", phone: "9823000010" },
-      { sr: 4, name: "Dr. Shashikant V. Mayekar", subjects: "Principal / Statistics & Business Maths", phone: "9823000001" },
-      { sr: 5, name: "Maria Rodrigues", subjects: "Business Communication & English", phone: "9823000002" },
-      { sr: 6, name: "Vinayak Borkar", subjects: "Health & Sports Science", phone: "9823000014" }
+    SY: [
+      { sr: 1, name: "Dr. Anand Vernekar", subjects: "HOD Commerce / Taxation & Business Law", phone: "9823000004" },
+      { sr: 2, name: "Prof. Kavita Shenvi", subjects: "Associate Professor / Financial Markets & Banking", phone: "9823000005" },
+      { sr: 3, name: "Prof. Suresh Lotlikar", subjects: "Assistant Professor / Costing & Forensic Accounting", phone: "9823000006" }
     ]
   },
   Science: {
-    '11th': [
-      { sr: 1, name: "Dr. Neha Parab", subjects: "Physics Mechanics & Thermodynamics", phone: "9023456781" },
-      { sr: 2, name: "Vikram Bhat", subjects: "Inorganic & Organic Chemistry", phone: "8855667788" },
-      { sr: 3, name: "Sangeeta Dessai", subjects: "Botany & Cell Biology", phone: "9321123344" },
-      { sr: 4, name: "Pranav Kolekar", subjects: "Algebra & Coordinate Geometry", phone: "8765432109" },
-      { sr: 5, name: "Amit Gaonkar", subjects: "Computer Science (Python & SQL)", phone: "8899001122" },
-      { sr: 6, name: "Pramod Naik", subjects: "HOD Science / Physics Practicals", phone: "9823000003" }
+    FY: [
+      { sr: 1, name: "Dr. Pramod Naik", subjects: "HOD Science / Mechanics, Electrodynamics & Lab", phone: "9823000003" },
+      { sr: 2, name: "Dr. Sunita Kulkarni", subjects: "Associate Professor / Organic & Physical Chemistry", phone: "9823000010" },
+      { sr: 3, name: "Prof. Rajesh Haldankar", subjects: "Assistant Professor / Calculus, Differential Equations & Stats", phone: "9823000011" }
     ],
-    '12th': [
-      { sr: 1, name: "Dr. Neha Parab", subjects: "Physics Optics & Modern Electrodynamics", phone: "9023456781" },
-      { sr: 2, name: "Vikram Bhat", subjects: "Physical Chemistry & Reaction Kinetics", phone: "8855667788" },
-      { sr: 3, name: "Sangeeta Dessai", subjects: "Zoology, Genetics & Biotechnology", phone: "9321123344" },
-      { sr: 4, name: "Pranav Kolekar", subjects: "Calculus, Vectors & Probability", phone: "8765432109" },
-      { sr: 5, name: "Amit Gaonkar", subjects: "Computer Science (Data Structures & OOP)", phone: "8899001122" },
-      { sr: 6, name: "Pramod Naik", subjects: "HOD Science / Advanced Physics Lab", phone: "9823000003" }
-    ]
-  },
-  Vocational: {
-    '11th': [
-      { sr: 1, name: "Francis D'Costa", subjects: "HOD / Office Management & Secretarial Practice", phone: "9823000006" },
-      { sr: 2, name: "Clifford Fernandes", subjects: "Electronic Technology & Hardware Maintenance", phone: "9823000013" },
-      { sr: 3, name: "Nitin Shenvi", subjects: "Accountancy & Costing (Vocational)", phone: "9823000010" },
-      { sr: 4, name: "Amit Gaonkar", subjects: "Desktop Publishing & Computer Applications", phone: "8899001122" },
-      { sr: 5, name: "Maria Rodrigues", subjects: "Functional & Workplace English", phone: "9823000002" },
-      { sr: 6, name: "Vinayak Borkar", subjects: "Physical Fitness & Industrial Safety", phone: "9823000014" }
-    ],
-    '12th': [
-      { sr: 1, name: "Francis D'Costa", subjects: "HOD / Advanced Office Administration & CRM", phone: "9823000006" },
-      { sr: 2, name: "Clifford Fernandes", subjects: "Microcontrollers & Network Maintenance", phone: "9823000013" },
-      { sr: 3, name: "Nitin Shenvi", subjects: "Auditing & Taxation Practice", phone: "9823000010" },
-      { sr: 4, name: "Amit Gaonkar", subjects: "Web Graphics, Typography & DTP Lab", phone: "8899001122" },
-      { sr: 5, name: "Maria Rodrigues", subjects: "Business Presentation & Communication", phone: "9823000002" },
-      { sr: 6, name: "Vinayak Borkar", subjects: "First Aid & Community NSS Projects", phone: "9823000014" }
+    SY: [
+      { sr: 1, name: "Dr. Pramod Naik", subjects: "HOD Science / Quantum Mechanics & Modern Physics", phone: "9823000003" },
+      { sr: 2, name: "Dr. Sunita Kulkarni", subjects: "Associate Professor / Spectroscopy & Inorganic Chemistry", phone: "9823000010" },
+      { sr: 3, name: "Prof. Rajesh Haldankar", subjects: "Assistant Professor / Numerical Analysis & Linear Algebra", phone: "9823000011" }
     ]
   }
 };
+// Aliases for compatibility
+collegeFacultyData.Arts['11th'] = collegeFacultyData.Arts.FY;
+collegeFacultyData.Arts['12th'] = collegeFacultyData.Arts.SY;
+collegeFacultyData.Commerce['11th'] = collegeFacultyData.Commerce.FY;
+collegeFacultyData.Commerce['12th'] = collegeFacultyData.Commerce.SY;
+collegeFacultyData.Science['11th'] = collegeFacultyData.Science.FY;
+collegeFacultyData.Science['12th'] = collegeFacultyData.Science.SY;
+const hssFacultyData = collegeFacultyData;
 
-// Authentic Wakanda HSS Student Directory (Image 2 Structure)
+// Authentic Yashoda College Student Directory (15 students per general degree stream = 45 total)
 const hssStudentsData = {
   Arts: [
-    { roll: "AR01", year: "2024", name: "Aditi Sharma", email: "aditi.sharma@eventra.ac.in", pass: "123456789" },
-    { roll: "AR02", year: "2024", name: "Rohan Patil", email: "rohan.patil@eventra.ac.in", pass: "123456789" },
-    { roll: "AR03", year: "2025", name: "Sneha Desai", email: "sneha.desai@eventra.ac.in", pass: "123456789" },
-    { roll: "AR04", year: "2025", name: "Pratik Kulkarni", email: "pratik.kulkarni@eventra.ac.in", pass: "123456789" },
-    { roll: "AR05", year: "2025", name: "Neha Iyer", email: "neha.iyer@eventra.ac.in", pass: "123456789" },
-    { roll: "AR06", year: "2025", name: "Rutuja More", email: "rutuja.more@eventra.ac.in", pass: "123456789" }
+    { roll: "ART-26-001", year: "2026", name: "Aditi Sharma", email: "aditi.sharma@ycasc", pass: "123456789" },
+    { roll: "ART-26-002", year: "2026", name: "Rohan Patil", email: "rohan.patil@ycasc", pass: "123456789" },
+    { roll: "ART-26-003", year: "2026", name: "Sneha Desai", email: "sneha.desai@ycasc", pass: "123456789" },
+    { roll: "ART-26-004", year: "2026", name: "Pratik Kulkarni", email: "pratik.kulkarni@ycasc", pass: "123456789" },
+    { roll: "ART-26-005", year: "2026", name: "Neha Iyer", email: "neha.iyer@ycasc", pass: "123456789" },
+    { roll: "ART-26-006", year: "2026", name: "Rutuja More", email: "rutuja.more@ycasc", pass: "123456789" },
+    { roll: "ART-26-007", year: "2026", name: "Devika Menon", email: "devika.menon@ycasc", pass: "123456789" },
+    { roll: "ART-26-008", year: "2026", name: "Kabir Sen", email: "kabir.sen@ycasc", pass: "123456789" },
+    { roll: "ART-26-009", year: "2026", name: "Ayesha Qureshi", email: "ayesha.qureshi@ycasc", pass: "123456789" },
+    { roll: "ART-26-010", year: "2026", name: "Manasvi Gokhale", email: "manasvi.gokhale@ycasc", pass: "123456789" },
+    { roll: "ART-26-011", year: "2026", name: "Nikhil Vartak", email: "nikhil.vartak@ycasc", pass: "123456789" },
+    { roll: "ART-26-012", year: "2026", name: "Sharmila Tagore", email: "sharmila.tagore@ycasc", pass: "123456789" },
+    { roll: "ART-26-013", year: "2026", name: "Farhan Akhtar", email: "farhan.akhtar@ycasc", pass: "123456789" },
+    { roll: "ART-26-014", year: "2026", name: "Gayatri Devi", email: "gayatri.devi@ycasc", pass: "123456789" },
+    { roll: "ART-26-015", year: "2026", name: "Rahul Dravid", email: "rahul.dravid@ycasc", pass: "123456789" }
   ],
   Commerce: [
-    { roll: "CO001", year: "2024", name: "Anil Shah", email: "anil.shah@eventra.ac.in", pass: "123456789" },
-    { roll: "CO002", year: "2024", name: "Pooja Mehta", email: "pooja.mehta@eventra.ac.in", pass: "123456789" },
-    { roll: "CO003", year: "2024", name: "Karan Singh", email: "karan.singh@eventra.ac.in", pass: "123456789" },
-    { roll: "CO004", year: "2025", name: "Isha Patel", email: "isha.patel@eventra.ac.in", pass: "123456789" },
-    { roll: "CO005", year: "2025", name: "Sahil Gupta", email: "sahil.gupta@eventra.ac.in", pass: "123456789" },
-    { roll: "CO006", year: "2025", name: "Tanvi Joshi", email: "tanvi.joshi@eventra.ac.in", pass: "123456789" }
+    { roll: "COM-26-001", year: "2026", name: "Anil Shah", email: "anil.shah@ycasc", pass: "123456789" },
+    { roll: "COM-26-002", year: "2026", name: "Pooja Mehta", email: "pooja.mehta@ycasc", pass: "123456789" },
+    { roll: "COM-26-003", year: "2026", name: "Karan Singh", email: "karan.singh@ycasc", pass: "123456789" },
+    { roll: "COM-26-004", year: "2026", name: "Isha Patel", email: "isha.patel@ycasc", pass: "123456789" },
+    { roll: "COM-26-005", year: "2026", name: "Sahil Gupta", email: "sahil.gupta@ycasc", pass: "123456789" },
+    { roll: "COM-26-006", year: "2026", name: "Tanvi Joshi", email: "tanvi.joshi@ycasc", pass: "123456789" },
+    { roll: "COM-26-007", year: "2026", name: "Bhavik Agarwal", email: "bhavik.agarwal@ycasc", pass: "123456789" },
+    { roll: "COM-26-008", year: "2026", name: "Megha Singhania", email: "megha.singhania@ycasc", pass: "123456789" },
+    { roll: "COM-26-009", year: "2026", name: "Yashvardhan Goel", email: "yashvardhan.goel@ycasc", pass: "123456789" },
+    { roll: "COM-26-010", year: "2026", name: "Ritu Maheshwari", email: "ritu.maheshwari@ycasc", pass: "123456789" },
+    { roll: "COM-26-011", year: "2026", name: "Kunal Somani", email: "kunal.somani@ycasc", pass: "123456789" },
+    { roll: "COM-26-012", year: "2026", name: "Simran Kaur", email: "simran.kaur@ycasc", pass: "123456789" },
+    { roll: "COM-26-013", year: "2026", name: "Gaurav Biyani", email: "gaurav.biyani@ycasc", pass: "123456789" },
+    { roll: "COM-26-014", year: "2026", name: "Nidhi Khandelwal", email: "nidhi.khandelwal@ycasc", pass: "123456789" },
+    { roll: "COM-26-015", year: "2026", name: "Ananya Prabhu", email: "015.ananya@ycasc", pass: "123456789", isCollisionDemo: true }
   ],
   Science: [
-    { roll: "SC001", year: "2024", name: "Aditya Kamat", email: "aditya.kamat@eventra.ac.in", pass: "123456789" },
-    { roll: "SC002", year: "2024", name: "Riya Patil", email: "riya.patil@eventra.ac.in", pass: "123456789" },
-    { roll: "SC003", year: "2025", name: "Pallavi Deshmukh", email: "pallavi.deshmukh@eventra.ac.in", pass: "123456789" },
-    { roll: "SC004", year: "2025", name: "Siddharth Kulkarni", email: "siddharth.kulkarni@eventra.ac.in", pass: "123456789" },
-    { roll: "SC005", year: "2025", name: "Shruti Nair", email: "shruti.nair@eventra.ac.in", pass: "123456789" },
-    { roll: "SC006", year: "2025", name: "Omkar Bhosale", email: "omkar.bhosale@eventra.ac.in", pass: "123456789" },
-    // Collision resolution rule demo student:
-    { roll: "SC055", year: "2025", name: "Kiran Kiran", email: "055.kiran@eventra.ac.in", pass: "123456789", isCollisionDemo: true }
-  ],
-  Vocational: [
-    { roll: "VO001", year: "2024", name: "Sahil Khan", email: "sahil.khan@eventra.ac.in", pass: "123456789" },
-    { roll: "VO002", year: "2024", name: "Pooja Nair", email: "pooja.nair@eventra.ac.in", pass: "123456789" },
-    { roll: "VO003", year: "2025", name: "Arjun Shetty", email: "arjun.shetty@eventra.ac.in", pass: "123456789" },
-    { roll: "VO004", year: "2025", name: "Meera Iyer", email: "meera.iyer@eventra.ac.in", pass: "123456789" },
-    { roll: "VO005", year: "2025", name: "Rohit Yadav", email: "rohit.yadav@eventra.ac.in", pass: "123456789" },
-    { roll: "VO006", year: "2025", name: "Snehal Patil", email: "snehal.patil@eventra.ac.in", pass: "123456789" }
+    { roll: "SCI-26-001", year: "2026", name: "Aditya Kamat", email: "aditya.kamat@ycasc", pass: "123456789" },
+    { roll: "SCI-26-002", year: "2026", name: "Riya Patil", email: "riya.patil@ycasc", pass: "123456789" },
+    { roll: "SCI-26-003", year: "2026", name: "Pallavi Deshmukh", email: "pallavi.deshmukh@ycasc", pass: "123456789" },
+    { roll: "SCI-26-004", year: "2026", name: "Siddharth Kulkarni", email: "siddharth.kulkarni@ycasc", pass: "123456789" },
+    { roll: "SCI-26-005", year: "2026", name: "Shruti Nair", email: "shruti.nair@ycasc", pass: "123456789" },
+    { roll: "SCI-26-006", year: "2026", name: "Omkar Bhosale", email: "omkar.bhosale@ycasc", pass: "123456789" },
+    { roll: "SCI-26-007", year: "2026", name: "Tanvi Gawde", email: "tanvi.gawde@ycasc", pass: "123456789" },
+    { roll: "SCI-26-008", year: "2026", name: "Harshvardhan Joshi", email: "harshvardhan.joshi@ycasc", pass: "123456789" },
+    { roll: "SCI-26-009", year: "2026", name: "Ananya Prabhu", email: "ananya.prabhu@ycasc", pass: "123456789" },
+    { roll: "SCI-26-010", year: "2026", name: "Varun Shenoy", email: "varun.shenoy@ycasc", pass: "123456789" },
+    { roll: "SCI-26-011", year: "2026", name: "Sanika Shirodkar", email: "sanika.shirodkar@ycasc", pass: "123456789" },
+    { roll: "SCI-26-012", year: "2026", name: "Prathamesh Naik", email: "prathamesh.naik@ycasc", pass: "123456789" },
+    { roll: "SCI-26-013", year: "2026", name: "Divya Chodankar", email: "divya.chodankar@ycasc", pass: "123456789" },
+    { roll: "SCI-26-014", year: "2026", name: "Chinmay Rane", email: "chinmay.rane@ycasc", pass: "123456789" },
+    { roll: "SCI-26-015", year: "2026", name: "Kiran Kiran", email: "015.kiran@ycasc", pass: "123456789", isCollisionDemo: true }
   ]
 };
 
@@ -916,7 +865,7 @@ function switchMainPortalView(view) {
     if (btnTeacher) btnTeacher.classList.add('active');
     if (btnMobile) btnMobile.classList.remove('active');
     showTeacherTab('departments');
-    showToast("👨‍🏫 Switched to Wakanda HSS Teacher Interface");
+    showToast("👨‍🏫 Switched to Yashoda College Teacher Interface");
   } else {
     if (teacherContainer) teacherContainer.style.display = 'none';
     if (mobileContainer) mobileContainer.style.display = 'flex';
@@ -929,7 +878,7 @@ function switchMainPortalView(view) {
 // Switch Teacher Sidebar Nav Tabs
 function showTeacherTab(tabName) {
   const tabIds = ['dashboard', 'departments', 'faculty', 'students', 'timetable', 'announcements', 'contact'];
-  
+
   tabIds.forEach(id => {
     const navBtn = document.getElementById('tNav_' + id);
     if (navBtn) navBtn.classList.toggle('active', id === tabName);
@@ -953,28 +902,33 @@ function showTeacherTab(tabName) {
     renderStudentsList(currentStudentStream);
   } else if (tabName === 'faculty') {
     renderAllFacultyRoster();
+  } else if (tabName === 'announcements') {
+    renderAnnouncements();
+  } else if (tabName === 'timetable') {
+    renderTeacherTimetable();
   }
 }
 
-// Switch Standard between 11th and 12th
+// Switch Collegiate Year between FY and SY
 function setTeacherStandard(std) {
-  teacherCurrentStandard = std;
+  teacherCurrentStandard = (std === '12th' || std === 'SY') ? 'SY' : 'FY';
   const btn11 = document.getElementById('btnTStd11');
   const btn12 = document.getElementById('btnTStd12');
-  if (btn11) btn11.classList.toggle('active', std === '11th');
-  if (btn12) btn12.classList.toggle('active', std === '12th');
+  if (btn11) btn11.classList.toggle('active', teacherCurrentStandard === 'FY');
+  if (btn12) btn12.classList.toggle('active', teacherCurrentStandard === 'SY');
 
+  const label = teacherCurrentStandard === 'FY' ? 'First Year (FY)' : 'Second Year (SY)';
   document.querySelectorAll('.stream-std-text').forEach(el => {
-    el.textContent = `${std} Standard`;
+    el.textContent = label;
   });
 
-  showToast(`Switched to ${std} Standard`);
+  showToast(`Switched to ${label}`);
 }
 
 // Open Faculty Drilldown for a specific stream (Image 1 Right Panel)
 function openFacultyDrilldown(streamName) {
   currentFacultyDrillStream = streamName;
-  
+
   // Hide all sections, show drilldown
   document.querySelectorAll('.t-view-section').forEach(el => el.classList.remove('active'));
   const drillSec = document.getElementById('tView_facultyDrilldown');
@@ -989,7 +943,8 @@ function openFacultyDrilldown(streamName) {
   // Update Title and Icon
   const titleEl = document.getElementById('drillStreamTitle');
   if (titleEl) {
-    titleEl.textContent = `${streamName} - ${teacherCurrentStandard} Standard`;
+    const yrLabel = teacherCurrentStandard === 'FY' ? 'First Year (FY)' : 'Second Year (SY)';
+    titleEl.textContent = `${streamName} - ${yrLabel}`;
   }
 
   const iconEl = document.getElementById('drillStreamIcon');
@@ -999,15 +954,13 @@ function openFacultyDrilldown(streamName) {
   const streamIcons = {
     Arts: '📖',
     Commerce: '📈',
-    Science: '🧪',
-    Vocational: '🛠️'
+    Science: '🧪'
   };
 
   const streamClasses = {
     Arts: 'arts',
     Commerce: 'commerce',
-    Science: 'science',
-    Vocational: 'vocational'
+    Science: 'science'
   };
 
   const sClass = streamClasses[streamName] || 'arts';
@@ -1045,7 +998,7 @@ function openFacultyDrilldown(streamName) {
 // Student Stream Filter Tab Switcher (Image 2)
 function setStudentStreamTab(streamName) {
   currentStudentStream = streamName;
-  const tabs = ['Arts', 'Commerce', 'Science', 'Vocational'];
+  const tabs = ['Arts', 'Commerce', 'Science'];
 
   tabs.forEach(t => {
     const btn = document.getElementById('sTab' + t);
@@ -1066,7 +1019,7 @@ function renderStudentsList(streamName, query = '') {
   let list = hssStudentsData[streamName] || [];
   if (query && query.trim()) {
     const q = query.trim().toLowerCase();
-    list = list.filter(s => 
+    list = list.filter(s =>
       s.name.toLowerCase().includes(q) ||
       s.roll.toLowerCase().includes(q) ||
       s.email.toLowerCase().includes(q)
@@ -1089,7 +1042,7 @@ function renderStudentsList(streamName, query = '') {
         <td>${s.year}</td>
         <td>
           <strong>${s.name}</strong>
-          ${isCol ? '<div style="font-size:10.5px; color:#166534;">Identical name rule: rollno.name@eventra.ac.in</div>' : ''}
+          ${isCol ? '<div style="font-size:10.5px; color:#166534;">Identical name rule: rollno.name@ycasc</div>' : ''}
         </td>
         <td class="t-email-cell">
           <span>${s.email}</span>
@@ -1149,22 +1102,18 @@ function renderAllFacultyRoster() {
   if (!tbody) return;
 
   const roster = [
-    { name: "Dr. Shashikant V. Mayekar", role: "Principal (Executive Head)", dept: "Administration & Mathematics", subjects: "Commercial Mathematics, Statistics", email: "principal@wakandahss.edu.in", phone: "9823000001" },
-    { name: "Maria Rodrigues", role: "Vice Principal", dept: "Humanities & Languages", subjects: "English Special, Business Communication", email: "vp@wakandahss.edu.in", phone: "9823000002" },
-    { name: "Pramod Naik", role: "HOD Science", dept: "Department of Science", subjects: "Physics Mechanics, Optics & Lab", email: "hod.science@wakandahss.edu.in", phone: "9823000003" },
-    { name: "Sujata Kamat", role: "HOD Commerce", dept: "Department of Commerce", subjects: "Accountancy, Book Keeping, Corporate Accounts", email: "hod.commerce@wakandahss.edu.in", phone: "9823000004" },
-    { name: "Sanjay Bandodkar", role: "HOD Arts", dept: "Department of Arts & Humanities", subjects: "History, World Affairs, Geography", email: "hod.arts@wakandahss.edu.in", phone: "9823000005" },
-    { name: "Francis D'Costa", role: "HOD Vocational", dept: "Department of Vocational Studies", subjects: "Office Management & Secretarial Practice", email: "hod.vocational@wakandahss.edu.in", phone: "9823000006" },
-    { name: "Dr. Neha Parab", role: "Subject Teacher", dept: "Science (Physics)", subjects: "Physics Electrodynamics, Modern Physics", email: "neha.p@wakandahss.edu.in", phone: "9023456781" },
-    { name: "Vikram Bhat", role: "Subject Teacher", dept: "Science (Chemistry)", subjects: "Physical & Inorganic Chemistry", email: "vikram.b@wakandahss.edu.in", phone: "8855667788" },
-    { name: "Sneha Gaonkar", role: "Subject Teacher", dept: "Science (Chemistry)", subjects: "Organic Chemistry & Practical Labs", email: "sneha.g@wakandahss.edu.in", phone: "9823000007" },
-    { name: "Sangeeta Dessai", role: "Subject Teacher", dept: "Science (Biology)", subjects: "Cell Biology, Genetics & Physiology", email: "sangeeta.d@wakandahss.edu.in", phone: "9321123344" },
-    { name: "Pranav Kolekar", role: "Subject Teacher", dept: "Science (Mathematics)", subjects: "Calculus, Differential Equations, Geometry", email: "pranav.k@wakandahss.edu.in", phone: "8765432109" },
-    { name: "Amit Gaonkar", role: "Subject Teacher", dept: "Computer Science & IT", subjects: "Computer Science (Python/SQL), DTP", email: "amit.g@wakandahss.edu.in", phone: "8899001122" },
-    { name: "Aarti Faldesai", role: "Subject Teacher", dept: "Commerce", subjects: "Business Studies, Marketing & Management", email: "aarti.f@wakandahss.edu.in", phone: "9823000009" },
-    { name: "Nitin Shenvi", role: "Subject Teacher", dept: "Commerce & Vocational", subjects: "Economics, Statistics, Auditing", email: "nitin.s@wakandahss.edu.in", phone: "9823000010" },
-    { name: "Pradnya Sawant", role: "Subject Teacher", dept: "Arts (Political Science)", subjects: "Political Theory, Indian Constitution", email: "pradnya.s@wakandahss.edu.in", phone: "9156784320" },
-    { name: "Vinayak Borkar", role: "Director of Physical Ed", dept: "Sports & Extension", subjects: "Physical Education, NSS Unit In-charge", email: "sports.nss@wakandahss.edu.in", phone: "9823000014" }
+    { name: "Dr. Shashikant V. Mayekar", role: "Principal & Chief Executive", dept: "Administration & Mathematics", subjects: "Institutional Governance, Applied Mathematics", email: "principal@ycasc.com", phone: "9823000001" },
+    { name: "Dr. Ramakant Deshmukh", role: "Vice Principal", dept: "Administration & Chemistry", subjects: "Academic Council, Organic Chemistry", email: "ramakant.deshmukh@ycasc.com", phone: "9823000002" },
+    { name: "Mr. Rajesh Shirodkar", role: "Registrar", dept: "Registrar's Office", subjects: "Admissions & University Affiliation", email: "registrar@ycasc.com", phone: "9823000015" },
+    { name: "Dr. Pramod Naik", role: "HOD Science", dept: "Department of Science", subjects: "Quantum Mechanics, Advanced Physics & Lab", email: "pramod.naik@ycasc.com", phone: "9823000003" },
+    { name: "Dr. Sunita Kulkarni", role: "Associate Professor", dept: "Department of Science", subjects: "Physical Chemistry, Spectroscopy & Organic Analysis", email: "sunita.kulkarni@ycasc.com", phone: "9823000010" },
+    { name: "Prof. Rajesh Haldankar", role: "Assistant Professor", dept: "Department of Science", subjects: "Calculus, Differential Equations & Probability", email: "rajesh.haldankar@ycasc.com", phone: "9823000011" },
+    { name: "Dr. Anand Vernekar", role: "HOD Commerce", dept: "Department of Commerce", subjects: "Advanced Financial Accounting & Corporate Law", email: "anand.vernekar@ycasc.com", phone: "9823000004" },
+    { name: "Prof. Kavita Shenvi", role: "Associate Professor", dept: "Department of Commerce", subjects: "Corporate Accounting, Auditing & Financial Markets", email: "kavita.shenvi@ycasc.com", phone: "9823000005" },
+    { name: "Prof. Suresh Lotlikar", role: "Assistant Professor", dept: "Department of Commerce", subjects: "Principles of Business Management & Marketing", email: "suresh.lotlikar@ycasc.com", phone: "9823000006" },
+    { name: "Dr. Meenakshi Sundaram", role: "HOD Arts", dept: "Department of Arts & Humanities", subjects: "Indian History, Historiography & Culture", email: "meenakshi.sundaram@ycasc.com", phone: "9823000007" },
+    { name: "Prof. Anthony D'Souza", role: "Associate Professor", dept: "Department of Arts & Humanities", subjects: "English Literature, World Classics & Criticism", email: "anthony.dsouza@ycasc.com", phone: "9823000008" },
+    { name: "Prof. Geeta Sawant", role: "Assistant Professor", dept: "Department of Arts & Humanities", subjects: "Political Science, Indian Constitution & Public Policy", email: "geeta.sawant@ycasc.com", phone: "9823000009" }
   ];
 
   tbody.innerHTML = roster.map(m => `
@@ -1179,6 +1128,96 @@ function renderAllFacultyRoster() {
   `).join('');
 }
 
+// Official Notices and Announcements (Kept empty for now; added by teachers/administration)
+let collegeAnnouncements = [];
+
+function toggleNoticePublisher() {
+  const card = document.getElementById('noticePublisherCard');
+  if (card) {
+    const isHidden = card.style.display === 'none' || !card.style.display;
+    card.style.display = isHidden ? 'block' : 'none';
+    if (isHidden) {
+      const input = document.getElementById('noticeInputTitle');
+      if (input) input.focus();
+    }
+  }
+}
+
+function handlePublishNotice(e) {
+  if (e) e.preventDefault();
+  const title = (document.getElementById('noticeInputTitle')?.value || '').trim();
+  const category = document.getElementById('noticeInputCategory')?.value || 'General Administration';
+  const audience = document.getElementById('noticeInputAudience')?.value || 'All Undergraduate Students & Faculty';
+  const content = (document.getElementById('noticeInputContent')?.value || '').trim();
+
+  if (!title || !content) {
+    showToast('⚠️ Please enter both notice title and content');
+    return;
+  }
+
+  const refNum = Math.floor(100 + Math.random() * 900);
+  const now = new Date();
+  const timeStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  const newNotice = {
+    ref: `NOT-2026-${refNum}`,
+    title: title,
+    category: category,
+    audience: audience,
+    content: content,
+    author: "Faculty Member (Yashoda College)",
+    date: `Today, ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+  };
+
+  collegeAnnouncements.unshift(newNotice);
+  renderAnnouncements();
+  toggleNoticePublisher();
+
+  const titleInput = document.getElementById('noticeInputTitle');
+  const contentInput = document.getElementById('noticeInputContent');
+  if (titleInput) titleInput.value = '';
+  if (contentInput) contentInput.value = '';
+
+  showToast(`📢 Official Notice [${newNotice.ref}] Published!`);
+}
+
+function renderAnnouncements() {
+  const container = document.getElementById('announcementsListContainer');
+  if (!container) return;
+
+  if (collegeAnnouncements.length === 0) {
+    container.innerHTML = `
+      <div style="background:#FFFFFF; border:2px dashed #E2E8F0; border-radius:14px; padding:40px 24px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+        <div style="font-size:38px; margin-bottom:12px;">📢</div>
+        <h3 style="font-size:16px; font-weight:800; color:#18191E; margin-bottom:6px;">No Official Notices Yet</h3>
+        <p style="font-size:13px; color:#64748B; max-width:440px; margin:0 auto 16px; line-height:1.5;">
+          Official announcements, exam schedules, and circulars to be added by teachers and administration. The notice board is currently empty.
+        </p>
+        <button class="t-btn-primary" onclick="toggleNoticePublisher()" style="font-size:12.5px; padding:8px 16px;">
+          + Publish First Notice
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = collegeAnnouncements.map(n => `
+    <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:14px; padding:18px 22px; box-shadow:0 2px 10px rgba(0,0,0,0.03);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span class="badge lavender-dark">${n.ref}</span>
+          <span class="badge mint-dark" style="font-size:11px;">${n.category}</span>
+          <span style="font-size:11px; color:#64748B;">• Target: ${n.audience}</span>
+        </div>
+        <span style="font-size:11px; color:#94A3B8;">${n.date}</span>
+      </div>
+      <h3 style="font-size:16px; font-weight:800; color:#18191E; margin-bottom:6px;">${n.title}</h3>
+      <p style="font-size:13px; color:#475569; line-height:1.5; white-space:pre-wrap;">${n.content}</p>
+      <div style="margin-top:10px; font-size:11.5px; color:#7B52DE; font-weight:700;">By: ${n.author}</div>
+    </div>
+  `).join('');
+}
+
 // Teacher Logout
 function logoutTeacher() {
   switchMainPortalView('MOBILE_APP');
@@ -1186,9 +1225,511 @@ function logoutTeacher() {
   showToast("Logged out of Teacher Portal. Switched to Sign In.");
 }
 
+// Student Mobile Logout
+function logout() {
+  currentLoggedInUser = null;
+  switchMode('LOGIN');
+  showToast("Signed out successfully.");
+}
+
+// ============================================================================
+// ACADEMIC TIMETABLE DATA ENGINE & TEACHER INTERCHANGE (WEB PREVIEW)
+// Timings:
+// Slot 1: 08:00 AM - 09:00 AM
+// Slot 2: 09:00 AM - 10:00 AM
+// Slot 3: 10:00 AM - 11:00 AM
+// Recess: 11:00 AM - 11:30 AM (Break)
+// Slot 4: 11:30 AM - 12:30 PM
+// Slot 5: 12:30 PM - 01:30 PM
+// ============================================================================
+
+let currentLoggedInUser = null;
+let activeWebTimetableStream = 'SCIENCE';
+let activeWebTimetableDay = 'Monday';
+let activeStudentTimetableDay = 'Monday';
+
+const timetableDatabase = {
+  SCIENCE: {
+    name: 'Science (B.Sc.)',
+    Monday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Physics', title: 'Physics · Lecture 1', teacher: 'Dr. Pramod Naik', room: 'Lab 1', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'Chemistry', title: 'Chemistry · Lecture 2', teacher: 'Dr. Sneha Gaonkar', room: 'Room 204', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Mathematics', title: 'Mathematics · Lecture 3', teacher: 'Dr. Shashikant Mayekar', room: 'Room 204', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Computer Science', title: 'Computer Science · Lecture 4', teacher: 'Prof. Vikram Dessai', room: 'Computer Lab A', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Physics', title: 'Applied Physics · Lecture 5', teacher: 'Dr. Pramod Naik', room: 'Lab 1', swapped: false }
+    ],
+    Tuesday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Chemistry', title: 'Chemistry · Lecture 1', teacher: 'Dr. Sneha Gaonkar', room: 'Room 204', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'Physics', title: 'Physics · Lecture 2', teacher: 'Dr. Pramod Naik', room: 'Lab 1', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Mathematics', title: 'Mathematics · Lecture 3', teacher: 'Dr. Shashikant Mayekar', room: 'Room 204', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Computer Science', title: 'Computer Science · Lecture 4', teacher: 'Prof. Vikram Dessai', room: 'Computer Lab A', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Chemistry', title: 'Organic Chemistry · Lecture 5', teacher: 'Dr. Sneha Gaonkar', room: 'Room 204', swapped: false }
+    ],
+    Wednesday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Mathematics', title: 'Mathematics · Lecture 1', teacher: 'Dr. Shashikant Mayekar', room: 'Room 204', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'Computer Science', title: 'Computer Science · Lecture 2', teacher: 'Prof. Vikram Dessai', room: 'Computer Lab A', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Physics', title: 'Physics · Lecture 3', teacher: 'Dr. Pramod Naik', room: 'Lab 1', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Chemistry', title: 'Chemistry · Lecture 4', teacher: 'Dr. Sneha Gaonkar', room: 'Room 204', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Mathematics', title: 'Discrete Mathematics · Lecture 5', teacher: 'Dr. Shashikant Mayekar', room: 'Room 204', swapped: false }
+    ],
+    Thursday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Computer Science', title: 'Computer Science · Lecture 1', teacher: 'Prof. Vikram Dessai', room: 'Computer Lab A', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'Physics', title: 'Physics · Lecture 2', teacher: 'Dr. Pramod Naik', room: 'Lab 1', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Chemistry', title: 'Chemistry · Lecture 3', teacher: 'Dr. Sneha Gaonkar', room: 'Room 204', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Mathematics', title: 'Mathematics · Lecture 4', teacher: 'Dr. Shashikant Mayekar', room: 'Room 204', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Computer Science', title: 'Software Lab · Lecture 5', teacher: 'Prof. Vikram Dessai', room: 'Computer Lab B', swapped: false }
+    ],
+    Friday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Chemistry', title: 'Chemistry · Lecture 1', teacher: 'Dr. Sneha Gaonkar', room: 'Room 204', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'Mathematics', title: 'Mathematics · Lecture 2', teacher: 'Dr. Shashikant Mayekar', room: 'Room 204', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Physics', title: 'Physics · Lecture 3', teacher: 'Dr. Pramod Naik', room: 'Lab 1', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Computer Science', title: 'Computer Science · Lecture 4', teacher: 'Prof. Vikram Dessai', room: 'Computer Lab A', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Physics', title: 'Experimental Physics · Lecture 5', teacher: 'Dr. Pramod Naik', room: 'Lab 1', swapped: false }
+    ],
+    Saturday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Physics', title: 'Physics · Lecture 1', teacher: 'Dr. Pramod Naik', room: 'Lab 1', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'Chemistry', title: 'Chemistry · Lecture 2', teacher: 'Dr. Sneha Gaonkar', room: 'Room 204', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Mathematics', title: 'Mathematics · Lecture 3', teacher: 'Dr. Shashikant Mayekar', room: 'Room 204', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Computer Science', title: 'Computer Science · Lecture 4', teacher: 'Prof. Vikram Dessai', room: 'Computer Lab A', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Chemistry', title: 'Chemistry Practical Review', teacher: 'Dr. Sneha Gaonkar', room: 'Room 204', swapped: false }
+    ]
+  },
+  COMMERCE: {
+    name: 'Commerce (B.Com)',
+    Monday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Financial Accounting', title: 'Financial Accounting · Lecture 1', teacher: 'Prof. Sujata Kamat', room: 'Room 101', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'Business Economics', title: 'Business Economics · Lecture 2', teacher: 'Prof. Aarti Faldesai', room: 'Room 101', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Business Law', title: 'Business Law · Lecture 3', teacher: 'Prof. Nitin Shenvi', room: 'Room 102', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Cost Accounting', title: 'Cost Accounting · Lecture 4', teacher: 'Prof. Sujata Kamat', room: 'Room 101', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Banking & Finance', title: 'Banking Operations · Lecture 5', teacher: 'Prof. Nitin Shenvi', room: 'Room 102', swapped: false }
+    ],
+    Tuesday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Business Economics', title: 'Business Economics · Lecture 1', teacher: 'Prof. Aarti Faldesai', room: 'Room 101', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'Financial Accounting', title: 'Financial Accounting · Lecture 2', teacher: 'Prof. Sujata Kamat', room: 'Room 101', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Cost Accounting', title: 'Cost Accounting · Lecture 3', teacher: 'Prof. Sujata Kamat', room: 'Room 101', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Business Law', title: 'Corporate Law · Lecture 4', teacher: 'Prof. Nitin Shenvi', room: 'Room 102', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Banking & Finance', title: 'Financial Services · Lecture 5', teacher: 'Prof. Aarti Faldesai', room: 'Room 101', swapped: false }
+    ],
+    Wednesday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Financial Accounting', title: 'Financial Accounting · Lecture 1', teacher: 'Prof. Sujata Kamat', room: 'Room 101', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'Business Law', title: 'Business Law · Lecture 2', teacher: 'Prof. Nitin Shenvi', room: 'Room 102', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Business Economics', title: 'Macro Economics · Lecture 3', teacher: 'Prof. Aarti Faldesai', room: 'Room 101', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Cost Accounting', title: 'Cost Accounting · Lecture 4', teacher: 'Prof. Sujata Kamat', room: 'Room 101', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Banking & Finance', title: 'Banking Regulations · Lecture 5', teacher: 'Prof. Nitin Shenvi', room: 'Room 102', swapped: false }
+    ],
+    Thursday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Cost Accounting', title: 'Cost Accounting · Lecture 1', teacher: 'Prof. Sujata Kamat', room: 'Room 101', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'Business Economics', title: 'Business Economics · Lecture 2', teacher: 'Prof. Aarti Faldesai', room: 'Room 101', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Financial Accounting', title: 'Financial Accounting · Lecture 3', teacher: 'Prof. Sujata Kamat', room: 'Room 101', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Business Law', title: 'Business Law · Lecture 4', teacher: 'Prof. Nitin Shenvi', room: 'Room 102', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Banking & Finance', title: 'Investment Analysis · Lecture 5', teacher: 'Prof. Aarti Faldesai', room: 'Room 101', swapped: false }
+    ],
+    Friday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Financial Accounting', title: 'Auditing & Accounting · Lecture 1', teacher: 'Prof. Sujata Kamat', room: 'Room 101', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'Business Law', title: 'Business Law · Lecture 2', teacher: 'Prof. Nitin Shenvi', room: 'Room 102', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Business Economics', title: 'Economic Policy · Lecture 3', teacher: 'Prof. Aarti Faldesai', room: 'Room 101', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Cost Accounting', title: 'Cost Management · Lecture 4', teacher: 'Prof. Sujata Kamat', room: 'Room 101', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Banking & Finance', title: 'Banking Operations · Lecture 5', teacher: 'Prof. Nitin Shenvi', room: 'Room 102', swapped: false }
+    ],
+    Saturday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Business Economics', title: 'Managerial Economics · Lecture 1', teacher: 'Prof. Aarti Faldesai', room: 'Room 101', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'Financial Accounting', title: 'Company Accounts · Lecture 2', teacher: 'Prof. Sujata Kamat', room: 'Room 101', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Business Law', title: 'Contract Act · Lecture 3', teacher: 'Prof. Nitin Shenvi', room: 'Room 102', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Cost Accounting', title: 'Cost Sheet Preparation · Lecture 4', teacher: 'Prof. Sujata Kamat', room: 'Room 101', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Banking & Finance', title: 'Case Study Seminar · Lecture 5', teacher: 'Prof. Aarti Faldesai', room: 'Room 101', swapped: false }
+    ]
+  },
+  ARTS: {
+    name: 'Arts (B.A.)',
+    Monday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'English Literature', title: 'Modern English Literature · Lecture 1', teacher: 'Dr. Robert Vance', room: 'Room 301', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'History', title: 'Contemporary World History · Lecture 2', teacher: 'Prof. Sanjay Bandodkar', room: 'Room 301', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Political Science', title: 'Political Theory · Lecture 3', teacher: 'Prof. Meera Chodankar', room: 'Room 302', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Psychology', title: 'General Psychology · Lecture 4', teacher: 'Dr. Anita Monteiro', room: 'Room 303', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Sociology', title: 'Indian Society & Culture · Lecture 5', teacher: 'Prof. Sanjay Bandodkar', room: 'Room 301', swapped: false }
+    ],
+    Tuesday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'History', title: 'Indian National Movement · Lecture 1', teacher: 'Prof. Sanjay Bandodkar', room: 'Room 301', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'English Literature', title: 'Post-Colonial Literature · Lecture 2', teacher: 'Dr. Robert Vance', room: 'Room 301', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Psychology', title: 'Developmental Psychology · Lecture 3', teacher: 'Dr. Anita Monteiro', room: 'Room 303', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Political Science', title: 'International Relations · Lecture 4', teacher: 'Prof. Meera Chodankar', room: 'Room 302', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Sociology', title: 'Sociological Theories · Lecture 5', teacher: 'Prof. Sanjay Bandodkar', room: 'Room 301', swapped: false }
+    ],
+    Wednesday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Political Science', title: 'Public Administration · Lecture 1', teacher: 'Prof. Meera Chodankar', room: 'Room 302', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'History', title: 'World Civilization · Lecture 2', teacher: 'Prof. Sanjay Bandodkar', room: 'Room 301', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'English Literature', title: 'Literary Criticism · Lecture 3', teacher: 'Dr. Robert Vance', room: 'Room 301', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Psychology', title: 'Social Psychology · Lecture 4', teacher: 'Dr. Anita Monteiro', room: 'Room 303', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Sociology', title: 'Research Methods · Lecture 5', teacher: 'Prof. Sanjay Bandodkar', room: 'Room 301', swapped: false }
+    ],
+    Thursday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'Psychology', title: 'Cognitive Psychology · Lecture 1', teacher: 'Dr. Anita Monteiro', room: 'Room 303', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'English Literature', title: 'Drama & Theatre Studies · Lecture 2', teacher: 'Dr. Robert Vance', room: 'Room 301', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'History', title: 'Modern Goa History · Lecture 3', teacher: 'Prof. Sanjay Bandodkar', room: 'Room 301', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Political Science', title: 'Comparative Politics · Lecture 4', teacher: 'Prof. Meera Chodankar', room: 'Room 302', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Sociology', title: 'Urban Sociology · Lecture 5', teacher: 'Prof. Sanjay Bandodkar', room: 'Room 301', swapped: false }
+    ],
+    Friday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'English Literature', title: 'Poetry Through Ages · Lecture 1', teacher: 'Dr. Robert Vance', room: 'Room 301', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'Political Science', title: 'Indian Constitution · Lecture 2', teacher: 'Prof. Meera Chodankar', room: 'Room 302', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'History', title: 'Historiography · Lecture 3', teacher: 'Prof. Sanjay Bandodkar', room: 'Room 301', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Sociology', title: 'Social Stratification · Lecture 4', teacher: 'Prof. Sanjay Bandodkar', room: 'Room 301', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Psychology', title: 'Abnormal Psychology · Lecture 5', teacher: 'Dr. Anita Monteiro', room: 'Room 303', swapped: false }
+    ],
+    Saturday: [
+      { slot: 1, time: '08:00 AM - 09:00 AM', start: '08:00 AM', subject: 'History', title: 'Asian History Seminar · Lecture 1', teacher: 'Prof. Sanjay Bandodkar', room: 'Room 301', swapped: false },
+      { slot: 2, time: '09:00 AM - 10:00 AM', start: '09:00 AM', subject: 'English Literature', title: 'Creative Writing Workshop · Lecture 2', teacher: 'Dr. Robert Vance', room: 'Room 301', swapped: false },
+      { slot: 3, time: '10:00 AM - 11:00 AM', start: '10:00 AM', subject: 'Political Science', title: 'Political Ideologies · Lecture 3', teacher: 'Prof. Meera Chodankar', room: 'Room 302', swapped: false },
+      { slot: 4, time: '11:30 AM - 12:30 PM', start: '11:30 AM', subject: 'Psychology', title: 'Practical Experimental Session', teacher: 'Dr. Anita Monteiro', room: 'Room 303', swapped: false },
+      { slot: 5, time: '12:30 PM - 01:30 PM', start: '12:30 PM', subject: 'Sociology', title: 'Community Outreach & Fieldwork', teacher: 'Prof. Sanjay Bandodkar', room: 'Room 301', swapped: false }
+    ]
+  }
+};
+
+// Render Mobile App Student Dashboard
+function renderDashboard(user) {
+  if (!user) return;
+  currentLoggedInUser = user;
+
+  const avatar = document.getElementById('dashAvatar');
+  const name = document.getElementById('dashUserName');
+  const idEl = document.getElementById('dashUserId');
+  const roleEl = document.getElementById('dashUserRole');
+  const heroTitle = document.getElementById('dashHeroTitle');
+
+  if (avatar) avatar.textContent = user.fullName.split(' ').map(p => p[0]).slice(0, 2).join('');
+  if (name) name.textContent = user.fullName;
+  if (idEl) idEl.textContent = user.id || user.email;
+  if (roleEl) roleEl.textContent = user.roleDisplayName || user.role || 'Student';
+
+  // Determine user's stream
+  let stream = 'SCIENCE';
+  const checkStr = ((user.department || '') + ' ' + (user.course || '') + ' ' + (user.id || '') + ' ' + (user.email || '')).toUpperCase();
+  if (checkStr.includes('COMMERCE') || checkStr.includes('B.COM') || checkStr.includes('COM-') || checkStr.includes('SHAH')) {
+    stream = 'COMMERCE';
+  } else if (checkStr.includes('ARTS') || checkStr.includes('B.A') || checkStr.includes('ART-') || checkStr.includes('SHARMA')) {
+    stream = 'ARTS';
+  }
+
+  activeWebTimetableStream = stream;
+  if (heroTitle) {
+    heroTitle.textContent = `${timetableDatabase[stream].name} • Academic Schedule`;
+  }
+
+  renderStudentTimetable();
+}
+
+// Render Student Timetable for Active Day
+function renderStudentTimetable() {
+  const container = document.getElementById('studentTimetableSlotsList');
+  const subtitle = document.getElementById('studentTimetableSubtitle');
+  if (!container) return;
+
+  const streamData = timetableDatabase[activeWebTimetableStream] || timetableDatabase.SCIENCE;
+  const slots = streamData[activeStudentTimetableDay] || streamData.Monday;
+
+  if (subtitle) {
+    subtitle.textContent = `${streamData.name} • ${activeStudentTimetableDay} Timetable`;
+  }
+
+  let html = '';
+  slots.forEach((s, idx) => {
+    const isSwapped = s.swapped;
+    const badgeText = isSwapped ? '🔄 Swapped' : 'Regular';
+    const badgeColor = isSwapped ? 'background:#FFF4D4; color:#B45309;' : 'background:#FFFFFF; color:#222;';
+
+    html += `
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; background:#F8FAFC; border-radius:10px; border:1px solid #E2E8F0;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:11px; font-weight:800; color:#7B52DE; min-width:62px;">${s.start}</div>
+          <div>
+            <div style="font-size:12.5px; font-weight:800; color:#18191E;">${s.title}</div>
+            <div style="font-size:11px; color:#64748B;">${s.teacher} • ${s.room}</div>
+            ${isSwapped ? `<div style="font-size:10.5px; color:#B45309; font-style:italic;">🔄 ${s.swapNote || 'Mutually interchanged'}</div>` : ''}
+          </div>
+        </div>
+        <span style="font-size:10px; font-weight:700; padding:3px 8px; border-radius:100px; ${badgeColor}">${badgeText}</span>
+      </div>
+    `;
+
+    // Recess / Break (11:00 AM - 11:30 AM) after slot 3
+    if (s.slot === 3) {
+      html += `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#D9F3EC; border-radius:10px; border:1px solid #B8E8DC;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="font-size:11px; font-weight:800; color:#0D7058; min-width:62px;">11:00 AM</div>
+            <div>
+              <div style="font-size:12px; font-weight:800; color:#0D7058;">🥪 Recess / Break (11:00 AM - 11:30 AM)</div>
+              <div style="font-size:10.5px; color:#1F8E73;">College Canteen &amp; Campus Common Rooms</div>
+            </div>
+          </div>
+          <span style="font-size:10px; font-weight:700; padding:2px 8px; border-radius:100px; background:#FFF; color:#0D7058;">Recess</span>
+        </div>
+      `;
+    }
+  });
+
+  container.innerHTML = html;
+}
+
+// Student Switch Day
+function switchStudentTimetableDay(day, btn) {
+  activeStudentTimetableDay = day;
+  document.querySelectorAll('.s-tt-day-chip').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = '#FFF';
+    b.style.color = '#555';
+    b.style.border = '1px solid #DDD';
+  });
+  if (btn) {
+    btn.classList.add('active');
+    btn.style.background = '#7B52DE';
+    btn.style.color = '#FFF';
+    btn.style.border = 'none';
+  }
+  renderStudentTimetable();
+}
+
+function toggleStudentTimetableFull() {
+  showToast(`📅 Showing full ${activeWebTimetableStream} weekly timetable`);
+  const modal = document.getElementById('webInterchangeModal');
+  if (modal) {
+    // If teacher, allow interchange; if student, prompt
+    if (currentLoggedInUser && (currentLoggedInUser.role === 'DIRECTOR' || currentLoggedInUser.role === 'FACULTY')) {
+      openWebInterchangeModal();
+    } else {
+      showToast(`Showing timetable for ${timetableDatabase[activeWebTimetableStream].name}. Tap any day chip to view lectures.`);
+    }
+  }
+}
+
+// Render Master Timetable for Teacher Portal
+function renderTeacherTimetable() {
+  const container = document.getElementById('teacherTimetableCardContainer');
+  if (!container) return;
+
+  const streamData = timetableDatabase[activeWebTimetableStream] || timetableDatabase.SCIENCE;
+  const slots = streamData[activeWebTimetableDay] || streamData.Monday;
+
+  let rowsHtml = '';
+  slots.forEach(s => {
+    const isSwapped = s.swapped;
+    const badgeText = isSwapped ? '🔄 Swapped' : 'Regular';
+    const badgeStyle = isSwapped
+      ? 'background:#FFF4D4; color:#B45309; border:1px solid #FCD34D;'
+      : 'background:#F1EEFD; color:#5B32BE; border:1px solid #E2DBFA;';
+
+    rowsHtml += `
+      <tr>
+        <td style="font-weight:700; color:#5B32BE; width:130px;">
+          Slot ${s.slot}<br>
+          <span style="font-size:11px; color:#64748B; font-weight:normal;">${s.time}</span>
+        </td>
+        <td>
+          <div style="font-weight:700; color:#18191E; font-size:13.5px;">${s.title}</div>
+          <div style="font-size:12px; color:#64748B;">Faculty: <strong>${s.teacher}</strong> • Room / Hall: <strong>${s.room}</strong></div>
+          ${isSwapped ? `<div style="font-size:11.5px; color:#B45309; margin-top:3px;">🔄 <em>${s.swapNote || 'Mutually interchanged'}</em></div>` : ''}
+        </td>
+        <td style="width:130px; text-align:right;">
+          <span style="font-size:11px; font-weight:700; padding:4px 10px; border-radius:100px; ${badgeStyle}">${badgeText}</span>
+        </td>
+      </tr>
+    `;
+
+    // Recess Row after slot 3
+    if (s.slot === 3) {
+      rowsHtml += `
+        <tr style="background:#F0FAF7;">
+          <td style="font-weight:800; color:#0D7058;">
+            🥪 Recess<br>
+            <span style="font-size:11px; color:#1F8E73; font-weight:normal;">11:00 AM - 11:30 AM</span>
+          </td>
+          <td colspan="2">
+            <div style="font-weight:800; color:#0D7058; font-size:13px;">Recess / Mid-Day Academic Break (30 Mins)</div>
+            <div style="font-size:11.5px; color:#1F8E73;">College Canteen, Faculty Common Room &amp; Library Period</div>
+          </td>
+        </tr>
+      `;
+    }
+  });
+
+  container.innerHTML = `
+    <table class="t-data-table" style="width:100%;">
+      <thead>
+        <tr>
+          <th>Slot / Timing</th>
+          <th>Subject, Faculty &amp; Room Details (${streamData.name} • ${activeWebTimetableDay})</th>
+          <th style="text-align:right;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHtml}
+      </tbody>
+    </table>
+  `;
+}
+
+// Teacher Portal Stream Switcher
+function switchWebTimetableStream(stream) {
+  activeWebTimetableStream = stream;
+  ['SCIENCE', 'COMMERCE', 'ARTS'].forEach(s => {
+    const btn = document.getElementById('ttStream_' + s);
+    if (btn) {
+      const active = s === stream;
+      btn.classList.toggle('active', active);
+      btn.style.background = active ? '#7B52DE' : 'transparent';
+      btn.style.color = active ? '#FFF' : '#555';
+    }
+  });
+  renderTeacherTimetable();
+}
+
+// Teacher Portal Day Switcher
+function switchWebTimetableDay(day, btn) {
+  activeWebTimetableDay = day;
+  document.querySelectorAll('.t-tt-day-btn').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = '#FFF';
+    b.style.color = '#555';
+    b.style.border = '1px solid #DDD';
+  });
+  if (btn) {
+    btn.classList.add('active');
+    btn.style.background = '#7B52DE';
+    btn.style.color = '#FFF';
+    btn.style.border = '1px solid #7B52DE';
+  }
+  renderTeacherTimetable();
+}
+
+// Modal Handlers for Lecture Interchange
+function openWebInterchangeModal() {
+  const streamSelect = document.getElementById('interchangeStreamSelect');
+  const daySelect = document.getElementById('interchangeDaySelect');
+  if (streamSelect) streamSelect.value = activeWebTimetableStream;
+  if (daySelect) daySelect.value = activeWebTimetableDay;
+
+  populateInterchangeSlots();
+  const modal = document.getElementById('webInterchangeModal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeWebInterchangeModal() {
+  const modal = document.getElementById('webInterchangeModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function populateInterchangeSlots() {
+  const stream = document.getElementById('interchangeStreamSelect').value;
+  const day = document.getElementById('interchangeDaySelect').value;
+  const s1 = document.getElementById('interchangeSlot1Select');
+  const s2 = document.getElementById('interchangeSlot2Select');
+  if (!s1 || !s2) return;
+
+  const slots = timetableDatabase[stream][day];
+  s1.innerHTML = slots.map(s => `<option value="${s.slot}">Slot ${s.slot} (${s.time}): ${s.subject} - ${s.teacher}</option>`).join('');
+  s2.innerHTML = slots.map(s => `<option value="${s.slot}">Slot ${s.slot} (${s.time}): ${s.subject} - ${s.teacher}</option>`).join('');
+
+  if (slots.length > 1) {
+    s1.selectedIndex = 0;
+    s2.selectedIndex = 1;
+  }
+}
+
+function handleWebInterchangeSubmit(event) {
+  event.preventDefault();
+  const stream = document.getElementById('interchangeStreamSelect').value;
+  const day = document.getElementById('interchangeDaySelect').value;
+  const slot1Num = parseInt(document.getElementById('interchangeSlot1Select').value, 10);
+  const slot2Num = parseInt(document.getElementById('interchangeSlot2Select').value, 10);
+  const reason = document.getElementById('interchangeReasonInput').value.trim();
+  const broadcast = document.getElementById('interchangeBroadcastCheckbox').checked;
+
+  if (slot1Num === slot2Num) {
+    showToast("⚠️ Please select two different lecture slots to interchange.");
+    return;
+  }
+
+  const slots = timetableDatabase[stream][day];
+  const slotA = slots.find(s => s.slot === slot1Num);
+  const slotB = slots.find(s => s.slot === slot2Num);
+
+  if (!slotA || !slotB) {
+    showToast("❌ Could not find selected slots.");
+    return;
+  }
+
+  // Swap subjects, titles, teachers, and rooms
+  const tempSubject = slotA.subject;
+  const tempTitle = slotA.title;
+  const tempTeacher = slotA.teacher;
+  const tempRoom = slotA.room;
+
+  slotA.subject = slotB.subject;
+  slotA.title = slotB.title.replace(/Lecture \d+/, `Lecture ${slotA.slot}`);
+  slotA.teacher = slotB.teacher;
+  slotA.room = slotB.room;
+  slotA.swapped = true;
+  slotA.swapNote = `Swapped with Slot ${slotB.slot}: ${reason}`;
+
+  slotB.subject = tempSubject;
+  slotB.title = tempTitle.replace(/Lecture \d+/, `Lecture ${slotB.slot}`);
+  slotB.teacher = tempTeacher;
+  slotB.room = tempRoom;
+  slotB.swapped = true;
+  slotB.swapNote = `Swapped with Slot ${slotA.slot}: ${reason}`;
+
+  // If broadcast checked, add notice to Announcements
+  if (broadcast) {
+    const authorName = currentLoggedInUser ? currentLoggedInUser.fullName : 'Faculty Coordination Committee';
+    const newNotice = {
+      id: Date.now(),
+      ref: `NOT-SWAP-${Date.now().toString().slice(-4)}`,
+      title: `📢 Timetable Update: ${day} Lectures Interchanged (${timetableDatabase[stream].name})`,
+      category: 'Academic Timetable',
+      audience: timetableDatabase[stream].name,
+      content: `Please note that Slot ${slotA.slot} (${slotA.time} - ${slotA.subject}) and Slot ${slotB.slot} (${slotB.time} - ${slotB.subject}) have been interchanged for ${day}.\n\nReason: ${reason}`,
+      author: `${authorName} (Faculty)`,
+      date: 'Today'
+    };
+    collegeAnnouncements.unshift(newNotice);
+    renderAnnouncements();
+  }
+
+  closeWebInterchangeModal();
+  renderTeacherTimetable();
+  renderStudentTimetable();
+  showToast("🎉 Lectures interchanged successfully! Students' timetable updated.");
+}
+
+// Dismiss Splash Overlay (Click or 2.4s Timer)
+let splashDismissed = false;
+function dismissSplash() {
+  if (splashDismissed) return;
+  splashDismissed = true;
+  const splash = document.getElementById('appSplashScreen');
+  if (splash) {
+    splash.classList.add('hidden');
+    setTimeout(() => {
+      splash.style.display = 'none';
+    }, 450);
+  }
+}
+
 // Initialize on window load
 window.addEventListener('DOMContentLoaded', () => {
+  switchMode('LOGIN');
   renderStudentsList('Arts');
   renderAllFacultyRoster();
+  renderAnnouncements();
+  renderTeacherTimetable();
+  renderStudentTimetable();
+
+  // 3s delay matching Android SplashActivity
+  setTimeout(() => {
+    dismissSplash();
+  }, 3000);
 });
+
+
 

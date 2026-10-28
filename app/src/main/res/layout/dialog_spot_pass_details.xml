@@ -145,7 +145,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Class Teacher"
+                    android:text="HOD"
                     android:textColor="@color/pastel_lavender_text"
                     android:textSize="10.5sp" />
 
@@ -204,7 +204,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Subject Teacher of That Particular Time"
+                    android:text="Faculty"
                     android:textColor="@color/pastel_lavender_text"
                     android:textSize="10.5sp" />
 
@@ -246,19 +246,42 @@
         android:textColor="@color/charcoal_dark"
         android:textSize="12.5sp" />
 
-    <!-- Dismiss Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnCloseDetails"
-        style="@style/Widget.Eventra.Button.Pill"
+    <!-- Action Buttons: Cancel Pass & Dismiss -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:backgroundTint="@color/charcoal_dark"
-        android:text="Dismiss"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:cornerRadius="18dp" />
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDeleteSpotPass"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:text="Cancel Pass"
+            android:textAllCaps="false"
+            android:textColor="@color/amber"
+            android:textSize="13.5sp"
+            android:textStyle="bold"
+            app:cornerRadius="18dp"
+            app:strokeColor="@color/outline" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCloseDetails"
+            style="@style/Widget.Eventra.Button.Pill"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/charcoal_dark"
+            android:text="Dismiss"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:cornerRadius="18dp" />
+    </LinearLayout>
 
 </LinearLayout>

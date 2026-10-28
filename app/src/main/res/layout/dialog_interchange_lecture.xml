@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_card_white"
+    android:orientation="vertical"
+    android:padding="22dp">
+
+    <!-- Header Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_calendar_event"
+            app:tint="@color/charcoal_dark" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Interchange Lectures"
+                android:textColor="@color/charcoal_dark"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Coordinate with faculty &amp; update student timetable"
+                android:textColor="@color/text_muted"
+                android:textSize="11.5sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_butter"
+            android:paddingStart="8dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="3dp"
+            android:text="Faculty SSO"
+            android:textColor="@color/charcoal_dark"
+            android:textSize="10.5sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="#E2E8F0" />
+
+    <!-- Stream Selection -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SELECT SUBJECT TO SWAP"
+        android:textColor="@color/text_secondary"
+        android:textSize="10.5sp"
+        android:textStyle="bold" />
+
+    <Spinner
+        android:id="@+id/spinnerInterchangeStream"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_input_box" />
+
+    <!-- Day Selection -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="SELECT DAY OF WEEK"
+        android:textColor="@color/text_secondary"
+        android:textSize="10.5sp"
+        android:textStyle="bold" />
+
+    <Spinner
+        android:id="@+id/spinnerInterchangeDay"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_input_box" />
+
+    <!-- Lecture Slot 1 (Source) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="1ST LECTURE SLOT (TO SWAP FROM)"
+        android:textColor="@color/text_secondary"
+        android:textSize="10.5sp"
+        android:textStyle="bold" />
+
+    <Spinner
+        android:id="@+id/spinnerInterchangeSlot1"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_input_box" />
+
+    <!-- Swap Icon Indicator -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_mint"
+            android:paddingStart="12dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="3dp"
+            android:text="⇄ Interchanges With"
+            android:textColor="@color/pastel_mint_text"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Lecture Slot 2 (Target) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2ND LECTURE SLOT (TO SWAP WITH)"
+        android:textColor="@color/text_secondary"
+        android:textSize="10.5sp"
+        android:textStyle="bold" />
+
+    <Spinner
+        android:id="@+id/spinnerInterchangeSlot2"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_input_box" />
+
+    <!-- Faculty Coordination Reason -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="REASON FOR EXCHANGE"
+        android:textColor="@color/text_secondary"
+        android:textSize="10.5sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etInterchangeReason"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_input_box"
+        android:hint="e.g. Swapped with Sneha Gaonkar for Chemistry Lab setup."
+        android:minLines="2"
+        android:padding="12dp"
+        android:textColor="@color/charcoal_dark"
+        android:textColorHint="@color/text_placeholder"
+        android:textSize="12.5sp" />
+
+    <!-- Notice Broadcast Checkbox -->
+    <CheckBox
+        android:id="@+id/cbBroadcastNotice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:checked="true"
+        android:text="📢 Post notice to the students"
+        android:textColor="@color/charcoal_dark"
+        android:textSize="12sp" />
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelInterchange"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:text="Cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/text_secondary"
+            android:textSize="13.5sp"
+            android:textStyle="bold"
+            app:cornerRadius="18dp"
+            app:strokeColor="@color/outline" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnConfirmInterchange"
+            style="@style/Widget.Eventra.Button.Pill"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/charcoal_dark"
+            android:text="Confirm Swap"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="13.5sp"
+            android:textStyle="bold"
+            app:cornerRadius="18dp" />
+    </LinearLayout>
+
+</LinearLayout>

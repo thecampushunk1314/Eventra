@@ -60,13 +60,6 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/greeting"
-                            android:textColor="@color/muted"
-                            android:textSize="12sp" />
-
-                        <TextView
                             android:id="@+id/tvHeaderStudentName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -95,6 +88,7 @@
                         app:tint="@color/ink" />
 
                     <View
+                        android:id="@+id/badgeNotificationDot"
                         android:layout_width="8dp"
                         android:layout_height="8dp"
                         android:layout_gravity="top|end"
@@ -103,22 +97,392 @@
                         android:background="@drawable/bg_dot_red"
                         android:importantForAccessibility="no" />
                 </FrameLayout>
+            </LinearLayout>
 
-                <ImageButton
-                    android:id="@+id/btnSearch"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:layout_marginStart="4dp"
-                    android:background="@drawable/bg_icon_button"
-                    android:contentDescription="@string/cd_search"
-                    android:padding="12dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_search"
-                    app:tint="@color/ink" />
+            <!-- ============ Principal Administrator Dashboard ============ -->
+            <LinearLayout
+                android:id="@+id/layoutPrincipalDashboard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- Principal Quick Action Cards -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrincipalAddFaculty"
+                        style="@style/Widget.Eventra.Button.Pill"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/charcoal_dark"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="+ Faculty"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp"
+                        app:icon="@drawable/ic_teacher"
+                        app:iconGravity="textStart"
+                        app:iconPadding="6dp"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/white" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrincipalEnrollStudent"
+                        style="@style/Widget.Eventra.Button.Pill"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1.1"
+                        android:backgroundTint="@color/charcoal_dark"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="+ Student"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp"
+                        app:icon="@drawable/ic_student"
+                        app:iconGravity="textStart"
+                        app:iconPadding="6dp"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/white" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrincipalUploadNotice"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="52dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1.1"
+                        android:backgroundTint="@color/white"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="+ Notice"
+                        android:textAllCaps="false"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp"
+                        app:icon="@drawable/ic_chat"
+                        app:iconGravity="textStart"
+                        app:iconPadding="6dp"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/charcoal_dark"
+                        app:strokeColor="@color/outline" />
+                </LinearLayout>
+
+                <!-- Institutional Records Card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_card_white"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Header -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@drawable/ic_file"
+                            app:tint="@color/charcoal_dark" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:text="Institutional Records"
+                            android:textColor="@color/charcoal_dark"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <!-- Switch Tabs: Students vs Faculty -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_input_box"
+                            android:orientation="horizontal"
+                            android:padding="3dp">
+
+                            <TextView
+                                android:id="@+id/tabRecordStudents"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_chip_selected_charcoal"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:paddingStart="12dp"
+                                android:paddingTop="6dp"
+                                android:paddingEnd="12dp"
+                                android:paddingBottom="6dp"
+                                android:text="Students"
+                                android:textColor="@color/white"
+                                android:textSize="11.5sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tabRecordTeachers"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_chip_unselected_white"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:paddingStart="12dp"
+                                android:paddingTop="6dp"
+                                android:paddingEnd="12dp"
+                                android:paddingBottom="6dp"
+                                android:text="Faculty"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="11.5sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Student Filter Section -->
+                    <LinearLayout
+                        android:id="@+id/layoutStudentFilterSection"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <!-- Stream Filter Dropdown -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="STREAM"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <Spinner
+                                    android:id="@+id/spinnerRecordStream"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="44dp"
+                                    android:layout_marginTop="4dp"
+                                    android:background="@drawable/bg_input_box" />
+                            </LinearLayout>
+
+                            <!-- Subject Filter Dropdown -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="SUBJECT"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <Spinner
+                                    android:id="@+id/spinnerRecordSubject"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="44dp"
+                                    android:layout_marginTop="4dp"
+                                    android:background="@drawable/bg_input_box" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Attendance Analytics Dashboard for Records -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_card_lavender"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="TOTAL ATTENDANCE OVERVIEW"
+                                android:textColor="@color/pastel_lavender_text"
+                                android:textSize="10.5sp"
+                                android:textStyle="bold" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <!-- Avg Attendance -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/tvRecordAvgAttendance"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="76.4%"
+                                        android:textColor="@color/charcoal_dark"
+                                        android:textSize="20sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Cohort Average"
+                                        android:textColor="@color/text_muted"
+                                        android:textSize="10.5sp" />
+                                </LinearLayout>
+
+                                <!-- Below 70% Alert -->
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="6dp"
+                                    android:background="@drawable/bg_chip_red"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal"
+                                    android:paddingStart="10dp"
+                                    android:paddingTop="5dp"
+                                    android:paddingEnd="10dp"
+                                    android:paddingBottom="5dp">
+
+                                    <TextView
+                                        android:id="@+id/tvRecordBelow70Count"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="⚠️ 5 Below 70%"
+                                        android:textColor="@color/chip_red_text"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <!-- Safe >= 70% -->
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_chip_green"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal"
+                                    android:paddingStart="10dp"
+                                    android:paddingTop="5dp"
+                                    android:paddingEnd="10dp"
+                                    android:paddingBottom="5dp">
+
+                                    <TextView
+                                        android:id="@+id/tvRecordSafeCount"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="✅ 10 Safe"
+                                        android:textColor="@color/chip_green_text"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvStudentsRecordCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Enrolled Students (0)"
+                            android:textColor="@color/text_muted"
+                            android:textSize="11.5sp"
+                            android:textStyle="bold" />
+
+                        <!-- Container for dynamic student cards -->
+                        <LinearLayout
+                            android:id="@+id/containerStudentsRecords"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="vertical" />
+                    </LinearLayout>
+
+                    <!-- Teacher Filter Section -->
+                    <LinearLayout
+                        android:id="@+id/layoutTeacherFilterSection"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TEACHING SUBJECT / DEPARTMENT"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
+
+                        <Spinner
+                            android:id="@+id/spinnerRecordTeacherSubject"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@drawable/bg_input_box" />
+
+                        <TextView
+                            android:id="@+id/tvTeachersRecordCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Faculty &amp; Staff (0)"
+                            android:textColor="@color/text_muted"
+                            android:textSize="11.5sp"
+                            android:textStyle="bold" />
+
+                        <!-- Container for dynamic teacher cards -->
+                        <LinearLayout
+                            android:id="@+id/containerTeachersRecords"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="vertical" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <!-- ============ Hero attendance card ============ -->
             <LinearLayout
+                android:id="@+id/layoutStudentHero"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -171,6 +535,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/tvAttendanceBreakdown"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
@@ -202,6 +567,7 @@
                                 app:trackThickness="9dp" />
 
                             <TextView
+                                android:id="@+id/tvAttendanceStatus"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:gravity="center"
@@ -225,6 +591,7 @@
 
             <!-- ============ Quick actions ============ -->
             <LinearLayout
+                android:id="@+id/layoutStudentQuickActions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -243,12 +610,7 @@
                     android:textSize="14sp"
                     android:textStyle="bold"
                     app:backgroundTint="@color/ink"
-                    app:cornerRadius="18dp"
-                    app:icon="@drawable/ic_plus"
-                    app:iconGravity="textStart"
-                    app:iconPadding="8dp"
-                    app:iconSize="18dp"
-                    app:iconTint="@color/white" />
+                    app:cornerRadius="18dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPermission"
@@ -271,10 +633,45 @@
                     app:iconSize="18dp"
                     app:iconTint="@color/ink"
                     app:strokeColor="@color/outline" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTeacherNoticeAction"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="📢 Notice"
+                    android:textColor="@color/lavender_dark"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:backgroundTint="@color/lavender_subtle"
+                    app:cornerRadius="18dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnInterchangeLectures"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="⚡ Swap Lecture"
+                    android:textColor="@color/pastel_mint_text"
+                    android:textSize="12.5sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:backgroundTint="@color/pastel_mint_bg"
+                    app:cornerRadius="18dp" />
             </LinearLayout>
 
             <!-- ============ This week ============ -->
             <LinearLayout
+                android:id="@+id/layoutStudentWeek"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -313,15 +710,48 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvCalendarMonthTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="October 2026 • Academic Week 8"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="13.5sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_chip_white"
+                        android:backgroundTint="#F1F5F9"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:text="Semester I"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <!-- Mon -->
                     <LinearLayout
+                        android:id="@+id/dayMon"
                         android:layout_width="0dp"
-                        android:layout_height="56dp"
-                        android:layout_marginHorizontal="3dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_day_default"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -330,25 +760,28 @@
                             android:layout_height="wrap_content"
                             android:text="@string/day_mon"
                             android:textColor="@color/muted_strong"
-                            android:textSize="10sp" />
+                            android:textSize="10.5sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="5dp"
                             android:text="@string/date_19"
                             android:textColor="@color/ink"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
                     <!-- Tue (duty leave) -->
                     <LinearLayout
+                        android:id="@+id/dayTue"
                         android:layout_width="0dp"
-                        android:layout_height="56dp"
-                        android:layout_marginHorizontal="3dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_day_yellow"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -357,25 +790,28 @@
                             android:layout_height="wrap_content"
                             android:text="@string/day_tue"
                             android:textColor="@color/muted_strong"
-                            android:textSize="10sp" />
+                            android:textSize="10.5sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="5dp"
                             android:text="@string/date_20"
                             android:textColor="@color/ink"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
                     <!-- Wed (today) -->
                     <LinearLayout
+                        android:id="@+id/dayWed"
                         android:layout_width="0dp"
-                        android:layout_height="56dp"
-                        android:layout_marginHorizontal="3dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_day_today"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -384,25 +820,28 @@
                             android:layout_height="wrap_content"
                             android:text="@string/day_wed"
                             android:textColor="@color/on_dark"
-                            android:textSize="10sp" />
+                            android:textSize="10.5sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="5dp"
                             android:text="@string/date_21"
                             android:textColor="@color/white"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
                     <!-- Thu (practice) -->
                     <LinearLayout
+                        android:id="@+id/dayThu"
                         android:layout_width="0dp"
-                        android:layout_height="56dp"
-                        android:layout_marginHorizontal="3dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_day_yellow"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -411,25 +850,28 @@
                             android:layout_height="wrap_content"
                             android:text="@string/day_thu"
                             android:textColor="@color/muted_strong"
-                            android:textSize="10sp" />
+                            android:textSize="10.5sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="5dp"
                             android:text="@string/date_22"
                             android:textColor="@color/ink"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
                     <!-- Fri -->
                     <LinearLayout
+                        android:id="@+id/dayFri"
                         android:layout_width="0dp"
-                        android:layout_height="56dp"
-                        android:layout_marginHorizontal="3dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_day_default"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -438,25 +880,28 @@
                             android:layout_height="wrap_content"
                             android:text="@string/day_fri"
                             android:textColor="@color/muted_strong"
-                            android:textSize="10sp" />
+                            android:textSize="10.5sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="5dp"
                             android:text="@string/date_23"
                             android:textColor="@color/ink"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
                     <!-- Sat (event) -->
                     <LinearLayout
+                        android:id="@+id/daySat"
                         android:layout_width="0dp"
-                        android:layout_height="56dp"
-                        android:layout_marginHorizontal="3dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_day_yellow"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -465,23 +910,24 @@
                             android:layout_height="wrap_content"
                             android:text="@string/day_sat"
                             android:textColor="@color/muted_strong"
-                            android:textSize="10sp" />
+                            android:textSize="10.5sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="5dp"
                             android:text="@string/date_24"
                             android:textColor="@color/ink"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
                     <!-- Sun -->
                     <LinearLayout
+                        android:id="@+id/daySun"
                         android:layout_width="0dp"
-                        android:layout_height="56dp"
-                        android:layout_marginHorizontal="3dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_day_default"
                         android:gravity="center"
@@ -492,15 +938,15 @@
                             android:layout_height="wrap_content"
                             android:text="@string/day_sun"
                             android:textColor="@color/muted_strong"
-                            android:textSize="10sp" />
+                            android:textSize="10.5sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="5dp"
                             android:text="@string/date_25"
                             android:textColor="@color/ink"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
@@ -531,525 +977,6 @@
                         android:text="@string/legend_duty"
                         android:textColor="@color/muted_strong"
                         android:textSize="12sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- ============ Today's practice ============ -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/bg_card_white"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/todays_practice"
-                        android:textColor="@color/ink"
-                        android:textSize="17sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/todays_date"
-                        android:textColor="@color/muted_strong"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <!-- Session 1 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/bg_tile_circle"
-                        android:importantForAccessibility="no"
-                        android:padding="11dp"
-                        android:src="@drawable/ic_clock"
-                        app:tint="@color/ink" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/practice_football"
-                            android:textColor="@color/ink"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/practice_football_meta"
-                            android:textColor="@color/muted"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_chip_dark"
-                        android:paddingStart="14dp"
-                        android:paddingTop="8dp"
-                        android:paddingEnd="14dp"
-                        android:paddingBottom="8dp"
-                        android:text="@string/status_marked_present"
-                        android:textColor="@color/white"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="14dp"
-                    android:layout_marginBottom="14dp"
-                    android:background="@color/divider" />
-
-                <!-- Session 2 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/bg_tile_circle"
-                        android:importantForAccessibility="no"
-                        android:padding="11dp"
-                        android:src="@drawable/ic_clock"
-                        app:tint="@color/ink" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/practice_cultural"
-                            android:textColor="@color/ink"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/practice_cultural_meta"
-                            android:textColor="@color/muted"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_chip_light"
-                        android:paddingStart="14dp"
-                        android:paddingTop="8dp"
-                        android:paddingEnd="14dp"
-                        android:paddingBottom="8dp"
-                        android:text="@string/status_upcoming"
-                        android:textColor="@color/ink"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- ============ Your requests ============ -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/your_requests"
-                    android:textColor="@color/ink"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/linkSeeAll"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:minHeight="48dp"
-                    android:text="@string/see_all"
-                    android:textColor="@color/accent"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Request card 1: Spot Pass (approved) -->
-            <LinearLayout
-                android:id="@+id/cardSpotPass"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_card_teal"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="@drawable/bg_tile_white"
-                        android:importantForAccessibility="no"
-                        android:padding="9dp"
-                        android:src="@drawable/ic_file"
-                        app:tint="@color/ink" />
-
-                    <TextView
-                        android:id="@+id/tvSpotPassCardTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:text="@string/spot_pass_title"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvSpotPassCardStatus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_chip_white"
-                        android:drawableStart="@drawable/dot_green"
-                        android:drawablePadding="6dp"
-                        android:gravity="center_vertical"
-                        android:paddingStart="12dp"
-                        android:paddingTop="6dp"
-                        android:paddingEnd="12dp"
-                        android:paddingBottom="6dp"
-                        android:text="@string/status_approved"
-                        android:textColor="@color/ink"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvSpotPassCardSlot"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/bg_chip_white"
-                        android:paddingStart="12dp"
-                        android:paddingTop="6dp"
-                        android:paddingEnd="12dp"
-                        android:paddingBottom="6dp"
-                        android:text="@string/lecture_slot"
-                        android:textColor="@color/ink"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/progressSpotPassCard"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:max="100"
-                    android:progress="100"
-                    app:indicatorColor="@color/green"
-                    app:trackColor="@color/track_white"
-                    app:trackCornerRadius="4dp"
-                    app:trackThickness="8dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvSpotPassStage1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="@string/stage_submitted"
-                        android:textColor="@color/on_teal_muted"
-                        android:textSize="11sp" />
-
-                    <TextView
-                        android:id="@+id/tvSpotPassStage2"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Class Teacher"
-                        android:textColor="@color/on_teal_muted"
-                        android:textSize="11sp" />
-
-                    <TextView
-                        android:id="@+id/tvSpotPassStage3"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="Subject Teacher"
-                        android:textColor="@color/ink"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/tvSpotPassAvatarCt"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:background="@drawable/bg_avatar_pd_teal"
-                            android:gravity="center"
-                            android:text="CT"
-                            android:textColor="@color/ink"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvSpotPassAvatarSt"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_marginStart="-8dp"
-                            android:background="@drawable/bg_avatar_t_teal"
-                            android:gravity="center"
-                            android:text="ST"
-                            android:textColor="@color/ink"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_chip_white"
-                        android:paddingStart="12dp"
-                        android:paddingTop="6dp"
-                        android:paddingEnd="12dp"
-                        android:paddingBottom="6dp"
-                        android:text="@string/date_21_oct"
-                        android:textColor="@color/ink"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Request card 2: Permission Request (pending PD) -->
-            <LinearLayout
-                android:id="@+id/cardPermission"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_card_periwinkle"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="@drawable/bg_tile_white"
-                        android:importantForAccessibility="no"
-                        android:padding="9dp"
-                        android:src="@drawable/ic_file"
-                        app:tint="@color/ink" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:text="@string/permission_title"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_chip_white"
-                        android:drawableStart="@drawable/dot_amber"
-                        android:drawablePadding="6dp"
-                        android:gravity="center_vertical"
-                        android:paddingStart="12dp"
-                        android:paddingTop="6dp"
-                        android:paddingEnd="12dp"
-                        android:paddingBottom="6dp"
-                        android:text="@string/status_pending_pd"
-                        android:textColor="@color/ink"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/bg_chip_white"
-                        android:paddingStart="12dp"
-                        android:paddingTop="6dp"
-                        android:paddingEnd="12dp"
-                        android:paddingBottom="6dp"
-                        android:text="@string/event_dates"
-                        android:textColor="@color/ink"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:max="100"
-                    android:progress="40"
-                    app:indicatorColor="@color/accent"
-                    app:trackColor="@color/track_white"
-                    app:trackCornerRadius="4dp"
-                    app:trackThickness="8dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="@string/stage_submitted"
-                        android:textColor="@color/ink"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/stage_pd_approved"
-                        android:textColor="@color/on_periwinkle_muted"
-                        android:textSize="11sp" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="@string/stage_teacher_notified"
-                        android:textColor="@color/on_periwinkle_muted"
-                        android:textSize="11sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:background="@drawable/bg_avatar_pd_periwinkle"
-                            android:gravity="center"
-                            android:text="@string/avatar_pd"
-                            android:textColor="@color/ink"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_chip_white"
-                        android:drawableStart="@drawable/ic_chat"
-                        android:drawablePadding="6dp"
-                        android:drawableTint="@color/ink"
-                        android:gravity="center_vertical"
-                        android:paddingStart="12dp"
-                        android:paddingTop="6dp"
-                        android:paddingEnd="12dp"
-                        android:paddingBottom="6dp"
-                        android:text="@string/remarks_count"
-                        android:textColor="@color/ink"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -1085,6 +1012,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvNoticeCardTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/notice_title"
@@ -1093,6 +1021,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvNoticeCardMeta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
@@ -1123,9 +1052,8 @@
         android:paddingBottom="16dp">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:background="@drawable/bg_nav_pill"
             android:orientation="horizontal"
             android:paddingStart="10dp"
@@ -1149,24 +1077,6 @@
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_home"
                     app:tint="@color/ink" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1">
-
-                <ImageButton
-                    android:id="@+id/navCalendar"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/bg_circle_transparent"
-                    android:contentDescription="@string/nav_calendar"
-                    android:padding="13dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_calendar"
-                    app:tint="@color/white" />
             </FrameLayout>
 
             <FrameLayout
@@ -1205,17 +1115,5 @@
                     app:tint="@color/white" />
             </FrameLayout>
         </LinearLayout>
-
-        <ImageButton
-            android:id="@+id/navCreate"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_marginStart="12dp"
-            android:background="@drawable/bg_circle_dark"
-            android:contentDescription="@string/nav_create"
-            android:padding="20dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_plus"
-            app:tint="@color/white" />
     </LinearLayout>
 </LinearLayout>
