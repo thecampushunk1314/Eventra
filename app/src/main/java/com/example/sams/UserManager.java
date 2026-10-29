@@ -81,13 +81,15 @@ public class UserManager {
         }
 
         boolean needsPhonePasswordUpgrade = !prefs.getBoolean("has_seeded_phone_passwords_v5", false);
-        if (list.isEmpty() || isOldHssData || studentCount < 40 || needsEmailOrAttendanceUpgrade || needsPhonePasswordUpgrade) {
+        boolean needs60LecturesUpgrade = !prefs.getBoolean("has_seeded_60_lectures_v6", false);
+        if (list.isEmpty() || isOldHssData || studentCount < 40 || needsEmailOrAttendanceUpgrade || needsPhonePasswordUpgrade || needs60LecturesUpgrade) {
             list.clear();
             list.add(getPrincipalUser());
             seedInstitutionalFacultyAndStudents(list);
             prefs.edit()
                     .putBoolean("has_seeded_attendance_v3", true)
                     .putBoolean("has_seeded_phone_passwords_v5", true)
+                    .putBoolean("has_seeded_60_lectures_v6", true)
                     .apply();
             saveUsers(list);
             return;
@@ -119,8 +121,8 @@ public class UserManager {
         User u = new User(id, name, cleanEmail, cleanPhone, User.ROLE_STUDENT, stream, degree, 
                 rollInfo, cleanPhone, User.INSTITUTION_COLLEGE, dob, yearOrClass, degree, subjects);
         u.setAttendancePercentage(attendancePct);
-        u.setTotalClasses(120);
-        u.setAttendedClasses((int) Math.round(120 * (attendancePct / 100.0)));
+        u.setTotalClasses(60); // 60 standard lectures for the term
+        u.setAttendedClasses((int) Math.round(60 * (attendancePct / 100.0)));
         u.setDutyLeaveApprovedCount(attendancePct > 80.0 ? 3 : (attendancePct > 70.0 ? 2 : 1));
         return u;
     }
@@ -605,8 +607,17 @@ public class UserManager {
                 // Restore academic attendance tracking data
                 if (obj.has("attendancePercentage")) {
                     u.setAttendancePercentage(obj.optDouble("attendancePercentage", 80.0));
-                    u.setTotalClasses(obj.optInt("totalClasses", 120));
-                    u.setAttendedClasses(obj.optInt("attendedClasses", (int) Math.round(120 * (u.getAttendancePercentage() / 100.0))));
+                    int tc = obj.optInt("totalClasses", 60);
+                    if (tc == 120 || tc <= 0) {
+                        tc = 60;
+                    }
+                    u.setTotalClasses(tc);
+                    int defaultAttended = (int) Math.round(tc * (u.getAttendancePercentage() / 100.0));
+                    int savedAttended = obj.optInt("attendedClasses", defaultAttended);
+                    if (tc == 60 && savedAttended > 60) {
+                        savedAttended = (int) Math.round(60 * (u.getAttendancePercentage() / 100.0));
+                    }
+                    u.setAttendedClasses(savedAttended);
                     u.setDutyLeaveApprovedCount(obj.optInt("dutyLeaveApprovedCount", 2));
                 }
 
@@ -1009,8 +1020,8 @@ public class UserManager {
                 password, User.ROLE_STUDENT, cleanDept, cleanCourse, additionalInfo,
                 phoneNumber != null ? phoneNumber.trim() : "", instType);
         newUser.setAttendancePercentage(78.5);
-        newUser.setTotalClasses(120);
-        newUser.setAttendedClasses(94);
+        newUser.setTotalClasses(60);
+        newUser.setAttendedClasses(47);
         newUser.setDutyLeaveApprovedCount(2);
 
         users.add(newUser);
@@ -1108,8 +1119,8 @@ public class UserManager {
 
         if (User.ROLE_STUDENT.equals(role)) {
             newUser.setAttendancePercentage(78.5);
-            newUser.setTotalClasses(120);
-            newUser.setAttendedClasses(94);
+            newUser.setTotalClasses(60);
+            newUser.setAttendedClasses(47);
             newUser.setDutyLeaveApprovedCount(2);
         }
 

@@ -33,8 +33,8 @@ public class User implements Serializable {
 
     // Academic Attendance Tracking
     private double attendancePercentage = 80.0;
-    private int totalClasses = 120;
-    private int attendedClasses = 96;
+    private int totalClasses = 60; // Standard term total lectures (60 lectures per term)
+    private int attendedClasses = 48; // Default attended (80% of 60)
     private int dutyLeaveApprovedCount = 2;
 
     public User() {

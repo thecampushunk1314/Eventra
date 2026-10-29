@@ -62,8 +62,8 @@ CREATE TABLE students (
     email VARCHAR(100) UNIQUE,
     phone VARCHAR(15),
     attendance_percentage DECIMAL(5,2) DEFAULT 75.0,
-    total_classes INT DEFAULT 120,
-    attended_classes INT DEFAULT 90,
+    total_classes INT DEFAULT 60, -- 60 lectures standard for a term
+    attended_classes INT DEFAULT 45,
     duty_leaves INT DEFAULT 2,
     FOREIGN KEY (stream_id) REFERENCES streams(stream_id)
 ) ENGINE=InnoDB;
@@ -166,57 +166,57 @@ INSERT INTO subjects (subject_id, subject_name, stream_id, is_compulsory, teache
 
 -- A. Science Stream (15 Students: SCI-26-001 to SCI-26-015)
 INSERT INTO students (roll_number, first_name, last_name, gender, stream_id, class_year, email, attendance_percentage, total_classes, attended_classes, duty_leaves) VALUES
-('SCI-26-001', 'Akash', 'Kamat', 'Male', 1, 'First Year (Batch 2026)', 'akash.kamat@ycasc.com', 82.5, 120, 99, 3),
-('SCI-26-002', 'Priya', 'Vernekar', 'Female', 1, 'SY B.Sc. (Chemistry)', 'priya.vernekar@ycasc.com', 64.0, 120, 77, 1), -- Below 70%
-('SCI-26-003', 'Sahil', 'Fernandes', 'Male', 1, 'FY B.Sc. (Comp Sci)', 'sahil.fernandes@ycasc.com', 91.5, 120, 110, 3),
-('SCI-26-004', 'Shruti', 'Dessai', 'Female', 1, 'TY B.Sc. (Mathematics)', 'shruti.dessai@ycasc.com', 88.0, 120, 106, 3),
-('SCI-26-005', 'Varun', 'Rane', 'Male', 1, 'FY B.Sc. (Physics)', 'varun.rane@ycasc.com', 58.5, 120, 70, 1), -- Below 70%
-('SCI-26-006', 'Neha', 'Chari', 'Female', 1, 'SY B.Sc. (Chemistry)', 'neha.chari@ycasc.com', 73.0, 120, 88, 2), -- Borderline
-('SCI-26-007', 'Pranav', 'Naik', 'Male', 1, 'FY B.Sc. (Comp Sci)', 'pranav.naik@ycasc.com', 67.5, 120, 81, 1), -- Below 70%
-('SCI-26-008', 'Ananya', 'Gawde', 'Female', 1, 'TY B.Sc. (Physics)', 'ananya.gawde@ycasc.com', 94.0, 120, 113, 3),
-('SCI-26-009', 'Siddharth', 'Borkar', 'Male', 1, 'FY B.Sc. (Mathematics)', 'siddharth.borkar@ycasc.com', 61.2, 120, 73, 1), -- Below 70%
-('SCI-26-010', 'Tanvi', 'Shirodkar', 'Female', 1, 'SY B.Sc. (Comp Sci)', 'tanvi.shirodkar@ycasc.com', 85.5, 120, 103, 3),
-('SCI-26-011', 'Gaurav', 'Sawant', 'Male', 1, 'FY B.Sc. (Chemistry)', 'gaurav.sawant@ycasc.com', 76.0, 120, 91, 2),
-('SCI-26-012', 'Rashmi', 'Kudchadkar', 'Female', 1, 'TY B.Sc. (Physics)', 'rashmi.kudchadkar@ycasc.com', 69.0, 120, 83, 1), -- Below 70%
-('SCI-26-013', 'Manish', 'Tari', 'Male', 1, 'FY B.Sc. (Comp Sci)', 'manish.tari@ycasc.com', 89.2, 120, 107, 3),
-('SCI-26-014', 'Isha', 'Prabhu', 'Female', 1, 'SY B.Sc. (Mathematics)', 'isha.prabhu@ycasc.com', 71.5, 120, 86, 2), -- Borderline
-('SCI-26-015', 'Kiran M', 'Nair', 'Male', 1, 'First Year', 'kiran.m.nair@ycasc.com', 78.4, 120, 94, 2);
+('SCI-26-001', 'Akash', 'Kamat', 'Male', 1, 'First Year (Batch 2026)', 'akash.kamat@ycasc.com', 82.5, 60, 50, 3),
+('SCI-26-002', 'Priya', 'Vernekar', 'Female', 1, 'SY B.Sc. (Chemistry)', 'priya.vernekar@ycasc.com', 64.0, 60, 38, 1), -- Below 70%
+('SCI-26-003', 'Sahil', 'Fernandes', 'Male', 1, 'FY B.Sc. (Comp Sci)', 'sahil.fernandes@ycasc.com', 91.5, 60, 55, 3),
+('SCI-26-004', 'Shruti', 'Dessai', 'Female', 1, 'TY B.Sc. (Mathematics)', 'shruti.dessai@ycasc.com', 88.0, 60, 53, 3),
+('SCI-26-005', 'Varun', 'Rane', 'Male', 1, 'FY B.Sc. (Physics)', 'varun.rane@ycasc.com', 58.5, 60, 35, 1), -- Below 70%
+('SCI-26-006', 'Neha', 'Chari', 'Female', 1, 'SY B.Sc. (Chemistry)', 'neha.chari@ycasc.com', 73.0, 60, 44, 2), -- Borderline
+('SCI-26-007', 'Pranav', 'Naik', 'Male', 1, 'FY B.Sc. (Comp Sci)', 'pranav.naik@ycasc.com', 67.5, 60, 41, 1), -- Below 70%
+('SCI-26-008', 'Ananya', 'Gawde', 'Female', 1, 'TY B.Sc. (Physics)', 'ananya.gawde@ycasc.com', 94.0, 60, 56, 3),
+('SCI-26-009', 'Siddharth', 'Borkar', 'Male', 1, 'FY B.Sc. (Mathematics)', 'siddharth.borkar@ycasc.com', 61.2, 60, 37, 1), -- Below 70%
+('SCI-26-010', 'Tanvi', 'Shirodkar', 'Female', 1, 'SY B.Sc. (Comp Sci)', 'tanvi.shirodkar@ycasc.com', 85.5, 60, 51, 3),
+('SCI-26-011', 'Gaurav', 'Sawant', 'Male', 1, 'FY B.Sc. (Chemistry)', 'gaurav.sawant@ycasc.com', 76.0, 60, 46, 2),
+('SCI-26-012', 'Rashmi', 'Kudchadkar', 'Female', 1, 'TY B.Sc. (Physics)', 'rashmi.kudchadkar@ycasc.com', 69.0, 60, 41, 1), -- Below 70%
+('SCI-26-013', 'Manish', 'Tari', 'Male', 1, 'FY B.Sc. (Comp Sci)', 'manish.tari@ycasc.com', 89.2, 60, 54, 3),
+('SCI-26-014', 'Isha', 'Prabhu', 'Female', 1, 'SY B.Sc. (Mathematics)', 'isha.prabhu@ycasc.com', 71.5, 60, 43, 2), -- Borderline
+('SCI-26-015', 'Kiran M', 'Nair', 'Male', 1, 'First Year', 'kiran.m.nair@ycasc.com', 78.4, 60, 47, 2);
 
 -- B. Commerce Stream (15 Students: COM-26-001 to COM-26-015)
 INSERT INTO students (roll_number, first_name, last_name, gender, stream_id, class_year, email, attendance_percentage, total_classes, attended_classes, duty_leaves) VALUES
-('COM-26-001', 'Rohan', 'Phadte', 'Male', 2, 'FY B.Com (Accountancy)', 'rohan.phadte@ycasc.com', 86.0, 120, 103, 3),
-('COM-26-002', 'Meera', 'Deshmukh', 'Female', 2, 'TY B.Com (Banking & Finance)', 'meera.deshmukh@ycasc.com', 95.0, 120, 114, 3),
-('COM-26-003', 'Rohan', 'Kamat', 'Male', 2, 'FY B.Com (Auditing)', 'rohan.kamat@ycasc.com', 63.5, 120, 76, 1), -- Below 70%
-('COM-26-004', 'Tanvi', 'Shenvi', 'Female', 2, 'SY B.Com (Corporate Law)', 'tanvi.shenvi@ycasc.com', 77.5, 120, 93, 2),
-('COM-26-005', 'Gaurav', 'Borkar', 'Male', 2, 'FY B.Com (Accountancy)', 'gaurav.borkar@ycasc.com', 59.0, 120, 71, 1), -- Below 70%
-('COM-26-006', 'Divya', 'Velip', 'Female', 2, 'SY B.Com (Economics)', 'divya.velip@ycasc.com', 72.5, 120, 87, 2), -- Borderline
-('COM-26-007', 'Sanket', 'Prabhu', 'Male', 2, 'FY B.Com (Taxation)', 'sanket.prabhu@ycasc.com', 66.0, 120, 79, 1), -- Below 70%
-('COM-26-008', 'Rhea', 'Kakodkar', 'Female', 2, 'TY B.Com (Finance)', 'rhea.kakodkar@ycasc.com', 84.0, 120, 101, 3),
-('COM-26-009', 'Abhishek', 'Gauns', 'Male', 2, 'FY B.Com (Business Law)', 'abhishek.gauns@ycasc.com', 68.5, 120, 82, 1), -- Below 70%
-('COM-26-010', 'Pooja', 'Mandrekar', 'Female', 2, 'SY B.Com (Accountancy)', 'pooja.mandrekar@ycasc.com', 79.5, 120, 95, 2),
-('COM-26-011', 'Ketan', 'Salgaonkar', 'Male', 2, 'FY B.Com (Auditing)', 'ketan.salgaonkar@ycasc.com', 62.0, 120, 74, 1), -- Below 70%
-('COM-26-012', 'Snehal', 'Tirodkar', 'Female', 2, 'TY B.Com (Banking)', 'snehal.tirodkar@ycasc.com', 92.5, 120, 111, 3),
-('COM-26-013', 'Yash', 'Dharwadkar', 'Male', 2, 'FY B.Com (Accountancy)', 'yash.dharwadkar@ycasc.com', 74.0, 120, 89, 2), -- Borderline
-('COM-26-014', 'Simran', 'Kadam', 'Female', 2, 'SY B.Com (Economics)', 'simran.kadam@ycasc.com', 81.0, 120, 97, 3),
-('COM-26-015', 'Omkar', 'Lotlikar', 'Male', 2, 'FY B.Com (Finance)', 'omkar.lotlikar@ycasc.com', 87.5, 120, 105, 3);
+('COM-26-001', 'Rohan', 'Phadte', 'Male', 2, 'FY B.Com (Accountancy)', 'rohan.phadte@ycasc.com', 86.0, 60, 52, 3),
+('COM-26-002', 'Meera', 'Deshmukh', 'Female', 2, 'TY B.Com (Banking & Finance)', 'meera.deshmukh@ycasc.com', 95.0, 60, 57, 3),
+('COM-26-003', 'Rohan', 'Kamat', 'Male', 2, 'FY B.Com (Auditing)', 'rohan.kamat@ycasc.com', 63.5, 60, 38, 1), -- Below 70%
+('COM-26-004', 'Tanvi', 'Shenvi', 'Female', 2, 'SY B.Com (Corporate Law)', 'tanvi.shenvi@ycasc.com', 77.5, 60, 47, 2),
+('COM-26-005', 'Gaurav', 'Borkar', 'Male', 2, 'FY B.Com (Accountancy)', 'gaurav.borkar@ycasc.com', 59.0, 60, 35, 1), -- Below 70%
+('COM-26-006', 'Divya', 'Velip', 'Female', 2, 'SY B.Com (Economics)', 'divya.velip@ycasc.com', 72.5, 60, 44, 2), -- Borderline
+('COM-26-007', 'Sanket', 'Prabhu', 'Male', 2, 'FY B.Com (Taxation)', 'sanket.prabhu@ycasc.com', 66.0, 60, 40, 1), -- Below 70%
+('COM-26-008', 'Rhea', 'Kakodkar', 'Female', 2, 'TY B.Com (Finance)', 'rhea.kakodkar@ycasc.com', 84.0, 60, 50, 3),
+('COM-26-009', 'Abhishek', 'Gauns', 'Male', 2, 'FY B.Com (Business Law)', 'abhishek.gauns@ycasc.com', 68.5, 60, 41, 1), -- Below 70%
+('COM-26-010', 'Pooja', 'Mandrekar', 'Female', 2, 'SY B.Com (Accountancy)', 'pooja.mandrekar@ycasc.com', 79.5, 60, 48, 2),
+('COM-26-011', 'Ketan', 'Salgaonkar', 'Male', 2, 'FY B.Com (Auditing)', 'ketan.salgaonkar@ycasc.com', 62.0, 60, 37, 1), -- Below 70%
+('COM-26-012', 'Snehal', 'Tirodkar', 'Female', 2, 'TY B.Com (Banking)', 'snehal.tirodkar@ycasc.com', 92.5, 60, 56, 3),
+('COM-26-013', 'Yash', 'Dharwadkar', 'Male', 2, 'FY B.Com (Accountancy)', 'yash.dharwadkar@ycasc.com', 74.0, 60, 44, 2), -- Borderline
+('COM-26-014', 'Simran', 'Kadam', 'Female', 2, 'SY B.Com (Economics)', 'simran.kadam@ycasc.com', 81.0, 60, 49, 3),
+('COM-26-015', 'Omkar', 'Lotlikar', 'Male', 2, 'FY B.Com (Finance)', 'omkar.lotlikar@ycasc.com', 87.5, 60, 53, 3);
 
 -- C. Arts Stream (15 Students: ART-26-001 to ART-26-015)
 INSERT INTO students (roll_number, first_name, last_name, gender, stream_id, class_year, email, attendance_percentage, total_classes, attended_classes, duty_leaves) VALUES
-('ART-26-001', 'Kunal', 'Shirodkar', 'Male', 3, 'FY B.A. (History)', 'kunal.shirodkar@ycasc.com', 78.0, 120, 94, 2),
-('ART-26-002', 'Ananya', 'Naik', 'Female', 3, 'TY B.A. (Psychology)', 'ananya.naik@ycasc.com', 89.0, 120, 107, 3),
-('ART-26-003', 'Sanika', 'Bandodkar', 'Female', 3, 'FY B.A. (English Lit)', 'sanika.bandodkar@ycasc.com', 65.5, 120, 79, 1), -- Below 70%
-('ART-26-004', 'Nilesh', 'Sawant', 'Male', 3, 'SY B.A. (Political Science)', 'nilesh.sawant@ycasc.com', 71.0, 120, 85, 2), -- Borderline
-('ART-26-005', 'Rhea', 'Tari', 'Female', 3, 'FY B.A. (Psychology)', 'rhea.tari@ycasc.com', 83.0, 120, 100, 3),
-('ART-26-006', 'Gautam', 'Vernekar', 'Male', 3, 'SY B.A. (History)', 'gautam.vernekar@ycasc.com', 57.5, 120, 69, 1), -- Below 70%
-('ART-26-007', 'Maitreyi', 'Kulkarni', 'Female', 3, 'FY B.A. (Sociology)', 'maitreyi.kulkarni@ycasc.com', 90.5, 120, 109, 3),
-('ART-26-008', 'Sameer', 'Khan', 'Male', 3, 'TY B.A. (English Lit)', 'sameer.khan@ycasc.com', 68.0, 120, 82, 1), -- Below 70%
-('ART-26-009', 'Aparna', 'Joshi', 'Female', 3, 'FY B.A. (Political Science)', 'aparna.joshi@ycasc.com', 76.5, 120, 92, 2),
-('ART-26-010', 'Chinmay', 'Nadkarni', 'Male', 3, 'SY B.A. (Psychology)', 'chinmay.nadkarni@ycasc.com', 60.5, 120, 73, 1), -- Below 70%
-('ART-26-011', 'Devika', 'Shet', 'Female', 3, 'FY B.A. (English Lit)', 'devika.shet@ycasc.com', 85.0, 120, 102, 3),
-('ART-26-012', 'Akshay', 'Redkar', 'Male', 3, 'TY B.A. (History)', 'akshay.redkar@ycasc.com', 73.5, 120, 88, 2), -- Borderline
-('ART-26-013', 'Pallavi', 'Chopdekar', 'Female', 3, 'FY B.A. (Sociology)', 'pallavi.chopdekar@ycasc.com', 93.0, 120, 112, 3),
-('ART-26-014', 'Tejas', 'Madkaikar', 'Male', 3, 'SY B.A. (Political Science)', 'tejas.madkaikar@ycasc.com', 67.0, 120, 80, 1), -- Below 70%
-('ART-26-015', 'Kavya', 'Sukhtankar', 'Female', 3, 'FY B.A. (Psychology)', 'kavya.sukhtankar@ycasc.com', 82.0, 120, 98, 3);
+('ART-26-001', 'Kunal', 'Shirodkar', 'Male', 3, 'FY B.A. (History)', 'kunal.shirodkar@ycasc.com', 78.0, 60, 47, 2),
+('ART-26-002', 'Ananya', 'Naik', 'Female', 3, 'TY B.A. (Psychology)', 'ananya.naik@ycasc.com', 89.0, 60, 53, 3),
+('ART-26-003', 'Sanika', 'Bandodkar', 'Female', 3, 'FY B.A. (English Lit)', 'sanika.bandodkar@ycasc.com', 65.5, 60, 39, 1), -- Below 70%
+('ART-26-004', 'Nilesh', 'Sawant', 'Male', 3, 'SY B.A. (Political Science)', 'nilesh.sawant@ycasc.com', 71.0, 60, 43, 2), -- Borderline
+('ART-26-005', 'Rhea', 'Tari', 'Female', 3, 'FY B.A. (Psychology)', 'rhea.tari@ycasc.com', 83.0, 60, 50, 3),
+('ART-26-006', 'Gautam', 'Vernekar', 'Male', 3, 'SY B.A. (History)', 'gautam.vernekar@ycasc.com', 57.5, 60, 35, 1), -- Below 70%
+('ART-26-007', 'Maitreyi', 'Kulkarni', 'Female', 3, 'FY B.A. (Sociology)', 'maitreyi.kulkarni@ycasc.com', 90.5, 60, 54, 3),
+('ART-26-008', 'Sameer', 'Khan', 'Male', 3, 'TY B.A. (English Lit)', 'sameer.khan@ycasc.com', 68.0, 60, 41, 1), -- Below 70%
+('ART-26-009', 'Aparna', 'Joshi', 'Female', 3, 'FY B.A. (Political Science)', 'aparna.joshi@ycasc.com', 76.5, 60, 46, 2),
+('ART-26-010', 'Chinmay', 'Nadkarni', 'Male', 3, 'SY B.A. (Psychology)', 'chinmay.nadkarni@ycasc.com', 60.5, 60, 36, 1), -- Below 70%
+('ART-26-011', 'Devika', 'Shet', 'Female', 3, 'FY B.A. (English Lit)', 'devika.shet@ycasc.com', 85.0, 60, 51, 3),
+('ART-26-012', 'Akshay', 'Redkar', 'Male', 3, 'TY B.A. (History)', 'akshay.redkar@ycasc.com', 73.5, 60, 44, 2), -- Borderline
+('ART-26-013', 'Pallavi', 'Chopdekar', 'Female', 3, 'FY B.A. (Sociology)', 'pallavi.chopdekar@ycasc.com', 93.0, 60, 56, 3),
+('ART-26-014', 'Tejas', 'Madkaikar', 'Male', 3, 'SY B.A. (Political Science)', 'tejas.madkaikar@ycasc.com', 67.0, 60, 40, 1), -- Below 70%
+('ART-26-015', 'Kavya', 'Sukhtankar', 'Female', 3, 'FY B.A. (Psychology)', 'kavya.sukhtankar@ycasc.com', 82.0, 60, 49, 3);
 
 -- Auto-enroll students into compulsory subjects for their stream
 INSERT INTO student_course_enrollments (student_id, subject_id)

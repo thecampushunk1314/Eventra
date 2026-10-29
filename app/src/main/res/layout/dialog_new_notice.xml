@@ -33,7 +33,7 @@
                 android:id="@+id/tvNoticeDialogHeaderTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upload Notice"
+                android:text="Upload &amp; Publish Notice"
                 android:textColor="@color/charcoal_dark"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -67,10 +67,11 @@
         android:layout_marginBottom="16dp"
         android:background="@color/divider" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxHeight="440dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
         android:scrollbars="vertical">
 
         <LinearLayout
@@ -231,7 +232,7 @@
             </LinearLayout>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- Action Buttons -->
     <LinearLayout
@@ -262,13 +263,14 @@
             android:layout_marginStart="10dp"
             android:layout_weight="1.6"
             android:backgroundTint="@color/charcoal_dark"
-            android:text="Publish Notice"
+            android:text="Submit &amp; Publish Notice"
+            android:contentDescription="Submit to Publish Notice"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold"
             app:cornerRadius="18dp"
-            app:icon="@drawable/ic_chat"
+            app:icon="@drawable/ic_check"
             app:iconGravity="textStart"
             app:iconPadding="8dp"
             app:iconSize="16dp"

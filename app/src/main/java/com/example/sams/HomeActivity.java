@@ -678,7 +678,7 @@ public class HomeActivity extends AppCompatActivity {
         if (spMonth != null) spMonth.setAdapter(monthAdapter);
 
         // Pre-fill lecture values
-        int defaultTotal = student.getTotalClasses() > 0 ? student.getTotalClasses() : 120;
+        int defaultTotal = student.getTotalClasses() > 0 ? student.getTotalClasses() : 60;
         int defaultAttended = student.getAttendedClasses() > 0 ? student.getAttendedClasses() : (int) Math.round(defaultTotal * 0.70);
         if (etTotal != null) etTotal.setText(String.valueOf(defaultTotal));
         if (etAttended != null) etAttended.setText(String.valueOf(defaultAttended));
@@ -800,13 +800,13 @@ public class HomeActivity extends AppCompatActivity {
         final int finalDutyLeaves = totalDutyLeaves;
 
         Runnable updateFormula = () -> {
-            int tot = 120;
-            int att = 88;
+            int tot = 60;
+            int att = 44;
             try {
                 if (etTotal != null) tot = Integer.parseInt(etTotal.getText().toString().trim());
                 if (etAttended != null) att = Integer.parseInt(etAttended.getText().toString().trim());
             } catch (Exception ignored) {}
-            if (tot <= 0) tot = 120;
+            if (tot <= 0) tot = 60;
             int mergedAttended = Math.min(tot, att + finalDutyLeaves);
             double pct = ((double) mergedAttended / tot) * 100.0;
 
@@ -844,8 +844,8 @@ public class HomeActivity extends AppCompatActivity {
 
         if (btnMerge != null) {
             btnMerge.setOnClickListener(v -> {
-                int tot = 120;
-                int att = 88;
+                int tot = 60;
+                int att = 44;
                 try {
                     if (etTotal != null) tot = Integer.parseInt(etTotal.getText().toString().trim());
                     if (etAttended != null) att = Integer.parseInt(etAttended.getText().toString().trim());
@@ -993,7 +993,7 @@ public class HomeActivity extends AppCompatActivity {
                 com.google.android.material.progressindicator.CircularProgressIndicator ringAttendance = findViewById(R.id.ringAttendance);
 
                 double pct = user.getAttendancePercentage();
-                int total = user.getTotalClasses() > 0 ? user.getTotalClasses() : 120;
+                int total = user.getTotalClasses() > 0 ? user.getTotalClasses() : 60;
                 int attended = user.getAttendedClasses() > 0 ? user.getAttendedClasses() : (int) Math.round(total * (pct / 100.0));
                 int duty = user.getDutyLeaveApprovedCount();
 
@@ -1838,11 +1838,17 @@ public class HomeActivity extends AppCompatActivity {
                 // Immediately update home page card
                 refreshNoticeCard();
 
-                Toast.makeText(this, "📢 Official Notice Published!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "📢 Official Notice Submitted & Published!", Toast.LENGTH_SHORT).show();
             });
         }
 
         dialog.show();
+        if (dialog.getWindow() != null) {
+            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            int w = (int) (dm.widthPixels * 0.94);
+            int maxH = (int) (dm.heightPixels * 0.86);
+            dialog.getWindow().setLayout(w, maxH);
+        }
     }
 
     /**
@@ -2125,6 +2131,12 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         dialog.show();
+        if (dialog.getWindow() != null) {
+            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            int w = (int) (dm.widthPixels * 0.94);
+            int maxH = (int) (dm.heightPixels * 0.86);
+            dialog.getWindow().setLayout(w, maxH);
+        }
     }
 
     /**

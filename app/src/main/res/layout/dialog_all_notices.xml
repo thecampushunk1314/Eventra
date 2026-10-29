@@ -54,7 +54,7 @@
             android:backgroundTint="@color/pastel_lavender_surface"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:text="+ Notice"
+            android:text="+ Add Notice"
             android:textAllCaps="false"
             android:textColor="@color/pastel_lavender_text"
             android:textSize="12sp"
