@@ -20,6 +20,8 @@ public class SpotPass implements Serializable {
     private String classTeacherStatus;
     private String subjectTeacherStatus;
     private long timestamp;
+    private String eventType; // Sports, Cultural, Volunteer Work, Sick Leave, Emergency, Competition
+    private java.util.List<SpotPassAction> actionHistory;
 
     public SpotPass() {
         this.status = "Pending Class Teacher";
@@ -27,12 +29,22 @@ public class SpotPass implements Serializable {
         this.classTeacherStatus = "Pending Review";
         this.subjectTeacherStatus = "Notified of Slot";
         this.timestamp = System.currentTimeMillis();
+        this.eventType = "Sports";
+        this.actionHistory = new java.util.ArrayList<>();
     }
 
     public SpotPass(String id, String studentId, String studentName, String studentClass,
                     String activityTitle, String date, String timeSlot, String subject,
                     String subjectTeacher, String classTeacher, String reason, String status,
                     int progress, String classTeacherStatus, String subjectTeacherStatus, long timestamp) {
+        this(id, studentId, studentName, studentClass, activityTitle, date, timeSlot, subject,
+             subjectTeacher, classTeacher, reason, status, progress, classTeacherStatus, subjectTeacherStatus, timestamp, "Sports");
+    }
+
+    public SpotPass(String id, String studentId, String studentName, String studentClass,
+                    String activityTitle, String date, String timeSlot, String subject,
+                    String subjectTeacher, String classTeacher, String reason, String status,
+                    int progress, String classTeacherStatus, String subjectTeacherStatus, long timestamp, String eventType) {
         this.id = id;
         this.studentId = studentId;
         this.studentName = studentName;
@@ -49,7 +61,11 @@ public class SpotPass implements Serializable {
         this.classTeacherStatus = classTeacherStatus;
         this.subjectTeacherStatus = subjectTeacherStatus;
         this.timestamp = timestamp;
+        this.eventType = eventType != null && !eventType.isEmpty() ? eventType : "Sports";
     }
+
+    public String getEventType() { return eventType != null ? eventType : "Sports"; }
+    public void setEventType(String eventType) { this.eventType = eventType; }
 
     public String getId() { return id != null ? id : ""; }
     public void setId(String id) { this.id = id; }
@@ -62,6 +78,8 @@ public class SpotPass implements Serializable {
 
     public String getStudentClass() { return studentClass != null ? studentClass : ""; }
     public void setStudentClass(String studentClass) { this.studentClass = studentClass; }
+
+    public String getStudentRoll() { return studentId != null ? studentId : ""; }
 
     public String getActivityTitle() { return activityTitle != null ? activityTitle : "Spot Pass Duty"; }
     public void setActivityTitle(String activityTitle) { this.activityTitle = activityTitle; }
@@ -99,6 +117,26 @@ public class SpotPass implements Serializable {
     public long getTimestamp() { return timestamp; }
     public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
 
+    public boolean isApproved() {
+        if (status == null) return false;
+        String s = status.toLowerCase();
+        return s.contains("approved") || s.contains("granted") || s.contains("accepted");
+    }
+
+    public java.util.List<SpotPassAction> getActionHistory() {
+        if (actionHistory == null) actionHistory = new java.util.ArrayList<>();
+        return actionHistory;
+    }
+
+    public void setActionHistory(java.util.List<SpotPassAction> actionHistory) {
+        this.actionHistory = actionHistory;
+    }
+
+    public void addAction(SpotPassAction action) {
+        if (actionHistory == null) actionHistory = new java.util.ArrayList<>();
+        actionHistory.add(action);
+    }
+
     public JSONObject toJson() {
         try {
             JSONObject obj = new JSONObject();
@@ -118,6 +156,16 @@ public class SpotPass implements Serializable {
             obj.put("classTeacherStatus", classTeacherStatus);
             obj.put("subjectTeacherStatus", subjectTeacherStatus);
             obj.put("timestamp", timestamp);
+            obj.put("eventType", eventType);
+
+            if (actionHistory != null && !actionHistory.isEmpty()) {
+                org.json.JSONArray arr = new org.json.JSONArray();
+                for (SpotPassAction act : actionHistory) {
+                    arr.put(act.toJson());
+                }
+                obj.put("actionHistory", arr);
+            }
+
             return obj;
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,7 +175,7 @@ public class SpotPass implements Serializable {
 
     public static SpotPass fromJson(JSONObject obj) {
         if (obj == null) return null;
-        return new SpotPass(
+        SpotPass pass = new SpotPass(
                 obj.optString("id", ""),
                 obj.optString("studentId", ""),
                 obj.optString("studentName", ""),
@@ -143,7 +191,23 @@ public class SpotPass implements Serializable {
                 obj.optInt("progress", 50),
                 obj.optString("classTeacherStatus", "Pending Review"),
                 obj.optString("subjectTeacherStatus", "Notified of Slot"),
-                obj.optLong("timestamp", System.currentTimeMillis())
+                obj.optLong("timestamp", System.currentTimeMillis()),
+                obj.optString("eventType", "Sports")
         );
+
+        if (obj.has("actionHistory")) {
+            org.json.JSONArray arr = obj.optJSONArray("actionHistory");
+            if (arr != null) {
+                java.util.List<SpotPassAction> history = new java.util.ArrayList<>();
+                for (int i = 0; i < arr.length(); i++) {
+                    JSONObject aObj = arr.optJSONObject(i);
+                    SpotPassAction act = SpotPassAction.fromJson(aObj);
+                    if (act != null) history.add(act);
+                }
+                pass.setActionHistory(history);
+            }
+        }
+
+        return pass;
     }
 }

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Core Neutrals -->
+    <color name="white">#FFFFFFFF</color>
+    <color name="bg_canvas">#FFF0F4F7</color>
+    <color name="charcoal_dark">#FF18191E</color>
+    <color name="text_secondary">#FF707684</color>
+    <color name="text_white">#FFFFFFFF</color>
+    <color name="text_muted">#FF64748B</color>
+    <color name="text_placeholder">#FF94A3B8</color>
+
+    <color name="input_bg">#FFF8FAFC</color>
+    <color name="input_border">#FFE2E8F0</color>
+    <color name="surface_input">#FFF8FAFC</color>
+    <color name="surface_input_stroke">#FFE2E8F0</color>
+    <color name="surface_btn_charcoal">#FF18191E</color>
+    <color name="pill_inactive_bg">#FFEBF0F5</color>
+
+    <!-- Pastel Lilac / Lavender Palette -->
+    <color name="pastel_lavender_surface">#FFF4EFFF</color>
+    <color name="pastel_lavender_primary">#FF7B52DE</color>
+    <color name="pastel_lavender_text">#FF482E92</color>
+    <color name="pastel_lavender_chip">#FFE5DCF9</color>
+    <color name="lavender_subtle">#FFF4EFFF</color>
+    <color name="lavender_dark">#FF482E92</color>
+    <color name="purple_accent">#FF7B52DE</color>
+    <color name="logo_pink">#FF7B52DE</color>
+
+    <!-- Dark Blue / Indigo Palette -->
+    <color name="pastel_mint_bg">#FFE0E7FF</color>
+    <color name="pastel_mint_border">#FFC7D2FE</color>
+    <color name="pastel_mint_primary">#FF1D4ED8</color>
+    <color name="pastel_mint_text">#FF1E3A8A</color>
+    <color name="pastel_mint_chip">#FFE0E7FF</color>
+
+    <!-- Pastel Butter / Warm Yellow Palette -->
+    <color name="pastel_butter_bg">#FFFFF2CE</color>
+    <color name="pastel_butter_border">#FFFFE49E</color>
+    <color name="pastel_butter_primary">#FFD97706</color>
+    <color name="pastel_butter_text">#FF8C4B06</color>
+    <color name="pastel_butter_chip">#FFFFE8A8</color>
+
+        <color name="bg">#F6F7FB</color>
+        <color name="ink">#17171C</color>
+        <color name="muted">#5C5F6B</color>
+        <color name="muted_strong">#4A4D5A</color>
+        <color name="accent">#5A3FC0</color>
+        <color name="accent_ring">#C7B0F7</color>
+        <color name="ring_track">#3A3A42</color>
+        <color name="card_lavender">#E4D7FB</color>
+        <color name="card_periwinkle">#E1E2FA</color>
+        <color name="card_teal">#FFE0E7FF</color>
+        <color name="card_dark">#1E1E22</color>
+        <color name="chip_light">#EEF0F5</color>
+        <color name="tile">#F1F2F7</color>
+        <color name="divider">#EEF0F5</color>
+        <color name="stroke">#E3E5EC</color>
+        <color name="outline">#D5D8E2</color>
+        <color name="yellow">#FBE7A0</color>
+        <color name="yellow_dot">#F0CE55</color>
+        <color name="green">#FF1D4ED8</color>
+        <color name="amber">#C98A00</color>
+        <color name="red">#E5484D</color>
+        <color name="peach">#F7C9A9</color>
+        <color name="on_dark">#D4D5DE</color>
+        <color name="on_dark_muted">#C2C4D0</color>
+        <color name="on_teal_muted">#FF1E3A8A</color>
+        <color name="on_periwinkle_muted">#3A3D55</color>
+        <color name="coral">#E5484D</color>
+        <color name="chip_red_bg">#FEE2E2</color>
+        <color name="chip_red_text">#B91C1C</color>
+        <color name="chip_yellow_bg">#FEF3C7</color>
+        <color name="chip_yellow_text">#B45309</color>
+        <color name="chip_green_bg">#DCFCE7</color>
+        <color name="chip_green_text">#15803D</color>
+        <color name="track_white">#BFFFFFFF</color>
+</resources>

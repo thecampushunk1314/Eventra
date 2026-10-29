@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/splashRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_splash_gradient"
+    android:fitsSystemWindows="true">
+
+    <!-- Center Content: Logo + Branding -->
+    <LinearLayout
+        android:id="@+id/layoutCenterBrand"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp">
+
+        <!-- Logo Container with Soft Glow Effect -->
+        <FrameLayout
+            android:id="@+id/cardLogoContainer"
+            android:layout_width="168dp"
+            android:layout_height="168dp"
+            android:padding="4dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardBackgroundColor="#00000000"
+                app:cardCornerRadius="36dp"
+                app:cardElevation="0dp">
+
+                <ImageView
+                    android:id="@+id/ivSplashLogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="Eventra App Logo"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/app_logo" />
+            </androidx.cardview.widget.CardView>
+        </FrameLayout>
+
+        <!-- Main Title -->
+        <TextView
+            android:id="@+id/tvSplashTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:letterSpacing="-0.03"
+            android:text="Eventra"
+            android:textColor="#FFFFFF"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+        <!-- Institutional Stream Subtitle -->
+
+        <!-- Academic Streams Pill -->
+    </LinearLayout>
+
+    <!-- Bottom Section: Loading Indicator & Campus Accreditation -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="36dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="32dp">
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/splashProgress"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            app:indicatorColor="#7B52DE"
+            app:trackColor="#1E293B"
+            app:trackCornerRadius="4dp"
+            app:trackThickness="4dp" />
+
+        <TextView
+            android:id="@+id/tvSplashStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:letterSpacing="0.06"
+            android:text="AUTHENTICATING . . ."
+            android:textColor="#64748B"
+            android:textSize="10.5sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</RelativeLayout>

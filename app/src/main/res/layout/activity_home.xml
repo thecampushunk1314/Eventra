@@ -1,0 +1,1480 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    tools:context=".HomeActivity">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp">
+
+            <!-- ============ Header ============ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/headerProfileSection"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvHeaderAvatar"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/bg_avatar_peach"
+                        android:gravity="center"
+                        android:text="@string/avatar_initials"
+                        android:textColor="@color/ink"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvHeaderStudentName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/student_name"
+                            android:textColor="@color/ink"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp">
+
+                    <ImageButton
+                        android:id="@+id/btnNotifications"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_icon_button"
+                        android:contentDescription="@string/cd_notifications"
+                        android:padding="12dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_bell"
+                        app:tint="@color/ink" />
+
+                    <View
+                        android:id="@+id/badgeNotificationDot"
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:layout_gravity="top|end"
+                        android:layout_marginTop="9dp"
+                        android:layout_marginEnd="9dp"
+                        android:background="@drawable/bg_dot_red"
+                        android:importantForAccessibility="no" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- ============ Principal Administrator Dashboard ============ -->
+            <LinearLayout
+                android:id="@+id/layoutPrincipalDashboard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- Principal Executive Card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_card_lavender"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="🏛️ PRINCIPAL EXECUTIVE OFFICE"
+                            android:textColor="@color/pastel_lavender_text"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_chip_mint"
+                            android:paddingStart="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="3dp"
+                            android:text="Authority"
+                            android:textColor="@color/pastel_mint_text"
+                            android:textSize="10.5sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Yashoda College of Arts, Science and Commerce"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="3 Degree Streams • 45 Students • 11 Faculty &amp; Staff"
+                        android:textColor="@color/text_muted"
+                        android:textSize="11.5sp" />
+                </LinearLayout>
+
+                <!-- Principal Quick Action Grid (2x2 Balanced) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrincipalAddFaculty"
+                        style="@style/Widget.Eventra.Button.Pill"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/charcoal_dark"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="👩‍🏫 + Faculty"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrincipalEnrollStudent"
+                        style="@style/Widget.Eventra.Button.Pill"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/charcoal_dark"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="👨‍🎓 + Student"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrincipalUploadNotice"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/pastel_lavender_surface"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="📢 Notice Board"
+                        android:textAllCaps="false"
+                        android:textColor="@color/pastel_lavender_text"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrincipalRequests"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/white"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="📁 Requests"
+                        android:textAllCaps="false"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp"
+                        app:icon="@drawable/ic_file"
+                        app:iconGravity="textStart"
+                        app:iconPadding="6dp"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/charcoal_dark"
+                        app:strokeColor="@color/outline" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrincipalMonthlyRegister"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/white"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="📊 Attendance Register"
+                        android:textAllCaps="false"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp"
+                        app:strokeColor="@color/outline" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrincipalEventsAndPractice"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/pastel_lavender_surface"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="🏟️ Events &amp; Practice"
+                        android:textAllCaps="false"
+                        android:textColor="@color/pastel_lavender_text"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+                </LinearLayout>
+
+                <!-- Appoint Event Incharge & Multi-Day Camp (Principal Executive Action) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPrincipalAppointIncharge"
+                    style="@style/Widget.Eventra.Button.Pill"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="12dp"
+                    android:backgroundTint="@color/charcoal_dark"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="🏆 Appoint Event Incharge &amp; Multi-Day Camp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="16dp" />
+
+                <!-- Institutional Records Card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_card_white"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Header -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@drawable/ic_file"
+                            app:tint="@color/charcoal_dark" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:text="Institutional Records"
+                            android:textColor="@color/charcoal_dark"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <!-- Switch Tabs: Students vs Faculty -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_input_box"
+                            android:orientation="horizontal"
+                            android:padding="3dp">
+
+                            <TextView
+                                android:id="@+id/tabRecordStudents"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_chip_selected_charcoal"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:paddingStart="12dp"
+                                android:paddingTop="6dp"
+                                android:paddingEnd="12dp"
+                                android:paddingBottom="6dp"
+                                android:text="Students"
+                                android:textColor="@color/white"
+                                android:textSize="11.5sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tabRecordTeachers"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_chip_unselected_white"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:paddingStart="12dp"
+                                android:paddingTop="6dp"
+                                android:paddingEnd="12dp"
+                                android:paddingBottom="6dp"
+                                android:text="Faculty"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="11.5sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Student Filter Section -->
+                    <LinearLayout
+                        android:id="@+id/layoutStudentFilterSection"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <!-- Stream Filter Dropdown -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="STREAM"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <Spinner
+                                    android:id="@+id/spinnerRecordStream"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="44dp"
+                                    android:layout_marginTop="4dp"
+                                    android:background="@drawable/bg_input_box" />
+                            </LinearLayout>
+
+                            <!-- Subject Filter Dropdown -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="SUBJECT"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <Spinner
+                                    android:id="@+id/spinnerRecordSubject"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="44dp"
+                                    android:layout_marginTop="4dp"
+                                    android:background="@drawable/bg_input_box" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Attendance Analytics Dashboard for Records -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_card_lavender"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="TOTAL ATTENDANCE OVERVIEW"
+                                android:textColor="@color/pastel_lavender_text"
+                                android:textSize="10.5sp"
+                                android:textStyle="bold" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <!-- Avg Attendance -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/tvRecordAvgAttendance"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="76.4%"
+                                        android:textColor="@color/charcoal_dark"
+                                        android:textSize="20sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Cohort Average"
+                                        android:textColor="@color/text_muted"
+                                        android:textSize="10.5sp" />
+                                </LinearLayout>
+
+                                <!-- Below 70% Alert -->
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="6dp"
+                                    android:background="@drawable/bg_chip_red"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal"
+                                    android:paddingStart="10dp"
+                                    android:paddingTop="5dp"
+                                    android:paddingEnd="10dp"
+                                    android:paddingBottom="5dp">
+
+                                    <TextView
+                                        android:id="@+id/tvRecordBelow70Count"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="⚠️ 5 Below 70%"
+                                        android:textColor="@color/chip_red_text"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <!-- Safe >= 70% -->
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_chip_green"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal"
+                                    android:paddingStart="10dp"
+                                    android:paddingTop="5dp"
+                                    android:paddingEnd="10dp"
+                                    android:paddingBottom="5dp">
+
+                                    <TextView
+                                        android:id="@+id/tvRecordSafeCount"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="✅ 10 Safe"
+                                        android:textColor="@color/chip_green_text"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvStudentsRecordCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Enrolled Students (0)"
+                            android:textColor="@color/text_muted"
+                            android:textSize="11.5sp"
+                            android:textStyle="bold" />
+
+                        <!-- Container for dynamic student cards -->
+                        <LinearLayout
+                            android:id="@+id/containerStudentsRecords"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="vertical" />
+                    </LinearLayout>
+
+                    <!-- Teacher Filter Section -->
+                    <LinearLayout
+                        android:id="@+id/layoutTeacherFilterSection"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TEACHING SUBJECT / DEPARTMENT"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
+
+                        <Spinner
+                            android:id="@+id/spinnerRecordTeacherSubject"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@drawable/bg_input_box" />
+
+                        <!-- Faculty Allocation Summary Card -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_card_lavender"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="FACULTY STREAM ALLOCATION"
+                                android:textColor="@color/pastel_lavender_text"
+                                android:textSize="10.5sp"
+                                android:textStyle="bold" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="🧪 Science: 4"
+                                    android:textColor="@color/charcoal_dark"
+                                    android:textSize="11.5sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="📈 Commerce: 3"
+                                    android:textColor="@color/charcoal_dark"
+                                    android:textSize="11.5sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="🎨 Arts: 3"
+                                    android:textColor="@color/charcoal_dark"
+                                    android:textSize="11.5sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="🏛️ Admin: 1"
+                                    android:textColor="@color/charcoal_dark"
+                                    android:textSize="11.5sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvTeachersRecordCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Faculty &amp; Staff (0)"
+                            android:textColor="@color/text_muted"
+                            android:textSize="11.5sp"
+                            android:textStyle="bold" />
+
+                        <!-- Container for dynamic teacher cards -->
+                        <LinearLayout
+                            android:id="@+id/containerTeachersRecords"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="vertical" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- ============ Teacher / Faculty Dashboard ============ -->
+            <LinearLayout
+                android:id="@+id/layoutTeacherDashboard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- Faculty Hero Banner -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_card_lavender"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="👩‍🏫 FACULTY ACADEMIC AUTHORITY"
+                            android:textColor="@color/pastel_lavender_text"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvTeacherDeptBadge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_chip_mint"
+                            android:paddingStart="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="3dp"
+                            android:text="Faculty"
+                            android:textColor="@color/pastel_mint_text"
+                            android:textSize="10.5sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvTeacherHeroName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Faculty Classroom Dashboard"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvTeacherHeroMeta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Review spot passes, manage student enrollment &amp; publish official circulars."
+                        android:textColor="@color/text_muted"
+                        android:textSize="11.5sp" />
+                </LinearLayout>
+
+                <!-- Teacher Quick Action Grid (2x2 Balanced) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTeacherAddStudent"
+                        style="@style/Widget.Eventra.Button.Pill"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/charcoal_dark"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="👨‍🎓 + Student"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTeacherReviewRequests"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/white"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="📁 Requests"
+                        android:textAllCaps="false"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp"
+                        app:icon="@drawable/ic_file"
+                        app:iconGravity="textStart"
+                        app:iconPadding="6dp"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/charcoal_dark"
+                        app:strokeColor="@color/outline" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTeacherNoticeAction"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/pastel_lavender_surface"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="📢 Notice Board"
+                        android:textAllCaps="false"
+                        android:textColor="@color/pastel_lavender_text"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTeacherInterchangeLectures"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/pastel_mint_bg"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="⚡ Swap Lecture"
+                        android:textAllCaps="false"
+                        android:textColor="@color/pastel_mint_text"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+                </LinearLayout>
+
+                <!-- Monthly Attendance & Events Actions -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTeacherMonthlyRegister"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/white"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="📊 Attendance"
+                        android:textAllCaps="false"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp"
+                        app:icon="@drawable/ic_file"
+                        app:iconGravity="textStart"
+                        app:iconPadding="6dp"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/charcoal_dark"
+                        app:strokeColor="@color/outline" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTeacherEventsAndPractice"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/pastel_lavender_surface"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="🏟️ Events &amp; Practice"
+                        android:textAllCaps="false"
+                        android:textColor="@color/pastel_lavender_text"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="16dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ============ Hero attendance card ============ -->
+            <LinearLayout
+                android:id="@+id/layoutStudentHero"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_card_lavender"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxWidth="250dp"
+                    android:text="@string/hero_title"
+                    android:textColor="@color/ink"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_card_dark"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="18dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvAttendanceValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/attendance_value"
+                            android:textColor="@color/white"
+                            android:textSize="36sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/attendance_label"
+                            android:textColor="@color/on_dark"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvAttendanceBreakdown"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/attendance_breakdown"
+                            android:textColor="@color/on_dark_muted"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <FrameLayout
+                            android:layout_width="84dp"
+                            android:layout_height="84dp">
+
+                            <com.google.android.material.progressindicator.CircularProgressIndicator
+                                android:id="@+id/ringAttendance"
+                                android:layout_width="84dp"
+                                android:layout_height="84dp"
+                                android:max="100"
+                                android:progress="82"
+                                app:indicatorColor="@color/accent_ring"
+                                app:indicatorSize="84dp"
+                                app:trackColor="@color/ring_track"
+                                app:trackCornerRadius="5dp"
+                                app:trackThickness="9dp" />
+
+                            <TextView
+                                android:id="@+id/tvAttendanceStatus"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="@string/attendance_safe"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="@string/attendance_minimum"
+                            android:textColor="@color/on_dark_muted"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ============ Student Quick actions ============ -->
+            <LinearLayout
+                android:id="@+id/layoutStudentQuickActions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnNewSpotPass"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="@string/new_spot_pass"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/ink"
+                    app:cornerRadius="18dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPermission"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="@string/permission"
+                    android:textColor="@color/ink"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/white"
+                    app:cornerRadius="18dp"
+                    app:icon="@drawable/ic_file"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
+                    app:iconSize="18dp"
+                    app:iconTint="@color/ink"
+                    app:strokeColor="@color/outline" />
+            </LinearLayout>
+
+            <!-- ============ This week ============ -->
+            <LinearLayout
+                android:id="@+id/layoutStudentWeek"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/this_week"
+                    android:textColor="@color/ink"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/linkOpenCalendar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:minHeight="48dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/open_calendar"
+                    android:textColor="@color/accent"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card_white"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvCalendarMonthTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="October 2026 • Academic Week 8"
+                        android:textColor="@color/charcoal_dark"
+                        android:textSize="13.5sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_chip_white"
+                        android:backgroundTint="#F1F5F9"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:text="Semester I"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Mon -->
+                    <LinearLayout
+                        android:id="@+id/dayMon"
+                        android:layout_width="0dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_day_default"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/day_mon"
+                            android:textColor="@color/muted_strong"
+                            android:textSize="10.5sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="@string/date_19"
+                            android:textColor="@color/ink"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Tue (duty leave) -->
+                    <LinearLayout
+                        android:id="@+id/dayTue"
+                        android:layout_width="0dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_day_yellow"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/day_tue"
+                            android:textColor="@color/muted_strong"
+                            android:textSize="10.5sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="@string/date_20"
+                            android:textColor="@color/ink"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Wed (today) -->
+                    <LinearLayout
+                        android:id="@+id/dayWed"
+                        android:layout_width="0dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_day_today"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/day_wed"
+                            android:textColor="@color/on_dark"
+                            android:textSize="10.5sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="@string/date_21"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Thu (practice) -->
+                    <LinearLayout
+                        android:id="@+id/dayThu"
+                        android:layout_width="0dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_day_yellow"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/day_thu"
+                            android:textColor="@color/muted_strong"
+                            android:textSize="10.5sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="@string/date_22"
+                            android:textColor="@color/ink"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Fri -->
+                    <LinearLayout
+                        android:id="@+id/dayFri"
+                        android:layout_width="0dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_day_default"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/day_fri"
+                            android:textColor="@color/muted_strong"
+                            android:textSize="10.5sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="@string/date_23"
+                            android:textColor="@color/ink"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Sat (event) -->
+                    <LinearLayout
+                        android:id="@+id/daySat"
+                        android:layout_width="0dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_day_yellow"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/day_sat"
+                            android:textColor="@color/muted_strong"
+                            android:textSize="10.5sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="@string/date_24"
+                            android:textColor="@color/ink"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Sun -->
+                    <LinearLayout
+                        android:id="@+id/daySun"
+                        android:layout_width="0dp"
+                        android:layout_height="82dp"
+                        android:layout_marginHorizontal="2.5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_day_default"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/day_sun"
+                            android:textColor="@color/muted_strong"
+                            android:textSize="10.5sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="@string/date_25"
+                            android:textColor="@color/ink"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/dot_ink"
+                        android:drawablePadding="6dp"
+                        android:gravity="center_vertical"
+                        android:text="@string/legend_today"
+                        android:textColor="@color/muted_strong"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:drawableStart="@drawable/dot_yellow"
+                        android:drawablePadding="6dp"
+                        android:gravity="center_vertical"
+                        android:text="@string/legend_duty"
+                        android:textColor="@color/muted_strong"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ============ Latest circulation notice ============ -->
+            <LinearLayout
+                android:id="@+id/cardNotice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_card_notice"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingTop="14dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="14dp">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_tile_lavender"
+                    android:importantForAccessibility="no"
+                    android:padding="11dp"
+                    android:src="@drawable/ic_chat"
+                    app:tint="@color/ink" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvNoticeCardTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/notice_title"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvNoticeCardMeta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/notice_meta"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:background="@drawable/bg_dot_accent"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- ============ Bottom navigation ============ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_nav_pill"
+            android:orientation="horizontal"
+            android:paddingStart="10dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="8dp">
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/navHome"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_circle_white"
+                    android:contentDescription="@string/nav_home"
+                    android:padding="13dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_home"
+                    app:tint="@color/ink" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/navRequests"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_circle_transparent"
+                    android:contentDescription="@string/nav_requests"
+                    android:padding="13dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_file"
+                    app:tint="@color/white" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/navProfile"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_circle_transparent"
+                    android:contentDescription="@string/nav_profile"
+                    android:padding="13dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_profile"
+                    app:tint="@color/white" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

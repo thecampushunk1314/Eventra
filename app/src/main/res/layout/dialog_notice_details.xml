@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_card_white"
+    android:orientation="vertical"
+    android:padding="22dp">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/bg_tile_lavender"
+            android:padding="9dp"
+            android:src="@drawable/ic_chat"
+            app:tint="@color/charcoal_dark" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Official Notice"
+                android:textColor="@color/charcoal_dark"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvNoticeDetailAuthor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dr. Shashikant V. Mayekar (Principal)"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvNoticeDetailCategoryBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_chip_mint"
+            android:paddingStart="10dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="4dp"
+            android:text="Sports"
+            android:textColor="@color/pastel_mint_text"
+            android:textSize="10.5sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/divider" />
+
+    <TextView
+        android:id="@+id/tvNoticeDetailTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Annual Sports Meet &amp; Inter-College Athletic Trials"
+        android:textColor="@color/charcoal_dark"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvNoticeDetailDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Issued: Wed, 21 Oct 2026 • Target: All Students &amp; Faculty"
+        android:textColor="@color/text_muted"
+        android:textSize="11.5sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/bg_input_box"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvNoticeDetailContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="4dp"
+            android:text="All students and faculty members are hereby notified that the Annual Inter-College Athletic trials will be conducted on the Main Sports Ground..."
+            android:textColor="@color/charcoal_dark"
+            android:textSize="13.5sp" />
+    </LinearLayout>
+
+    <!-- Cc Notice Meeting Outcomes Card -->
+    <LinearLayout
+        android:id="@+id/layoutNoticeCcSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_card_lavender"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🏛️ CC HIGHER AUTHORITY (PRINCIPAL)"
+                android:textColor="@color/pastel_lavender_text"
+                android:textSize="10.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvNoticeCcStatusBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chip_mint"
+                android:paddingStart="8dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="3dp"
+                android:text="Acknowledged"
+                android:textColor="@color/pastel_mint_text"
+                android:textSize="10.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvNoticeMeetingOutcomes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Meeting outcomes and co-curricular duty leaves recorded."
+            android:textColor="@color/charcoal_dark"
+            android:textSize="12sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAcknowledgeNotice"
+            style="@style/Widget.Eventra.Button.Pill"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/charcoal_dark"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="✍️ Acknowledge &amp; Sign Off Notice"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="12.5sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Staff Management Controls: Edit and Delete (Teachers & Principal) -->
+    <LinearLayout
+        android:id="@+id/layoutNoticeStaffActions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEditNoticeDetail"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="✏️ Edit Notice"
+            android:textAllCaps="false"
+            android:textColor="@color/charcoal_dark"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:cornerRadius="16dp"
+            app:strokeColor="@color/outline" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDeleteNoticeDetail"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="6dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="🗑️ Remove"
+            android:textAllCaps="false"
+            android:textColor="@color/coral"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:cornerRadius="16dp"
+            app:strokeColor="@color/coral" />
+    </LinearLayout>
+
+    <!-- Additional helper: View all notices -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnViewAllNotices"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_marginTop="6dp"
+        android:text="📋 View All Notices Board"
+        android:textAllCaps="false"
+        android:textColor="@color/pastel_lavender_text"
+        android:textSize="12.5sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCloseNoticeDetail"
+        style="@style/Widget.Eventra.Button.Pill"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@color/charcoal_dark"
+        android:text="Close Notice"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:cornerRadius="18dp" />
+
+</LinearLayout>
