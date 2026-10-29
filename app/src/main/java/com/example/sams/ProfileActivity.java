@@ -323,7 +323,7 @@ public class ProfileActivity extends AppCompatActivity {
         if (containerPrincipalStudentsMinimal == null) return;
         containerPrincipalStudentsMinimal.removeAllViews();
 
-        List<User> allStudents = userManager.getStudents();
+        List<User> allStudents = userManager.getStudentsForUser(currentUser);
         List<User> filteredList = new ArrayList<>();
 
         for (User s : allStudents) {

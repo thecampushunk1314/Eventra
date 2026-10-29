@@ -151,12 +151,12 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(tvInfo);
 
         EditText etNew = new EditText(this);
-        etNew.setHint("New Personal Password *");
+        etNew.setHint("New Personal Password");
         etNew.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         layout.addView(etNew);
 
         EditText etConfirm = new EditText(this);
-        etConfirm.setHint("Confirm New Password *");
+        etConfirm.setHint("Confirm New Password");
         etConfirm.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         layout.addView(etConfirm);
 
@@ -207,19 +207,19 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(tvInfo);
 
         EditText etPhone = new EditText(this);
-        etPhone.setHint("Phone Number *");
+        etPhone.setHint("Phone Number");
         etPhone.setInputType(InputType.TYPE_CLASS_PHONE);
         if (user.getPhoneNumber() != null) etPhone.setText(user.getPhoneNumber());
         layout.addView(etPhone);
 
         EditText etAddress = new EditText(this);
-        etAddress.setHint("Residential Address *");
+        etAddress.setHint("Residential Address");
         etAddress.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);
         if (user.getAddress() != null) etAddress.setText(user.getAddress());
         layout.addView(etAddress);
 
         EditText etDob = new EditText(this);
-        etDob.setHint("Date of Birth (DD/MM/YYYY) *");
+        etDob.setHint("Date of Birth (DD/MM/YYYY)");
         if (user.getDob() != null) etDob.setText(user.getDob());
         layout.addView(etDob);
 

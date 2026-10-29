@@ -169,7 +169,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="OFFICIAL NOTICE CONTENT *"
+                android:text="OFFICIAL NOTICE CONTENT"
                 android:textColor="@color/text_secondary"
                 android:textSize="11sp"
                 android:textStyle="bold" />

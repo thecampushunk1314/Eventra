@@ -23,7 +23,7 @@ public class User implements Serializable {
     private String programme;
     private String additionalInfo; // e.g., Semester/Year for student, Designation/Course for teacher
     private String phoneNumber;
-    private String institutionType; // University, College, Higher Secondary, School
+    private String institutionType; // University, College, Higher Secondary
     private String dob; // e.g., "14/05/2008"
     private String yearOrClass; // e.g. "11th Standard", "2nd Year / Batch 2026"
     private String degree; // e.g. "MCA", "B.Tech", "Higher Secondary Certificate"
@@ -188,7 +188,7 @@ public class User implements Serializable {
     }
 
     public boolean isTeacherOrDirector() {
-        return ROLE_TEACHER.equals(role) || ROLE_PROGRAMME_DIRECTOR.equals(role) || isPrincipal();
+        return ROLE_TEACHER.equals(role) || ROLE_PROGRAMME_DIRECTOR.equals(role) || ROLE_EVENT_COORDINATOR.equals(role) || isPrincipal();
     }
 
     public boolean isPrincipal() {
@@ -214,6 +214,8 @@ public class User implements Serializable {
     public String getRoleDisplayName() {
         if (isPrincipal()) {
             return "Principal / Admin";
+        } else if (isEventCoordinatorOrIncharge()) {
+            return "Event Incharge";
         } else if (ROLE_STUDENT.equals(role)) {
             return "Student";
         } else if (ROLE_ORGANIZER.equals(role)) {
@@ -272,6 +274,135 @@ public class User implements Serializable {
 
     public boolean isAttendanceSafe() {
         return attendancePercentage >= 75.0;
+    }
+
+    public boolean isHOD() {
+        if (additionalInfo != null && additionalInfo.toUpperCase().contains("HOD")) return true;
+        if (yearOrClass != null && yearOrClass.toUpperCase().contains("HOD")) return true;
+        if (programme != null && programme.toUpperCase().contains("HOD")) return true;
+        if (email != null && email.toLowerCase().startsWith("hod.")) return true;
+        return false;
+    }
+
+    /**
+     * Identifies the academic stream of this user: "Science", "Commerce", or "Arts".
+     */
+    public String getStream() {
+        if (department != null && !department.isEmpty()) {
+            String d = department.toLowerCase();
+            if (d.contains("science") || d.contains("sci")) return "Science";
+            if (d.contains("commerce") || d.contains("com")) return "Commerce";
+            if (d.contains("arts") || d.contains("art")) return "Arts";
+        }
+        if (degree != null && !degree.isEmpty()) {
+            String dg = degree.toLowerCase();
+            if (dg.contains("b.sc") || dg.contains("science")) return "Science";
+            if (dg.contains("b.com") || dg.contains("commerce")) return "Commerce";
+            if (dg.contains("b.a") || dg.contains("arts")) return "Arts";
+        }
+        if (programme != null && !programme.isEmpty()) {
+            String p = programme.toLowerCase();
+            if (p.contains("b.sc") || p.contains("science")) return "Science";
+            if (p.contains("b.com") || p.contains("commerce")) return "Commerce";
+            if (p.contains("b.a") || p.contains("arts")) return "Arts";
+        }
+        if (id != null) {
+            String upper = id.toUpperCase();
+            if (upper.startsWith("SCI") || upper.contains("-SCI-")) return "Science";
+            if (upper.startsWith("COM") || upper.contains("-COM-")) return "Commerce";
+            if (upper.startsWith("ART") || upper.contains("-ART-")) return "Arts";
+        }
+        if (additionalInfo != null) {
+            String info = additionalInfo.toLowerCase();
+            if (info.contains("science")) return "Science";
+            if (info.contains("commerce")) return "Commerce";
+            if (info.contains("arts")) return "Arts";
+        }
+        return "";
+    }
+
+    /**
+     * Determines whether this faculty/HOD can access the given student.
+     * Principal has full visibility; Teachers and HODs only see students from their own stream.
+     */
+    public boolean canAccessStudent(User student) {
+        if (student == null) return false;
+        if (isPrincipal()) return true;
+        if (isTeacherOrDirector() || isHOD()) {
+            String myStream = getStream();
+            if (myStream.isEmpty()) return true;
+            String studentStream = student.getStream();
+            return myStream.equalsIgnoreCase(studentStream);
+        }
+        return this.id != null && this.id.equals(student.getId());
+    }
+
+    /**
+     * Returns true if this user holds an Event Incharge, Sports Director, Coach, or Coordinator designation.
+     */
+    public boolean isEventCoordinatorOrIncharge() {
+        if (ROLE_EVENT_COORDINATOR.equalsIgnoreCase(role) || ROLE_ORGANIZER.equalsIgnoreCase(role)) {
+            return true;
+        }
+        if (additionalInfo != null) {
+            String info = additionalInfo.toLowerCase();
+            if (info.contains("coordinator") || info.contains("incharge") || info.contains("in-charge") ||
+                info.contains("coach") || info.contains("sports director")) {
+                return true;
+            }
+        }
+        if (yearOrClass != null) {
+            String yc = yearOrClass.toLowerCase();
+            if (yc.contains("coordinator") || yc.contains("incharge") || yc.contains("coach")) {
+                return true;
+            }
+        }
+        if (department != null && department.toLowerCase().contains("sports")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if this user is the designated coordinator or incharge for a specific practice session or event.
+     */
+    public boolean isCoordinatorForSession(PracticeSession session, Event event) {
+        if (session == null && event == null) return false;
+        if (ROLE_EVENT_COORDINATOR.equalsIgnoreCase(role) || ROLE_ORGANIZER.equalsIgnoreCase(role)) {
+            if (degree != null && !degree.isEmpty()) {
+                if (session != null && degree.equalsIgnoreCase(session.getEventId())) return true;
+                if (event != null && degree.equalsIgnoreCase(event.getId())) return true;
+            }
+            if (programme != null && !programme.isEmpty()) {
+                if (session != null && session.getEventName() != null && programme.toLowerCase().contains(session.getEventName().toLowerCase())) return true;
+                if (event != null && event.getName() != null && programme.toLowerCase().contains(event.getName().toLowerCase())) return true;
+            }
+            if (additionalInfo != null && !additionalInfo.isEmpty()) {
+                if (session != null && session.getEventName() != null && additionalInfo.toLowerCase().contains(session.getEventName().toLowerCase())) return true;
+                if (event != null && event.getName() != null && additionalInfo.toLowerCase().contains(event.getName().toLowerCase())) return true;
+            }
+            return true;
+        }
+        String myName = fullName != null ? fullName.trim().toLowerCase() : "";
+        if (!myName.isEmpty()) {
+            String cleanMy = myName.replace("coach", "").replace("dr.", "").replace("prof.", "")
+                    .replace("(event incharge)", "").replace("(student event incharge)", "").replace("(faculty event incharge)", "").trim();
+            if (session != null && session.getCoachName() != null) {
+                String coach = session.getCoachName().trim().toLowerCase();
+                String cleanCoach = coach.replace("coach", "").replace("dr.", "").replace("prof.", "").trim();
+                if (coach.contains(myName) || coach.contains(cleanMy) || myName.contains(cleanCoach) || cleanMy.contains(cleanCoach)) {
+                    return true;
+                }
+            }
+            if (event != null && event.getCoordinatorName() != null) {
+                String coord = event.getCoordinatorName().trim().toLowerCase();
+                String cleanCoord = coord.replace("coach", "").replace("dr.", "").replace("prof.", "").trim();
+                if (coord.contains(myName) || coord.contains(cleanMy) || myName.contains(cleanCoord) || cleanMy.contains(cleanCoord)) {
+                    return true;
+                }
+            }
+        }
+        return isEventCoordinatorOrIncharge();
     }
 
     public String getAttendanceStatusBadgeText() {

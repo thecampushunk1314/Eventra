@@ -144,6 +144,16 @@ public class EventManager {
         saveEvents(list);
     }
 
+    public synchronized Event getEventById(String eventId) {
+        if (eventId == null) return null;
+        for (Event e : getAllEvents()) {
+            if (eventId.equalsIgnoreCase(e.getId())) {
+                return e;
+            }
+        }
+        return null;
+    }
+
     public synchronized List<PracticeSession> getAllPracticeSessions() {
         List<PracticeSession> list = new ArrayList<>();
         String json = prefs.getString(KEY_SESSIONS, "[]");

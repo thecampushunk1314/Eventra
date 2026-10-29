@@ -294,6 +294,23 @@
                         app:cornerRadius="16dp" />
                 </LinearLayout>
 
+                <!-- Appoint Event Incharge & Multi-Day Camp (Principal Executive Action) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPrincipalAppointIncharge"
+                    style="@style/Widget.Eventra.Button.Pill"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="12dp"
+                    android:backgroundTint="@color/charcoal_dark"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="🏆 Appoint Event Incharge &amp; Multi-Day Camp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="16dp" />
+
                 <!-- Institutional Records Card -->
                 <LinearLayout
                     android:layout_width="match_parent"

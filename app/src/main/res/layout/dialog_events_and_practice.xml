@@ -106,21 +106,46 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Close button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnCloseEventsDialog"
-        style="@style/Widget.Eventra.Button.Pill"
+    <!-- Action buttons -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:backgroundTint="@color/charcoal_dark"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:text="Close"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="13.5sp"
-        android:textStyle="bold"
-        app:cornerRadius="14dp" />
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAppointInchargeInDialog"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1.4"
+            android:backgroundTint="@color/pastel_lavender_surface"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="🏆 Appoint Incharge"
+            android:textAllCaps="false"
+            android:textColor="@color/pastel_lavender_text"
+            android:textSize="12.5sp"
+            android:textStyle="bold"
+            app:cornerRadius="14dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCloseEventsDialog"
+            style="@style/Widget.Eventra.Button.Pill"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/charcoal_dark"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Close"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="13.5sp"
+            android:textStyle="bold"
+            app:cornerRadius="14dp" />
+    </LinearLayout>
 
 </LinearLayout>

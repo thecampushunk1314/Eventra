@@ -317,6 +317,56 @@ public class UserManager {
                 "Examination Logistics, University Transcripts, Institutional Records"
         ));
 
+        // 6. Sports Department & Event Incharges / Coordinators
+        list.add(new User(
+                "COACH-101",
+                "Coach Rajesh Parab",
+                "rajesh.parab@ycasc.com",
+                "9823000016",
+                User.ROLE_EVENT_COORDINATOR,
+                "Physical Education & Sports",
+                "Collegiate Sports Directorate",
+                "Head Coach & Inter-Collegiate Football Coordinator",
+                "9823000016",
+                User.INSTITUTION_COLLEGE,
+                "15/04/1983",
+                "Event Incharge & Head Coach",
+                "M.P.Ed (Master of Physical Education), NIS Certified",
+                "Physical Education, Football, Athletics, Field Drills"
+        ));
+        list.add(new User(
+                "SPORTS-DIR-101",
+                "Maria Rodrigues",
+                "sports.director@ycasc.com",
+                "9823000017",
+                User.ROLE_EVENT_COORDINATOR,
+                "Physical Education & Sports",
+                "Collegiate Sports Directorate",
+                "Sports Director & Annual Athletics Incharge",
+                "9823000017",
+                User.INSTITUTION_COLLEGE,
+                "20/09/1980",
+                "Sports Director & Event Incharge",
+                "Ph.D in Sports Science & Physical Training",
+                "Athletics, Track & Field, Sports Administration"
+        ));
+        list.add(new User(
+                "T-ART-HOD",
+                "Dr. Meenakshi Sundaram",
+                "meenakshi.sundaram@ycasc.com",
+                "9823000012",
+                User.ROLE_TEACHER,
+                "Arts",
+                "Bachelor of Arts (B.A.)",
+                "HOD Arts & Cultural Incharge",
+                "9823000012",
+                User.INSTITUTION_COLLEGE,
+                "14/07/1979",
+                "HOD Arts",
+                "Ph.D in Performing Arts & Literature",
+                "Drama, Literature, Performing Arts, Cultural Studies"
+        ));
+
         // =========================================================================
         // STUDENTS DEMO DATA: EXACTLY 15 STUDENTS PER STREAM (TOTAL 45 STUDENTS)
         // Realistic Random Attendance: Some below 70% (defaulter), some borderline, rest above 75%
@@ -387,6 +437,28 @@ public class UserManager {
         return students;
     }
 
+    /**
+     * Returns student roster filtered by the viewer's role and stream.
+     * Principals see all students; Teachers and HODs only see students from their own stream.
+     */
+    public synchronized List<User> getStudentsForUser(User viewer) {
+        List<User> all = getStudents();
+        if (viewer == null || viewer.isPrincipal()) {
+            return all;
+        }
+        String viewerStream = viewer.getStream();
+        if (viewerStream.isEmpty()) {
+            return all;
+        }
+        List<User> filtered = new ArrayList<>();
+        for (User u : all) {
+            if (viewer.canAccessStudent(u)) {
+                filtered.add(u);
+            }
+        }
+        return filtered;
+    }
+
     public synchronized List<User> getFacultyAndStaff() {
         List<User> faculty = new ArrayList<>();
         for (User u : getAllUsers()) {
@@ -398,7 +470,12 @@ public class UserManager {
     }
 
     public synchronized List<User> filterStudents(String stream, String subject) {
+        return filterStudents(getCurrentUser(), stream, subject);
+    }
+
+    public synchronized List<User> filterStudents(User viewer, String stream, String subject) {
         List<User> results = new ArrayList<>();
+        List<User> sourceList = getStudentsForUser(viewer);
         String streamQuery = stream != null ? stream.trim().toLowerCase() : "";
         String subQuery = subject != null ? subject.trim().toLowerCase() : "";
 
@@ -406,7 +483,7 @@ public class UserManager {
                 .replace("b.sc.", "").replace("b.com", "").replace("b.a.", "")
                 .replace("(", "").replace(")", "").trim();
 
-        for (User s : getStudents()) {
+        for (User s : sourceList) {
             boolean streamMatches = true;
             if (!streamKey.isEmpty() && !streamKey.contains("all")) {
                 String sDept = s.getDepartment() != null ? s.getDepartment().toLowerCase() : "";
@@ -1197,6 +1274,14 @@ public class UserManager {
         return null;
     }
 
+    public synchronized User findUserByEmailOrId(String idOrEmail) {
+        if (idOrEmail == null) return null;
+        for (User u : getAllUsers()) {
+            if (idOrEmail.equalsIgnoreCase(u.getId()) || idOrEmail.equalsIgnoreCase(u.getEmail())) return u;
+        }
+        return null;
+    }
+
     public synchronized void setCurrentUser(User user) {
         if (user == null) {
             prefs.edit().remove(KEY_LOGGED_IN_ID).apply();
@@ -1322,5 +1407,76 @@ public class UserManager {
             }
         }
         return false;
+    }
+
+    /**
+     * Provisions a dedicated Event Incharge user account created solely for managing
+     * attendance and permissions for an event.
+     * Can be appointed for a Teacher or a Student.
+     */
+    public synchronized User appointEventIncharge(Event event, User appointedPerson,
+                                                  String inchargeEmail, String inchargePassword,
+                                                  boolean isStudent) {
+        if (event == null || appointedPerson == null) return null;
+
+        String personName = appointedPerson.getFullName();
+        String eventSlug = event.getName().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        if (eventSlug.length() > 8) eventSlug = eventSlug.substring(0, 8);
+        if (eventSlug.isEmpty()) eventSlug = "event";
+
+        String id = "INC-" + (event.getId() != null ? event.getId().replace("EV-", "") : "EV") + "-" + (System.currentTimeMillis() % 10000);
+        String name = personName + (isStudent ? " (Student Event Incharge)" : " (Faculty Event Incharge)");
+
+        String email = inchargeEmail != null && !inchargeEmail.trim().isEmpty() ? inchargeEmail.trim().toLowerCase() : ("incharge." + eventSlug + "@ycasc.com");
+        if (!email.contains("@")) email = email + "@ycasc.com";
+
+        String password = inchargePassword != null && !inchargePassword.trim().isEmpty() ? inchargePassword.trim() : "event123";
+        String designation = isStudent ? ("Student Incharge • " + event.getName()) : ("Faculty Incharge • " + event.getName());
+        String info = "Event Incharge for " + event.getName() + " | Appointed by Principal";
+
+        User inchargeUser = new User(
+                id,
+                name,
+                email,
+                password,
+                User.ROLE_EVENT_COORDINATOR,
+                appointedPerson.getDepartment(),
+                "Event Incharge - " + event.getName(),
+                info,
+                appointedPerson.getPhoneNumber(),
+                User.INSTITUTION_COLLEGE,
+                appointedPerson.getDob() != null ? appointedPerson.getDob() : "01/01/2000",
+                designation,
+                event.getId(), // links to event ID
+                "Ground Roll-Call & Duty Leave Redirection"
+        );
+        inchargeUser.setPasswordChanged(true);
+        inchargeUser.setAddress("Yashoda College Campus, Margao Goa");
+
+        // Check if account already exists with this email or id, update or add
+        List<User> list = getAllUsers();
+        boolean found = false;
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getEmail() != null && list.get(i).getEmail().equalsIgnoreCase(email)) {
+                list.set(i, inchargeUser);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            list.add(inchargeUser);
+        }
+        saveUsers(list);
+        return inchargeUser;
+    }
+
+    public synchronized List<User> getEventIncharges() {
+        List<User> incharges = new ArrayList<>();
+        for (User u : getAllUsers()) {
+            if (u.isEventCoordinatorOrIncharge() || User.ROLE_EVENT_COORDINATOR.equalsIgnoreCase(u.getRole())) {
+                incharges.add(u);
+            }
+        }
+        return incharges;
     }
 }

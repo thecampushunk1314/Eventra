@@ -24,20 +24,27 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import android.widget.CheckBox;
+import android.widget.RadioGroup;
+import android.widget.RadioButton;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class HomeActivity extends AppCompatActivity {
 
     private TextView tvHeaderAvatar;
     private TextView tvHeaderStudentName;
     private View headerProfileSection;
+    private User currentUser;
     private UserManager userManager;
     private SpotPassManager spotPassManager;
     private NoticeManager noticeManager;
@@ -90,6 +97,7 @@ public class HomeActivity extends AppCompatActivity {
         permissionRequestManager = PermissionRequestManager.getInstance(this);
         timetableManager = TimetableManager.getInstance(this);
         eventManager = EventManager.getInstance(this);
+        currentUser = userManager.getCurrentUser();
 
         tvHeaderAvatar = findViewById(R.id.tvHeaderAvatar);
         tvHeaderStudentName = findViewById(R.id.tvHeaderStudentName);
@@ -211,6 +219,11 @@ public class HomeActivity extends AppCompatActivity {
             btnPrincipalEventsAndPractice.setOnClickListener(v -> showEventsAndPracticeDialog());
         }
 
+        View btnPrincipalAppointIncharge = findViewById(R.id.btnPrincipalAppointIncharge);
+        if (btnPrincipalAppointIncharge != null) {
+            btnPrincipalAppointIncharge.setOnClickListener(v -> showAppointEventInchargeDialog());
+        }
+
         tabRecordStudents = findViewById(R.id.tabRecordStudents);
         tabRecordTeachers = findViewById(R.id.tabRecordTeachers);
         layoutStudentFilterSection = findViewById(R.id.layoutStudentFilterSection);
@@ -249,7 +262,19 @@ public class HomeActivity extends AppCompatActivity {
 
         // Setup Spinners
         if (spinnerRecordStream != null) {
-            String[] streams = new String[]{"All Streams", "Science (B.Sc.)", "Commerce (B.Com)", "Arts (B.A.)"};
+            String[] streams;
+            if (currentUser != null && !currentUser.isPrincipal() && (currentUser.isTeacherOrDirector() || currentUser.isHOD())) {
+                String myStream = currentUser.getStream();
+                if ("Commerce".equalsIgnoreCase(myStream)) {
+                    streams = new String[]{"Commerce Stream (B.Com)"};
+                } else if ("Arts".equalsIgnoreCase(myStream)) {
+                    streams = new String[]{"Arts Stream (B.A.)"};
+                } else {
+                    streams = new String[]{"Science Stream (B.Sc.)"};
+                }
+            } else {
+                streams = new String[]{"All Streams", "Science (B.Sc.)", "Commerce (B.Com)", "Arts (B.A.)"};
+            }
             ArrayAdapter<String> streamAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, streams);
             spinnerRecordStream.setAdapter(streamAdapter);
             spinnerRecordStream.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -322,7 +347,7 @@ public class HomeActivity extends AppCompatActivity {
         String selStream = spinnerRecordStream.getSelectedItem() != null ? spinnerRecordStream.getSelectedItem().toString() : "All Streams";
         String selSubject = spinnerRecordSubject.getSelectedItem() != null ? spinnerRecordSubject.getSelectedItem().toString() : "All Subjects";
 
-        List<User> filtered = userManager.filterStudents(selStream, selSubject);
+        List<User> filtered = userManager.filterStudents(currentUser, selStream, selSubject);
         
         // Calculate cohort attendance statistics for counting total attendance feature
         double avg = userManager.calculateAverageAttendance(filtered);
@@ -574,7 +599,7 @@ public class HomeActivity extends AppCompatActivity {
      * and merge availed spot passes.
      */
     private void showSelectStudentForMonthlyAttendanceDialog() {
-        List<User> students = userManager.getStudents();
+        List<User> students = userManager.getStudentsForUser(currentUser);
         if (students.isEmpty()) {
             Toast.makeText(this, "No enrolled students found in records.", Toast.LENGTH_SHORT).show();
             return;
@@ -733,6 +758,34 @@ public class HomeActivity extends AppCompatActivity {
                     containerPasses.addView(item);
                 }
 
+                List<PracticeSession> allPracticeSessions = eventManager.getAllPracticeSessions();
+                for (PracticeSession ps : allPracticeSessions) {
+                    if (ps.isStudentPresent(student.getId())) {
+                        android.widget.LinearLayout item = new android.widget.LinearLayout(this);
+                        item.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                        item.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                        item.setPadding(0, (int)(4 * density), 0, (int)(4 * density));
+
+                        TextView tvSessionInfo = new TextView(this);
+                        android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                        tvSessionInfo.setLayoutParams(lp);
+                        tvSessionInfo.setText("⚽ Ground Roll-Call: " + ps.getEventName() + " (" + ps.getPracticeDate() + " • " + ps.getTimeSlot() + ")\n↪️ Verified by " + ps.getCoachName() + " (Redirected to Missed Subject Lectures)");
+                        tvSessionInfo.setTextColor(getColor(R.color.charcoal_dark));
+                        tvSessionInfo.setTextSize(11f);
+                        tvSessionInfo.setTypeface(null, android.graphics.Typeface.BOLD);
+                        item.addView(tvSessionInfo);
+
+                        TextView tvTag = new TextView(this);
+                        tvTag.setText("+Duty Leave");
+                        tvTag.setTextColor(getColor(R.color.pastel_mint_text));
+                        tvTag.setTextSize(10.5f);
+                        tvTag.setTypeface(null, android.graphics.Typeface.BOLD);
+                        item.addView(tvTag);
+
+                        containerPasses.addView(item);
+                    }
+                }
+
                 if (approvedPasses.isEmpty() && approvedPerms.isEmpty() && student.getDutyLeaveApprovedCount() > 0) {
                     TextView tvPreseeded = new TextView(this);
                     tvPreseeded.setText("✅ Verified Co-Curricular Event Participation (Inter-Collegiate Sports & Youth Fest)");
@@ -858,6 +911,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
         if (user != null) {
+            currentUser = user;
             if (tvHeaderStudentName != null && user.getFullName() != null) {
                 tvHeaderStudentName.setText(user.getFullName());
             }
@@ -890,15 +944,27 @@ public class HomeActivity extends AppCompatActivity {
                 TextView tvTeacherHeroName = findViewById(R.id.tvTeacherHeroName);
                 TextView tvTeacherHeroMeta = findViewById(R.id.tvTeacherHeroMeta);
 
-                if (tvTeacherDeptBadge != null) {
-                    tvTeacherDeptBadge.setText(user.getDepartment().isEmpty() ? "Faculty" : user.getDepartment());
-                }
-                if (tvTeacherHeroName != null) {
-                    tvTeacherHeroName.setText(user.getFullName() + " • " + (user.getDesignation().isEmpty() ? "Faculty Lecturer" : user.getDesignation()));
-                }
-                if (tvTeacherHeroMeta != null) {
-                    String sub = user.getSubjects().isEmpty() ? "General" : user.getSubjects();
-                    tvTeacherHeroMeta.setText("Subjects: " + sub + " • Staff ID: " + user.getId() + " • YCASC Academic Council");
+                if (user.isEventCoordinatorOrIncharge()) {
+                    if (tvTeacherDeptBadge != null) {
+                        tvTeacherDeptBadge.setText("🏆 EVENT INCHARGE CONSOLE");
+                    }
+                    if (tvTeacherHeroName != null) {
+                        tvTeacherHeroName.setText(user.getFullName());
+                    }
+                    if (tvTeacherHeroMeta != null) {
+                        tvTeacherHeroMeta.setText("🎯 " + user.getProgramme() + " • Login: " + user.getEmail() + " • Ground Roll-Call & Duty Redirection Active");
+                    }
+                } else {
+                    if (tvTeacherDeptBadge != null) {
+                        tvTeacherDeptBadge.setText(user.getDepartment().isEmpty() ? "Faculty" : user.getDepartment());
+                    }
+                    if (tvTeacherHeroName != null) {
+                        tvTeacherHeroName.setText(user.getFullName() + " • " + (user.getDesignation().isEmpty() ? "Faculty Lecturer" : user.getDesignation()));
+                    }
+                    if (tvTeacherHeroMeta != null) {
+                        String sub = user.getSubjects().isEmpty() ? "General" : user.getSubjects();
+                        tvTeacherHeroMeta.setText("Subjects: " + sub + " • Staff ID: " + user.getId() + " • YCASC Academic Council");
+                    }
                 }
 
             } else {
@@ -1646,27 +1712,32 @@ public class HomeActivity extends AppCompatActivity {
             boolean success = timetableManager.interchangeLectures(slotA.getId(), slotB.getId(), note, teacherName);
 
             if (success) {
-                if (cbBroadcast != null && cbBroadcast.isChecked()) {
-                    String noticeTitle = "📢 Timetable Update: " + slotA.getDayOfWeek() + " Lectures Swapped";
-                    String noticeContent = "Faculty coordination update for " + slotA.getStream() + ": " +
-                            slotA.getTimeDisplay() + " (" + slotA.getSubject() + ") has been interchanged with " +
-                            slotB.getTimeDisplay() + " (" + slotB.getSubject() + ").\nReason: " + note;
+                // Guaranteed advance preparation notification broadcast to students of this stream
+                String noticeTitle = "🚨 Lecture Swap Alert: " + slotA.getSubject() + " ⇄ " + slotB.getSubject() + " (" + slotA.getDayOfWeek() + ")";
+                String noticeContent = "ATTENTION STUDENTS — ADVANCE LECTURE SCHEDULE CHANGE:\n\n"
+                        + "Please be advised that your lecture timetable for " + slotA.getDayOfWeek() + " has been officially swapped by faculty:\n\n"
+                        + "• " + slotA.getTimeDisplay() + " is now: " + slotB.getSubject() + " (Taught by " + slotB.getTeacherName() + " • Room: " + slotB.getRoom() + ")\n"
+                        + "• " + slotB.getTimeDisplay() + " is now: " + slotA.getSubject() + " (Taught by " + slotA.getTeacherName() + " • Room: " + slotA.getRoom() + ")\n\n"
+                        + "Faculty Coordination Note: " + note + "\n"
+                        + "Coordination by: " + teacherName + "\n\n"
+                        + "⚠️ Action Required: Students must prepare and bring necessary textbooks, assignments, and study materials for " + slotB.getSubject() + " and " + slotA.getSubject() + " in advance according to this swapped timetable.";
 
-                    Notice n = new Notice(
-                            "NOT-SWAP-" + System.currentTimeMillis(),
-                            noticeTitle,
-                            "Academic Timetable",
-                            teacherName + " (Faculty)",
-                            slotA.getStream(),
-                            noticeContent,
-                            "Today",
-                            System.currentTimeMillis(),
-                            slotA.getTimeDisplay()
-                    );
-                    noticeManager.addNotice(n);
-                }
+                Notice n = new Notice(
+                        "NOT-SWAP-" + System.currentTimeMillis(),
+                        noticeTitle,
+                        "Timetable & Lecture Swap Notice",
+                        teacherName + " (Faculty Coordination)",
+                        "Students of " + slotA.getStream(),
+                        noticeContent,
+                        slotA.getDayOfWeek(),
+                        System.currentTimeMillis(),
+                        slotA.getTimeDisplay() + " / " + slotB.getTimeDisplay()
+                );
+                noticeManager.addNotice(n);
+                refreshNoticeCard();
+                updateNotificationBadge();
 
-                Toast.makeText(this, "🎉 Lectures interchanged successfully! Students' schedule updated.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "🎉 Lectures swapped! Advance preparation alert sent to " + slotA.getStream() + " students.", Toast.LENGTH_LONG).show();
                 dialog.dismiss();
 
                 if (onRefreshCallback != null) {
@@ -3139,6 +3210,16 @@ public class HomeActivity extends AppCompatActivity {
         android.widget.LinearLayout containerEvents = dialogView.findViewById(R.id.containerEventsList);
         android.widget.LinearLayout containerSessions = dialogView.findViewById(R.id.containerPracticeSessionsList);
         MaterialButton btnClose = dialogView.findViewById(R.id.btnCloseEventsDialog);
+        MaterialButton btnAppointIncharge = dialogView.findViewById(R.id.btnAppointInchargeInDialog);
+
+        if (btnAppointIncharge != null) {
+            boolean isPrincipal = currentUser != null && currentUser.isPrincipal();
+            btnAppointIncharge.setVisibility(isPrincipal ? View.VISIBLE : View.GONE);
+            btnAppointIncharge.setOnClickListener(v -> {
+                dialog.dismiss();
+                showAppointEventInchargeDialog();
+            });
+        }
 
         if (btnClose != null) {
             btnClose.setOnClickListener(v -> dialog.dismiss());
@@ -3278,25 +3359,44 @@ public class HomeActivity extends AppCompatActivity {
                     tvVenue.setPadding(0, (int)(2 * density), 0, 0);
                     card.addView(tvVenue);
 
-                    // Action Button: Take Ground Attendance
-                    MaterialButton btnTakeAttendance = new MaterialButton(this);
-                    btnTakeAttendance.setText("⚽ Take Ground Roll-Call");
-                    btnTakeAttendance.setTextColor(getColor(R.color.white));
-                    btnTakeAttendance.setTextSize(12f);
-                    btnTakeAttendance.setTypeface(null, android.graphics.Typeface.BOLD);
-                    btnTakeAttendance.setBackgroundTintList(android.content.res.ColorStateList.valueOf(getColor(R.color.charcoal_dark)));
-                    btnTakeAttendance.setCornerRadius((int)(12 * density));
-                    android.widget.LinearLayout.LayoutParams btnLp = new android.widget.LinearLayout.LayoutParams(
-                            android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-                            (int)(44 * density)
-                    );
-                    btnLp.setMargins(0, (int)(10 * density), 0, 0);
-                    btnTakeAttendance.setLayoutParams(btnLp);
-                    btnTakeAttendance.setOnClickListener(v -> {
-                        dialog.dismiss();
-                        showGroundAttendanceDialog(ps);
-                    });
-                    card.addView(btnTakeAttendance);
+                    // Action Button: Take Ground Attendance (only for Event Incharge / Coordinator)
+                    Event parentEv = eventManager.getEventById(ps.getEventId());
+                    boolean isCoordinator = currentUser != null && currentUser.isCoordinatorForSession(ps, parentEv);
+
+                    if (isCoordinator) {
+                        MaterialButton btnTakeAttendance = new MaterialButton(this);
+                        btnTakeAttendance.setText("⚽ Take Ground Roll-Call (Event Incharge)");
+                        btnTakeAttendance.setTextColor(getColor(R.color.white));
+                        btnTakeAttendance.setTextSize(12f);
+                        btnTakeAttendance.setTypeface(null, android.graphics.Typeface.BOLD);
+                        btnTakeAttendance.setBackgroundTintList(android.content.res.ColorStateList.valueOf(getColor(R.color.charcoal_dark)));
+                        btnTakeAttendance.setCornerRadius((int)(12 * density));
+                        android.widget.LinearLayout.LayoutParams btnLp = new android.widget.LinearLayout.LayoutParams(
+                                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                                (int)(44 * density)
+                        );
+                        btnLp.setMargins(0, (int)(10 * density), 0, 0);
+                        btnTakeAttendance.setLayoutParams(btnLp);
+                        btnTakeAttendance.setOnClickListener(v -> {
+                            dialog.dismiss();
+                            showGroundAttendanceDialog(ps);
+                        });
+                        card.addView(btnTakeAttendance);
+                    } else {
+                        TextView tvRestricted = new TextView(this);
+                        tvRestricted.setText("🔒 Attendance managed by Event Incharge: " + ps.getCoachName());
+                        tvRestricted.setTextColor(getColor(R.color.text_secondary));
+                        tvRestricted.setTextSize(11f);
+                        tvRestricted.setBackgroundResource(R.drawable.bg_chip_white);
+                        tvRestricted.setPadding((int)(10 * density), (int)(8 * density), (int)(10 * density), (int)(8 * density));
+                        android.widget.LinearLayout.LayoutParams resLp = new android.widget.LinearLayout.LayoutParams(
+                                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+                        );
+                        resLp.setMargins(0, (int)(10 * density), 0, 0);
+                        tvRestricted.setLayoutParams(resLp);
+                        card.addView(tvRestricted);
+                    }
 
                     containerSessions.addView(card);
                 }
@@ -3312,6 +3412,12 @@ public class HomeActivity extends AppCompatActivity {
      */
     private void showGroundAttendanceDialog(PracticeSession session) {
         if (session == null) return;
+
+        Event parentEv = eventManager.getEventById(session.getEventId());
+        if (currentUser == null || !currentUser.isCoordinatorForSession(session, parentEv)) {
+            Toast.makeText(this, "⚠️ Access Restricted: Only the Event Incharge or Coordinator (" + session.getCoachName() + ") can take attendance for this event.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_ground_attendance, null);
         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -3399,13 +3505,87 @@ public class HomeActivity extends AppCompatActivity {
                 }
 
                 eventManager.recordGroundAttendance(session.getId(), selectedIds);
+
+                // --- ATTENDANCE REDIRECTION TO MISSED SUBJECT TEACHERS ---
+                String dayOfWeek = getDayOfWeekFromDate(session.getPracticeDate());
+                int sessionStartMin = parseTimeToMinutes(session.getStartTime());
+                int sessionEndMin = parseTimeToMinutes(session.getEndTime());
+                if (sessionEndMin <= sessionStartMin) sessionEndMin = sessionStartMin + 150; // default 2.5h
+
+                List<String> redirectionSummaries = new ArrayList<>();
+                int totalRedirections = 0;
+
+                for (String studentId : selectedIds) {
+                    User student = userManager.getUserById(studentId);
+                    if (student == null) student = userManager.findUserByEmailOrId(studentId);
+                    if (student == null) continue;
+
+                    String stream = student.getStream();
+                    if (stream.isEmpty()) stream = "Science";
+
+                    List<TimetableSlot> daySlots = timetableManager.getTimetableForStreamAndDay(stream, dayOfWeek);
+                    List<TimetableSlot> clashingSlots = new ArrayList<>();
+
+                    for (TimetableSlot slot : daySlots) {
+                        int slotStartMin = parseTimeToMinutes(slot.getStartTime());
+                        int slotEndMin = parseTimeToMinutes(slot.getEndTime());
+                        if (slotStartMin >= 0 && slotEndMin >= 0) {
+                            if (sessionStartMin < slotEndMin && sessionEndMin > slotStartMin) {
+                                clashingSlots.add(slot);
+                            }
+                        }
+                    }
+
+                    if (clashingSlots.isEmpty() && !daySlots.isEmpty()) {
+                        clashingSlots.add(daySlots.get(0));
+                    }
+
+                    for (TimetableSlot slot : clashingSlots) {
+                        totalRedirections++;
+                        String noticeId = "RED-ATT-" + (System.currentTimeMillis() % 1000000) + "-" + slot.getId();
+                        String noticeTitle = "📢 Duty Leave Redirection: " + student.getFullName() + " (" + slot.getSubject() + ")";
+                        String noticeContent = "OFFICIAL ACADEMIC ATTENDANCE REDIRECTION & DUTY LEAVE:\n\n"
+                                + "• Student: " + student.getFullName() + " (Roll No: " + student.getId() + " • " + stream + " Stream)\n"
+                                + "• Event: " + session.getEventName() + "\n"
+                                + "• Practice Date: " + session.getPracticeDate() + " (" + session.getTimeSlot() + ")\n"
+                                + "• Ground Venue: " + session.getVenue() + "\n"
+                                + "• Missed Classroom Lecture: " + slot.getLectureTitle() + " (" + slot.getTimeDisplay() + ", Room: " + slot.getRoom() + ")\n"
+                                + "• Subject Teacher: " + slot.getTeacherName() + " (" + slot.getTeacherEmail() + ")\n"
+                                + "• Verifying Event Incharge: " + session.getCoachName() + "\n\n"
+                                + "Directive from Principal's Office: The student was physically verified on the practice field by the appointed Event Incharge. Academic attendance for this lecture slot is officially REDIRECTED & CREDITED as institutional Duty Leave (OD).";
+
+                        Notice redirNotice = new Notice(
+                                noticeId,
+                                noticeTitle,
+                                "Attendance Redirection",
+                                session.getCoachName() + " (Event Incharge)",
+                                "Faculty: " + slot.getTeacherName() + " • " + stream + " Stream",
+                                noticeContent,
+                                session.getPracticeDate(),
+                                System.currentTimeMillis(),
+                                slot.getTimeDisplay()
+                        );
+                        noticeManager.addNotice(redirNotice);
+
+                        String summaryItem = "• " + student.getFullName() + " ➔ " + slot.getSubject() + " (" + slot.getTeacherName() + " • " + slot.getTimeDisplay() + ")";
+                        if (!redirectionSummaries.contains(summaryItem)) {
+                            redirectionSummaries.add(summaryItem);
+                        }
+                    }
+
+                    // Credit co-curricular Duty Leave
+                    int credits = Math.max(1, clashingSlots.size());
+                    student.setDutyLeaveApprovedCount(student.getDutyLeaveApprovedCount() + credits);
+                    student.calculateAttendance();
+                    userManager.updateUser(student);
+                }
+
                 dialog.dismiss();
-
                 filterAndRenderStudents();
-                Toast.makeText(this, "⚽ Ground attendance recorded! Co-curricular duty credits applied to " + selectedIds.size() + " student(s).", Toast.LENGTH_LONG).show();
+                refreshNoticeCard();
 
-                // Re-open events dialog with updated counts
-                showEventsAndPracticeDialog();
+                // Show Redirection Confirmation Dialog
+                showAttendanceRedirectionSummaryDialog(session, selectedIds.size(), totalRedirections, redirectionSummaries);
             });
         }
 
@@ -3442,7 +3622,19 @@ public class HomeActivity extends AppCompatActivity {
         ArrayAdapter<String> classAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, classOptions);
         if (spClass != null) spClass.setAdapter(classAdapter);
 
-        String[] streamOptions = new String[]{"Science Stream (B.Sc.)", "Commerce Stream (B.Com)", "Arts Stream (B.A.)"};
+        String[] streamOptions;
+        if (currentUser != null && !currentUser.isPrincipal() && (currentUser.isTeacherOrDirector() || currentUser.isHOD())) {
+            String myStream = currentUser.getStream();
+            if ("Commerce".equalsIgnoreCase(myStream)) {
+                streamOptions = new String[]{"Commerce Stream (B.Com)"};
+            } else if ("Arts".equalsIgnoreCase(myStream)) {
+                streamOptions = new String[]{"Arts Stream (B.A.)"};
+            } else {
+                streamOptions = new String[]{"Science Stream (B.Sc.)"};
+            }
+        } else {
+            streamOptions = new String[]{"Science Stream (B.Sc.)", "Commerce Stream (B.Com)", "Arts Stream (B.A.)"};
+        }
         ArrayAdapter<String> streamAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, streamOptions);
         if (spStream != null) spStream.setAdapter(streamAdapter);
 
@@ -3733,10 +3925,22 @@ public class HomeActivity extends AppCompatActivity {
      * Institutional Roster displaying all provisioned users (Principal, Teachers, Students)
      */
     private void showInstitutionalRosterDialog() {
-        List<User> users = userManager.getAllUsers();
-        if (users.isEmpty()) {
+        List<User> allUsers = userManager.getAllUsers();
+        if (allUsers.isEmpty()) {
             Toast.makeText(this, "No registered users found.", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        List<User> users = new ArrayList<>();
+        if (currentUser != null && !currentUser.isPrincipal() && (currentUser.isTeacherOrDirector() || currentUser.isHOD())) {
+            String myStream = currentUser.getStream();
+            for (User u : allUsers) {
+                if (!u.isStudent() || u.getStream().equalsIgnoreCase(myStream)) {
+                    users.add(u);
+                }
+            }
+        } else {
+            users = allUsers;
         }
 
         StringBuilder sb = new StringBuilder();
@@ -3772,11 +3976,36 @@ public class HomeActivity extends AppCompatActivity {
 
     /**
      * Lists Spot Passes for teachers to review and approve/reject.
+     * Filtered so teachers only see passes for students in their own academic stream.
      */
     private void showTeacherPendingPassesDialog() {
-        List<SpotPass> passes = spotPassManager.getAllSpotPasses();
+        List<SpotPass> allPasses = spotPassManager.getAllSpotPasses();
+        final List<SpotPass> passes;
+
+        if (currentUser != null && !currentUser.isPrincipal() && (currentUser.isTeacherOrDirector() || currentUser.isHOD())) {
+            String myStream = currentUser.getStream();
+            List<SpotPass> streamOnly = new ArrayList<>();
+            for (SpotPass p : allPasses) {
+                User s = userManager.getUserById(p.getStudentId());
+                if (s == null) s = userManager.findUserByEmailOrId(p.getStudentId());
+                if (s != null && s.getStream().equalsIgnoreCase(myStream)) {
+                    streamOnly.add(p);
+                } else if (s == null) {
+                    String id = p.getStudentId().toUpperCase();
+                    if ((myStream.equalsIgnoreCase("Science") && (id.startsWith("SCI") || id.contains("-SCI-"))) ||
+                        (myStream.equalsIgnoreCase("Commerce") && (id.startsWith("COM") || id.contains("-COM-"))) ||
+                        (myStream.equalsIgnoreCase("Arts") && (id.startsWith("ART") || id.contains("-ART-")))) {
+                        streamOnly.add(p);
+                    }
+                }
+            }
+            passes = streamOnly;
+        } else {
+            passes = allPasses;
+        }
+
         if (passes.isEmpty()) {
-            Toast.makeText(this, "No Spot Passes currently pending review.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No Spot Passes currently pending review for your stream.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -3803,6 +4032,561 @@ public class HomeActivity extends AppCompatActivity {
             v.setOnClickListener(view ->
                     Toast.makeText(this, label, Toast.LENGTH_SHORT).show());
         }
+    }
+
+    /**
+     * Dialog for the Principal to appoint a Teacher or Student as Event Incharge.
+     * Generates a dedicated account solely created for the event, schedules multi-day practice sessions,
+     * and sets up attendance redirection to missed subject lectures.
+     */
+    private void showAppointEventInchargeDialog() {
+        if (currentUser == null || !currentUser.isPrincipal()) {
+            Toast.makeText(this, "⚠️ Principal administrative privilege required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_appoint_event_incharge, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        // Section 1: Event
+        Spinner spinnerEvent = dialogView.findViewById(R.id.spinnerInchargeEvent);
+        View layoutNewEvent = dialogView.findViewById(R.id.layoutInchargeNewEvent);
+        EditText etNewEventName = dialogView.findViewById(R.id.etInchargeNewEventName);
+        EditText etNewEventVenue = dialogView.findViewById(R.id.etInchargeNewEventVenue);
+        Spinner spNewEventType = dialogView.findViewById(R.id.spinnerInchargeNewEventType);
+        Spinner spNewEventLevel = dialogView.findViewById(R.id.spinnerInchargeNewEventLevel);
+
+        // Section 2: Incharge Category & Person
+        RadioGroup rgCategory = dialogView.findViewById(R.id.rgInchargeCategory);
+        RadioButton rbTeacher = dialogView.findViewById(R.id.rbCategoryTeacher);
+        RadioButton rbStudent = dialogView.findViewById(R.id.rbCategoryStudent);
+        Spinner spinnerPerson = dialogView.findViewById(R.id.spinnerInchargePerson);
+        TextView tvPersonDetails = dialogView.findViewById(R.id.tvInchargePersonDetails);
+
+        // Section 3: Dedicated Account
+        EditText etEmail = dialogView.findViewById(R.id.etInchargeLoginEmail);
+        EditText etPassword = dialogView.findViewById(R.id.etInchargeLoginPassword);
+
+        // Section 4: Multi-Day Schedule
+        EditText etStartDate = dialogView.findViewById(R.id.etPracticeStartDate);
+        Spinner spDuration = dialogView.findViewById(R.id.spinnerPracticeDuration);
+        Spinner spSlot = dialogView.findViewById(R.id.spinnerPracticeSlot);
+        EditText etVenue = dialogView.findViewById(R.id.etPracticeGroundVenue);
+
+        // Section 5: Participating Students
+        Spinner spStreamFilter = dialogView.findViewById(R.id.spinnerStudentStreamFilter);
+        TextView tvSelectAll = dialogView.findViewById(R.id.tvSelectAllStudentsToggle);
+        TextView tvSquadBadge = dialogView.findViewById(R.id.tvSquadCountBadge);
+        android.widget.LinearLayout containerStudents = dialogView.findViewById(R.id.containerInchargeStudents);
+
+        MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelAppointIncharge);
+        MaterialButton btnSubmit = dialogView.findViewById(R.id.btnSubmitAppointIncharge);
+
+        // Setup Events Spinner
+        List<Event> existingEvents = eventManager.getAllEvents();
+        List<String> eventNames = new ArrayList<>();
+        for (Event e : existingEvents) {
+            eventNames.add(e.getName() + " (" + e.getDatesDisplay() + ")");
+        }
+        eventNames.add("➕ [+ Create New Co-Curricular Event]");
+        ArrayAdapter<String> eventAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, eventNames);
+        spinnerEvent.setAdapter(eventAdapter);
+
+        // Setup Event Type and Level Spinners
+        String[] types = new String[]{"Sports", "Cultural", "Academic", "Technical"};
+        String[] levels = new String[]{"Inter-Collegiate", "State Level", "District Level", "University Level"};
+        spNewEventType.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, types));
+        spNewEventLevel.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, levels));
+
+        // Setup Practice Duration Spinner
+        String[] durations = new String[]{
+                "3 Days Practice Camp",
+                "5 Days Intensive Camp (Tournament Prep)",
+                "7 Days State Championship Camp",
+                "10 Days Comprehensive Training"
+        };
+        spDuration.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, durations));
+        spDuration.setSelection(1); // default 5 days
+
+        // Setup Practice Slot Spinner
+        String[] practiceSlots = new String[]{
+                "09:00 AM – 11:30 AM (Morning Session • Clashes with Slot 2 & 3)",
+                "08:00 AM – 10:00 AM (Early Session • Clashes with Slot 1 & 2)",
+                "10:00 AM – 01:00 PM (Midday Session • Clashes with Slot 3, 4 & 5)",
+                "11:30 AM – 01:30 PM (Afternoon Session • Clashes with Slot 4 & 5)"
+        };
+        spSlot.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, practiceSlots));
+
+        // Pre-fill Start Date with today/tomorrow
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.US);
+        etStartDate.setText(sdf.format(new java.util.Date()));
+
+        // Incharge Person Lists
+        List<User> facultyList = userManager.getFacultyAndStaff();
+        List<User> studentList = userManager.getStudents();
+        List<User> currentPersonPool = new ArrayList<>(facultyList);
+
+        Runnable updatePersonSpinner = () -> {
+            boolean isStudentCat = rbStudent.isChecked();
+            currentPersonPool.clear();
+            if (isStudentCat) {
+                currentPersonPool.addAll(studentList);
+            } else {
+                currentPersonPool.addAll(facultyList);
+            }
+
+            List<String> labels = new ArrayList<>();
+            for (User u : currentPersonPool) {
+                labels.add(u.getFullName() + " (" + u.getId() + " • " + u.getDepartment() + ")");
+            }
+            ArrayAdapter<String> pAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, labels);
+            spinnerPerson.setAdapter(pAdapter);
+        };
+
+        updatePersonSpinner.run();
+
+        rgCategory.setOnCheckedChangeListener((group, checkedId) -> updatePersonSpinner.run());
+
+        spinnerPerson.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position >= 0 && position < currentPersonPool.size()) {
+                    User sel = currentPersonPool.get(position);
+                    tvPersonDetails.setText("Selected: " + sel.getFullName() + " (" + sel.getId() + " • " + sel.getDepartment() + " • 📞 " + (sel.getPhoneNumber().isEmpty() ? "9823000000" : UserManager.normalizePhone(sel.getPhoneNumber())) + ")");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        // Event Selection Listener to auto-fill slug & toggle new event fields
+        Runnable updateEmailSlug = () -> {
+            int pos = spinnerEvent.getSelectedItemPosition();
+            String slug = "event";
+            if (pos < existingEvents.size()) {
+                Event selEv = existingEvents.get(pos);
+                slug = selEv.getName().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+            } else {
+                String typed = etNewEventName.getText().toString().trim();
+                if (!typed.isEmpty()) {
+                    slug = typed.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+                }
+            }
+            if (slug.length() > 8) slug = slug.substring(0, 8);
+            if (slug.isEmpty()) slug = "event";
+            etEmail.setText("incharge." + slug + "@ycasc.com");
+        };
+
+        spinnerEvent.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == existingEvents.size()) {
+                    layoutNewEvent.setVisibility(View.VISIBLE);
+                } else {
+                    layoutNewEvent.setVisibility(View.GONE);
+                }
+                updateEmailSlug.run();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        // Participating Students Squad setup
+        Set<String> selectedSquadStudentIds = new HashSet<>();
+        for (int i = 0; i < Math.min(6, studentList.size()); i++) {
+            selectedSquadStudentIds.add(studentList.get(i).getId());
+        }
+
+        String[] streamFilterOptions = new String[]{"All Streams", "Science Stream", "Commerce Stream", "Arts Stream"};
+        spStreamFilter.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, streamFilterOptions));
+
+        Runnable renderStudentCheckboxes = () -> {
+            containerStudents.removeAllViews();
+            int filterPos = spStreamFilter.getSelectedItemPosition();
+            String chosenFilter = filterPos == 1 ? "Science" : (filterPos == 2 ? "Commerce" : (filterPos == 3 ? "Arts" : ""));
+
+            float density = getResources().getDisplayMetrics().density;
+            for (User s : studentList) {
+                if (!chosenFilter.isEmpty() && !s.getStream().equalsIgnoreCase(chosenFilter)) {
+                    continue;
+                }
+
+                android.widget.LinearLayout row = new android.widget.LinearLayout(this);
+                row.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                row.setPadding(0, (int)(5 * density), 0, (int)(5 * density));
+
+                CheckBox cb = new CheckBox(this);
+                cb.setChecked(selectedSquadStudentIds.contains(s.getId()));
+                cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    if (isChecked) {
+                        selectedSquadStudentIds.add(s.getId());
+                    } else {
+                        selectedSquadStudentIds.remove(s.getId());
+                    }
+                    tvSquadBadge.setText(selectedSquadStudentIds.size() + " student(s) selected for multi-day permission");
+                });
+                row.addView(cb);
+
+                TextView tvInfo = new TextView(this);
+                tvInfo.setText(s.getFullName() + " (" + s.getId() + " • " + s.getDepartment() + " • " + s.getYearOrClass() + ")");
+                tvInfo.setTextColor(getColor(R.color.charcoal_dark));
+                tvInfo.setTextSize(12f);
+                row.addView(tvInfo);
+
+                containerStudents.addView(row);
+            }
+            tvSquadBadge.setText(selectedSquadStudentIds.size() + " student(s) selected for multi-day permission");
+        };
+
+        renderStudentCheckboxes.run();
+        spStreamFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> p, View v, int pos, long id) { renderStudentCheckboxes.run(); }
+            @Override
+            public void onNothingSelected(AdapterView<?> p) {}
+        });
+
+        tvSelectAll.setOnClickListener(v -> {
+            boolean allSelected = selectedSquadStudentIds.size() == studentList.size();
+            if (allSelected) {
+                selectedSquadStudentIds.clear();
+                tvSelectAll.setText("Select All");
+            } else {
+                for (User s : studentList) {
+                    selectedSquadStudentIds.add(s.getId());
+                }
+                tvSelectAll.setText("Deselect All");
+            }
+            renderStudentCheckboxes.run();
+        });
+
+        if (btnCancel != null) btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        if (btnSubmit != null) {
+            btnSubmit.setOnClickListener(v -> {
+                int eventPos = spinnerEvent.getSelectedItemPosition();
+                boolean isNew = (eventPos == existingEvents.size());
+                String eventName;
+                String eventVenue;
+                String eventType = spNewEventType.getSelectedItem() != null ? spNewEventType.getSelectedItem().toString() : "Sports";
+                String eventLevel = spNewEventLevel.getSelectedItem() != null ? spNewEventLevel.getSelectedItem().toString() : "Inter-Collegiate";
+
+                Event targetEvent;
+                if (isNew) {
+                    eventName = etNewEventName.getText().toString().trim();
+                    eventVenue = etNewEventVenue.getText().toString().trim();
+                    if (eventName.isEmpty()) {
+                        etNewEventName.setError("Event title is required");
+                        return;
+                    }
+                    if (eventVenue.isEmpty()) eventVenue = "Yashoda College Main Ground";
+                    String evId = "EV-" + (System.currentTimeMillis() % 100000);
+                    targetEvent = new Event(evId, eventName, etStartDate.getText().toString().trim(), "", eventType, eventLevel, "YCASC Co-Curricular Council", "", eventVenue, "Inter-Collegiate tournament with sanctioned multi-day ground practice");
+                } else {
+                    targetEvent = existingEvents.get(eventPos);
+                    eventName = targetEvent.getName();
+                    eventVenue = targetEvent.getVenue();
+                }
+
+                int personPos = spinnerPerson.getSelectedItemPosition();
+                if (personPos < 0 || personPos >= currentPersonPool.size()) {
+                    Toast.makeText(this, "Please select an incharge person.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                User appointedPerson = currentPersonPool.get(personPos);
+                boolean isStudentIncharge = rbStudent.isChecked();
+
+                String inchargeEmail = etEmail.getText().toString().trim();
+                String inchargePassword = etPassword.getText().toString().trim();
+                if (inchargeEmail.isEmpty()) {
+                    etEmail.setError("Login email is required");
+                    return;
+                }
+                if (inchargePassword.isEmpty()) inchargePassword = "event123";
+
+                String startDateStr = etStartDate.getText().toString().trim();
+                if (startDateStr.isEmpty()) startDateStr = "29 Oct 2026";
+
+                int durPos = spDuration.getSelectedItemPosition();
+                int numDays = durPos == 0 ? 3 : (durPos == 1 ? 5 : (durPos == 2 ? 7 : 10));
+
+                String chosenSlot = spSlot.getSelectedItem() != null ? spSlot.getSelectedItem().toString() : "09:00 AM – 11:30 AM";
+                String slotStart = "09:00 AM";
+                String slotEnd = "11:30 AM";
+                if (chosenSlot.contains("–")) {
+                    String clean = chosenSlot.split("\\(")[0].trim();
+                    String[] parts = clean.split("–");
+                    if (parts.length == 2) {
+                        slotStart = parts[0].trim();
+                        slotEnd = parts[1].trim();
+                    }
+                }
+
+                String groundVenue = etVenue.getText().toString().trim();
+                if (groundVenue.isEmpty()) groundVenue = "Yashoda College Main Ground";
+
+                // 1. Save or Update Event
+                targetEvent.setCoordinatorName(appointedPerson.getFullName());
+                if (isNew) {
+                    eventManager.addEvent(targetEvent);
+                } else {
+                    eventManager.saveEvents(eventManager.getAllEvents());
+                }
+
+                // 2. Appoint Incharge & Provision Dedicated Account
+                User inchargeAccount = userManager.appointEventIncharge(targetEvent, appointedPerson, inchargeEmail, inchargePassword, isStudentIncharge);
+
+                // 3. Schedule Multi-Day Practice Sessions
+                List<String> practiceDates = generateDateRange(startDateStr, numDays);
+                for (int i = 0; i < practiceDates.size(); i++) {
+                    String pDate = practiceDates.get(i);
+                    String sessionId = "PRAC-" + targetEvent.getId() + "-" + (i + 1);
+                    PracticeSession ps = new PracticeSession(
+                            sessionId,
+                            targetEvent.getId(),
+                            targetEvent.getName(),
+                            pDate,
+                            slotStart,
+                            slotEnd,
+                            groundVenue,
+                            "Day " + (i + 1) + " Practice Camp",
+                            inchargeAccount.getFullName()
+                    );
+                    eventManager.addPracticeSession(ps);
+                }
+
+                // 4. Sanction Approved Permission Requests for all selected students
+                String endDateStr = practiceDates.get(practiceDates.size() - 1);
+                for (String sId : selectedSquadStudentIds) {
+                    User st = userManager.getUserById(sId);
+                    if (st == null) continue;
+                    String permId = "PERM-EV-" + (System.currentTimeMillis() % 100000) + "-" + st.getId();
+                    PermissionRequest req = new PermissionRequest(
+                            permId,
+                            st.getId(),
+                            st.getFullName(),
+                            st.getYearOrClass(),
+                            targetEvent.getName(),
+                            startDateStr + " to " + endDateStr + " (" + numDays + " Practice Days)",
+                            st.getStream() + " Stream",
+                            "Official tournament squad participation sanctioned under Event Incharge " + inchargeAccount.getFullName(),
+                            "Approved by Principal",
+                            100,
+                            "Dr. Shashikant Mayekar (Principal)",
+                            "Multi-day practice permission sanctioned. Attendance tracked on dedicated incharge console; missed lectures redirected as Duty Leave.",
+                            System.currentTimeMillis()
+                    );
+                    permissionRequestManager.addPermission(req);
+                }
+
+                dialog.dismiss();
+                filterAndRenderStudents();
+
+                // Show Credentials Summary Dialog for Principal
+                showInchargeCredentialsDialog(targetEvent, inchargeAccount, startDateStr, numDays, slotStart + " – " + slotEnd, selectedSquadStudentIds.size());
+            });
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * Dialog showing the generated credentials of the dedicated Event Incharge account.
+     */
+    private void showInchargeCredentialsDialog(Event event, User inchargeUser, String startDate, int numDays, String timeSlot, int squadSize) {
+        if (event == null || inchargeUser == null) return;
+
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_incharge_credentials, null);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        TextView tvEvent = dialogView.findViewById(R.id.tvCredEventTitle);
+        TextView tvName = dialogView.findViewById(R.id.tvCredInchargeName);
+        TextView tvEmail = dialogView.findViewById(R.id.tvCredEmail);
+        TextView tvPassword = dialogView.findViewById(R.id.tvCredPassword);
+        TextView tvMultiDay = dialogView.findViewById(R.id.tvCredMultiDayInfo);
+        TextView tvSquad = dialogView.findViewById(R.id.tvCredSquadInfo);
+
+        View btnCopyEmail = dialogView.findViewById(R.id.btnCopyEmail);
+        View btnCopyPass = dialogView.findViewById(R.id.btnCopyPassword);
+        MaterialButton btnCopyFull = dialogView.findViewById(R.id.btnCopyFullCredentials);
+        MaterialButton btnClose = dialogView.findViewById(R.id.btnCloseCredentials);
+
+        tvEvent.setText("🏆 " + event.getName());
+        tvName.setText("Appointed Incharge: " + inchargeUser.getFullName());
+        tvEmail.setText(inchargeUser.getEmail());
+        tvPassword.setText(inchargeUser.getPassword());
+        tvMultiDay.setText("📅 " + numDays + " Days Practice Camp: Starting " + startDate + " (" + timeSlot + ")");
+        tvSquad.setText("👥 " + squadSize + " Participating Students Permitted & Squad Enrolled");
+
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+
+        if (btnCopyEmail != null) {
+            btnCopyEmail.setOnClickListener(v -> {
+                if (clipboard != null) {
+                    clipboard.setPrimaryClip(ClipData.newPlainText("Incharge Email", inchargeUser.getEmail()));
+                    Toast.makeText(this, "📋 Email copied to clipboard!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        if (btnCopyPass != null) {
+            btnCopyPass.setOnClickListener(v -> {
+                if (clipboard != null) {
+                    clipboard.setPrimaryClip(ClipData.newPlainText("Incharge Password", inchargeUser.getPassword()));
+                    Toast.makeText(this, "📋 Password copied to clipboard!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        if (btnCopyFull != null) {
+            btnCopyFull.setOnClickListener(v -> {
+                String fullCreds = "🏆 EVENTRA - DEDICATED EVENT INCHARGE CREDENTIALS\n\n"
+                        + "Event: " + event.getName() + "\n"
+                        + "Appointed Incharge: " + inchargeUser.getFullName() + "\n"
+                        + "Login Email: " + inchargeUser.getEmail() + "\n"
+                        + "Login Password: " + inchargeUser.getPassword() + "\n"
+                        + "Practice Schedule: " + numDays + " Days from " + startDate + " (" + timeSlot + ")\n"
+                        + "Permitted Squad: " + squadSize + " Students\n\n"
+                        + "Login using these credentials to take ground roll-call. Attendance is automatically redirected to subject teachers whose lectures students miss.";
+                if (clipboard != null) {
+                    clipboard.setPrimaryClip(ClipData.newPlainText("Eventra Incharge Credentials", fullCreds));
+                    Toast.makeText(this, "📋 Full credentials copied to clipboard!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> {
+                dialog.dismiss();
+                showEventsAndPracticeDialog();
+            });
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * Dialog showing summary of ground attendance recorded and the automatic redirection
+     * of duty leaves to the subject teachers whose lectures were missed.
+     */
+    private void showAttendanceRedirectionSummaryDialog(PracticeSession session, int presentCount, int redirectionCount, List<String> summaries) {
+        android.widget.LinearLayout layout = new android.widget.LinearLayout(this);
+        layout.setOrientation(android.widget.LinearLayout.VERTICAL);
+        layout.setPadding(40, 20, 40, 20);
+
+        TextView tvHeader = new TextView(this);
+        tvHeader.setText("⚽ Ground Roll-Call & Duty Redirection Complete");
+        tvHeader.setTextColor(getColor(R.color.charcoal_dark));
+        tvHeader.setTextSize(15f);
+        tvHeader.setTypeface(null, android.graphics.Typeface.BOLD);
+        layout.addView(tvHeader);
+
+        TextView tvSub = new TextView(this);
+        tvSub.setText("Event: " + session.getEventName() + "\nSession: " + session.getPracticeDate() + " (" + session.getTimeSlot() + ") • " + session.getVenue() + "\nVerified Present: " + presentCount + " student(s)\nRedirected Missed Lectures: " + redirectionCount + " slot(s)");
+        tvSub.setTextColor(getColor(R.color.text_secondary));
+        tvSub.setTextSize(12f);
+        tvSub.setPadding(0, 10, 0, 16);
+        layout.addView(tvSub);
+
+        if (!summaries.isEmpty()) {
+            TextView tvListTitle = new TextView(this);
+            tvListTitle.setText("Redirected Subject Lectures (Notified Teachers):");
+            tvListTitle.setTextColor(getColor(R.color.charcoal_dark));
+            tvListTitle.setTextSize(12.5f);
+            tvListTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+            layout.addView(tvListTitle);
+
+            for (String s : summaries) {
+                TextView item = new TextView(this);
+                item.setText(s);
+                item.setTextColor(getColor(R.color.pastel_lavender_text));
+                item.setTextSize(11.5f);
+                item.setPadding(0, 4, 0, 0);
+                layout.addView(item);
+            }
+        }
+
+        TextView tvNote = new TextView(this);
+        tvNote.setText("\n✅ Official Duty Leave notifications have been routed to each subject teacher's dashboard, crediting academic attendance for the missed lecture slots.");
+        tvNote.setTextColor(getColor(R.color.text_muted));
+        tvNote.setTextSize(11f);
+        layout.addView(tvNote);
+
+        new AlertDialog.Builder(this)
+                .setView(layout)
+                .setPositiveButton("Done", (d, w) -> showEventsAndPracticeDialog())
+                .show();
+    }
+
+    public static int parseTimeToMinutes(String timeStr) {
+        if (timeStr == null) return -1;
+        timeStr = timeStr.trim().toUpperCase();
+        try {
+            boolean isPm = timeStr.contains("PM");
+            boolean isAm = timeStr.contains("AM");
+            String clean = timeStr.replace("AM", "").replace("PM", "").trim();
+            String[] parts = clean.split(":");
+            int hour = Integer.parseInt(parts[0].trim());
+            int minute = parts.length > 1 ? Integer.parseInt(parts[1].trim()) : 0;
+            if (isPm && hour < 12) hour += 12;
+            if (isAm && hour == 12) hour = 0;
+            return hour * 60 + minute;
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    public static String getDayOfWeekFromDate(String dateStr) {
+        if (dateStr == null || dateStr.trim().isEmpty()) return "Monday";
+        String[] formats = new String[]{"dd MMM yyyy", "d MMM yyyy", "yyyy-MM-dd", "dd/MM/yyyy", "d/M/yyyy"};
+        for (String fmt : formats) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat(fmt, Locale.US);
+                sdf.setLenient(false);
+                java.util.Date d = sdf.parse(dateStr.trim());
+                if (d != null) {
+                    SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
+                    return dayFormat.format(d);
+                }
+            } catch (Exception ignored) {}
+        }
+        String lower = dateStr.toLowerCase();
+        for (String day : TimetableManager.DAYS_OF_WEEK) {
+            if (lower.contains(day.toLowerCase())) return day;
+        }
+        return "Thursday";
+    }
+
+    public static List<String> generateDateRange(String startDateStr, int numDays) {
+        List<String> dates = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.US);
+        Calendar cal = Calendar.getInstance();
+        try {
+            cal.setTime(sdf.parse(startDateStr.trim()));
+        } catch (Exception e) {
+            cal.setTime(new java.util.Date());
+        }
+        for (int i = 0; i < numDays; i++) {
+            dates.add(sdf.format(cal.getTime()));
+            cal.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        return dates;
     }
 }
 

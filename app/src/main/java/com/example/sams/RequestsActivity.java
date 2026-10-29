@@ -196,13 +196,50 @@ public class RequestsActivity extends AppCompatActivity {
         String studentId = currentUser != null ? currentUser.getId() : "";
         boolean isStaffOrPrincipal = currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isPrincipal());
 
-        List<SpotPass> spotPasses = isStaffOrPrincipal
-                ? spotPassManager.getAllSpotPasses()
-                : spotPassManager.getSpotPassesForStudent(studentId);
+        List<SpotPass> spotPasses;
+        List<PermissionRequest> permissions;
 
-        List<PermissionRequest> permissions = isStaffOrPrincipal
-                ? permissionManager.getAllPermissions()
-                : permissionManager.getPermissionsForStudent(studentId);
+        if (currentUser != null && currentUser.isPrincipal()) {
+            spotPasses = spotPassManager.getAllSpotPasses();
+            permissions = permissionManager.getAllPermissions();
+        } else if (currentUser != null && (currentUser.isTeacherOrDirector() || currentUser.isHOD())) {
+            // Filter passes and permissions so Teachers and HODs only see requests from their own stream's students
+            String myStream = currentUser.getStream();
+            spotPasses = new ArrayList<>();
+            for (SpotPass p : spotPassManager.getAllSpotPasses()) {
+                User s = userManager.getUserById(p.getStudentId());
+                if (s == null) s = userManager.findUserByEmailOrId(p.getStudentId());
+                if (s != null && s.getStream().equalsIgnoreCase(myStream)) {
+                    spotPasses.add(p);
+                } else if (s == null) {
+                    String id = p.getStudentId().toUpperCase();
+                    if ((myStream.equalsIgnoreCase("Science") && (id.startsWith("SCI") || id.contains("-SCI-"))) ||
+                        (myStream.equalsIgnoreCase("Commerce") && (id.startsWith("COM") || id.contains("-COM-"))) ||
+                        (myStream.equalsIgnoreCase("Arts") && (id.startsWith("ART") || id.contains("-ART-")))) {
+                        spotPasses.add(p);
+                    }
+                }
+            }
+
+            permissions = new ArrayList<>();
+            for (PermissionRequest pr : permissionManager.getAllPermissions()) {
+                User s = userManager.getUserById(pr.getStudentId());
+                if (s == null) s = userManager.findUserByEmailOrId(pr.getStudentId());
+                if (s != null && s.getStream().equalsIgnoreCase(myStream)) {
+                    permissions.add(pr);
+                } else if (s == null) {
+                    String id = pr.getStudentId().toUpperCase();
+                    if ((myStream.equalsIgnoreCase("Science") && (id.startsWith("SCI") || id.contains("-SCI-"))) ||
+                        (myStream.equalsIgnoreCase("Commerce") && (id.startsWith("COM") || id.contains("-COM-"))) ||
+                        (myStream.equalsIgnoreCase("Arts") && (id.startsWith("ART") || id.contains("-ART-")))) {
+                        permissions.add(pr);
+                    }
+                }
+            }
+        } else {
+            spotPasses = spotPassManager.getSpotPassesForStudent(studentId);
+            permissions = permissionManager.getPermissionsForStudent(studentId);
+        }
 
         // Compute metrics
         int acceptedCount = 0;
